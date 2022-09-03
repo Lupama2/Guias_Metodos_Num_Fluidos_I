@@ -1,0 +1,7 @@
+Cambios de Octave a Matlab:
+*Comentarios
+Octave: "#" o "%"
+MatLab: "%"
+*for loop
+Octave: for (.....) endfor
+MatLab: for (.....) end
