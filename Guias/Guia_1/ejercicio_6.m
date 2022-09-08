@@ -35,17 +35,24 @@ endfunction
 #---------------------------------------------
 
 #Defino la función que es solución exacta
-function y = y(x)
-    y = 0*x; #No sé aún cómo hacer esto
+function y = y(x,K)
+    C1 = 1/(e - power(e,-1));
+    C2 = -C1;
+    y_h = C1*exp(x) + C2*exp(-x);
+    y_p = 0;
+    for jj=1:K
+        y_p = y_p + sin(jj*pi*x);
+    endfor
+    y = y_h + y_p;
 endfunction
 
 #Defino la función error
-function err = error(y_num, x, norma)
+function err = error(y_num, x, K, norma)
     #Para dado array calcula la diferencia entre la solución exacta y la aproximación
     #y_num: solución numérica
     #x: valores en los que se calcula la solución numérica
     #norma: norma de la diferencia
-    err = norm(y_num - y(x), norma);
+    err = norm(y_num - y(x,K), norma);
 endfunction
 
 
@@ -101,7 +108,7 @@ endfunction
 
 
 #Testeo el funcionamiento de la función anterior. El siguiente código muestra que la solución converge
-#para N grande. Falta ver si converge a la solución exacta
+#para N grande a la solución exacta
 
 % [DC_x, DC_ysol] = DC_num_sol(23,6,UL,UR,SIZE_DOMAIN);
 % plot(DC_x,DC_ysol,".","markersize", 10);
@@ -118,9 +125,9 @@ endfunction
 % [DC_x, DC_ysol] = DC_num_sol(205,6,UL,UR,SIZE_DOMAIN);
 % plot(DC_x,DC_ysol,".","markersize", 10);
 % hold on;
+% ysol = y(DC_x, 6);
+% plot(DC_x,ysol,".","markersize", 10);
 % pause(10)
-
-
 
 
 #---------------------------------------------
@@ -180,7 +187,7 @@ function [P_x, P_ysol] = P_num_sol(Nn,K,UL,UR,SIZE_DOMAIN)
 endfunction
 
 #Testeo el funcionamiento de la función anterior. El siguiente código muestra que la solución converge
-#para N grande. Falta ver si converge a la solución exacta
+#para N grande a la solución exacta.
 
 % [P_x, P_ysol] = P_num_sol(23,6,UL,UR,SIZE_DOMAIN);
 % plot(P_x,P_ysol,".","markersize", 10);
@@ -194,73 +201,129 @@ endfunction
 % [P_x, P_ysol] = P_num_sol(105,6,UL,UR,SIZE_DOMAIN);
 % plot(P_x,P_ysol,".","markersize", 10);
 % hold on;
-
+% ysol = y(P_x, 6);
+% plot(P_x,ysol,".","markersize", 10);
+% pause(10)
 
 
 #Comparo la solución con ambos métodos para N grande:
-[P_x, P_ysol] = P_num_sol(105,6,UL,UR,SIZE_DOMAIN);
-plot(P_x,P_ysol,".","markersize", 10);
-hold on;
-[DC_x, DC_ysol] = DC_num_sol(205,6,UL,UR,SIZE_DOMAIN);
-plot(DC_x,DC_ysol,".","markersize", 10);
-hold on;
-pause(10)
-
-
-% #---------------------------------------------
-% #INCISO e
-% #---------------------------------------------
-% K = 6;
-% Nn = 23;
-
-% #Gráfico de solución exacta y ambas aproximaciones:
-
-% Nnsol = 100; #Numero de nodos
-% hsol = SIZE_DOMAIN / (Nnsol+1); #Distancia entre nodos
-% xsol =hsol*(1:Nnsol); #Array de 1/h hasta Nn/h
-% ysol = y(xsol);
-
-% Nn = 81;
-
-% DC_ysol = DC_num_sol(Nn,K,UL,UR,SIZE_DOMAIN);
-% P_ysol = P_num_sol(Nn,K,UL,UR,SIZE_DOMAIN);
-
-% plotear = true;
-
-% if(plotear == true)
-
-%     h = SIZE_DOMAIN / (Nn+1);
-%     x=h*(1:Nn);
-
-%     plot(xsol,ysol,";Exacta;","linewidth", 2);
-%     hold on
-%     plot(x,DC_ysol,".","markersize", 10,x,DC_ysol,";DC;","linewidth", 1);
-%     hold on
-%     plot(x,P_ysol,".","markersize", 10,x,P_ysol,";P;","linewidth", 1);
-%     pause(10)
-% endif
-
-% #Grafico el error en el punto central x = 0.5 en función de h
-% #El punto central es x((Nn+1)/2)
-
-
-% Nn_array = [5,7,9,11,15,21,41,81,161,321]; %tienen que ser valores impares
-% h_array = zeros(length(Nn_array),1).';
-% DC_error = zeros(length(Nn_array),1).';
-% P_error = zeros(length(Nn_array),1).';
-% for ii=1:length(Nn_array)
-%     DC_ysol = DC_num_sol(Nn_array(ii),K,UL,UR,SIZE_DOMAIN);
-%     P_ysol = P_num_sol(Nn_array(ii),K,UL,UR,SIZE_DOMAIN);
-%     DC_error(ii) = y(0.5) - DC_ysol((Nn_array(ii)+1)/2);
-%     P_error(ii) = y(0.5) - P_ysol((Nn_array(ii)+1)/2);
-
-%     h_array(ii) = SIZE_DOMAIN / (Nn_array(ii)+1); 
-% endfor
-
-
-% %plot(h_array,DC_error,".");
-% %hold on
-% plot(h_array,P_error,".");
+% [P_x, P_ysol] = P_num_sol(105,6,UL,UR,SIZE_DOMAIN);
+% plot(P_x,P_ysol,".","markersize", 10);
+% hold on;
+% [DC_x, DC_ysol] = DC_num_sol(205,6,UL,UR,SIZE_DOMAIN);
+% plot(DC_x,DC_ysol,".","markersize", 10);
+% hold on;
 % pause(10)
+
+
+#---------------------------------------------
+#INCISO e
+#---------------------------------------------
+K_e = 6;
+Nn_e = 23;
+
+#Gráfico de solución exacta y ambas aproximaciones:
+Nn_sol = 200;
+h_sol = SIZE_DOMAIN / (Nn_sol+1); #Distancia entre nodos
+h2_sol = h_sol*h_sol;
+xsol=h_sol*(1:Nn_sol); #Array de 1/h hasta Nn/h
+
+ysol = y(xsol, K_e);
+
+[DC_x, DC_ysol]  = DC_num_sol(Nn_e,K_e,UL,UR,SIZE_DOMAIN);
+[P_x, P_ysol]  = P_num_sol(Nn_e,K_e,UL,UR,SIZE_DOMAIN);
+
+plotear = false;
+
+if(plotear == true)
+    plot(xsol,ysol,";Exacta;","linewidth", 2);
+    hold on
+    plot(DC_x,DC_ysol,".","markersize", 10);
+    hold on
+    plot(P_x,P_ysol,".","markersize", 10);
+    pause(10)
+endif
+
+#Grafico el error en el punto central x = 0.5 en función de h
+#El punto central es x((Nn+1)/2)
+
+function [DF_errorx0, P_errorx0] = error_en_x(x0, Nn, K, UL, UR, SIZE_DOMAIN)
+    #Calcula el error en x = x0 para el método de diferencias finitas y el método de Padé
+    #Nn: nro de nodos
+    #K: K de la EDO
+    #POR LO PRONTO SÓLO FUNCIONA PARA X0 = 0.5
+
+
+    #Calculo la aproximación de diferencias finitas en x0
+    [DC_x, DC_ysol]  = DC_num_sol(Nn, K,UL,UR,SIZE_DOMAIN);
+    norma = 2;
+    DF_errorx0 = error(DC_ysol((Nn+1)/2), x0, K, norma);
+
+    #Calculo la aproximación de padé en X0
+    [P_x, P_ysol]  = P_num_sol(Nn ,K ,UL,UR,SIZE_DOMAIN);  
+    norma = 2;
+    P_errorx0 = error(P_ysol((Nn+1)/2), x0, K, norma);
+
+
+endfunction
+
+
+Nn_array = [5,7,9,11,15,21,41,81,161,321, 641, 1281, 2561, 5121, 10241, 20481,  40961]; %tienen que ser valores impares
+%Le tomamucho tiempo cargar:
+%Nn_array = [5,7,9,11,15,21,41,81,161,321, 641, 1281, 2561, 5121, 10241, 20481,  40961, 81921, 163841, 327681, 655361, 1310721]; %tienen que ser valores impares
+h_array = zeros(length(Nn_array),1).';
+DC_error = zeros(length(Nn_array),1).';
+P_error = zeros(length(Nn_array),1).';
+for ii=1:length(Nn_array)
+    [DC_error(ii), P_error(ii)] = error_en_x(0.5, Nn_array(ii), K_e, UL, UR, SIZE_DOMAIN);
+    h_array(ii) = SIZE_DOMAIN / (Nn_array(ii)+1); 
+endfor
+
+plotear = false;
+if (plotear == true)
+    plot(h_array,DC_error,".","markersize", 10)
+    hold on
+    plot(h_array,P_error,".","markersize", 10)
+    pause(10)
+endif
+
+#Determino el orden de truncamiento
+plotear = false;
+if (plotear == true)
+    #Recta con dependencia de orden 2
+    y2 = zeros(length(Nn_array),1).';
+    for ii=1:length(Nn_array)
+        y2(ii) = h_array(ii)*h_array(ii);
+    endfor
+    loglog(h_array, y2,";Orden2;","linewidth", 2)
+    hold on
+
+    #Recta con dependencia de orden 4
+    y4 = zeros(length(Nn_array),1).';
+    for ii=1:length(Nn_array)
+        y4(ii) = power(h_array(ii),4);
+    endfor
+    loglog(h_array, y4,";Orden4;","linewidth", 2)
+    hold on
+
+
+    loglog(h_array,DC_error,".","markersize", 10)
+    hold on
+    loglog(h_array,P_error,".","markersize", 10)
+    pause(10)
+endif
+
+
+#---------------------------------------------
+#INCISO e
+#---------------------------------------------
+
+function [DC_Nnmin, P_Nnmin] = Nm_minimo(tol)
+    #Calcula el nro de puntos mínimos Nn necesarios para obtener un error menor a tol.
+    #A priori es muy ineficiente: va calculando con Nn sucesivos hasta llegar a un error menor a tol
+    
+
+endfunction
+
 
 

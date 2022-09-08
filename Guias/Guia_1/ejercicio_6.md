@@ -19,6 +19,7 @@ Hago un gráfico de log error en función de log h?? Sí
 Error_j = |y_j - y^~_j|
 y grafico Error_j en función de DeltaX en escala log-log. Padé es orden 4 y DFC es orden 2.
 
+NO ENTIENDO EL COMPORTAMIENTO DEL ERROR DE TRUNCAMIENTO EN FUNCIÓN DEL h
 
 Arreglar en el código:
 *X Creo que hay un error en el código de Padé porque la solución cambia bruscamente con Nn. Encontré el problema pero las soluciones convergen a funciones distintas. Para saber dónde está el error tengo que graficar la función solución.
