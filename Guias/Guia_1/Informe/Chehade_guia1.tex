@@ -1,0 +1,268 @@
+\documentclass[aps,prb,twocolumn,superscriptaddress,floatfix,longbibliography]{revtex4-2}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{wrapfig} 
+\usepackage[export]{adjustbox}
+
+\usepackage{amsmath,amssymb} % math symbols
+\usepackage{bm} % bold math font
+\usepackage{graphicx} % for figures
+\usepackage{comment} % allows block comments
+\usepackage{textcomp} % This package is just to give the text quote '
+%\usepackage{ulem} % allows strikeout text, e.g. \sout{text}
+
+\usepackage[spanish]{babel}
+
+\usepackage{enumitem}
+\setlist{noitemsep,leftmargin=*,topsep=0pt,parsep=0pt}
+
+\usepackage{xcolor} % \textcolor{red}{text} will be red for notes
+\definecolor{lightgray}{gray}{0.6}
+\definecolor{medgray}{gray}{0.4}
+
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+urlcolor= blue,
+citecolor=blue,
+linkcolor= blue,
+bookmarks=true,
+bookmarksopen=false,
+}
+
+% Code to add paragraph numbers and titles
+\newif\ifptitle
+\newif\ifpnumber
+\newcounter{para}
+\newcommand\ptitle[1]{\par\refstepcounter{para}
+{\ifpnumber{\noindent\textcolor{lightgray}{\textbf{\thepara}}\indent}\fi}
+{\ifptitle{\textbf{[{#1}]}}\fi}}
+%\ptitletrue  % comment this line to hide paragraph titles
+%\pnumbertrue  % comment this line to hide paragraph numbers
+
+% minimum font size for figures
+\newcommand{\minfont}{6}
+
+% Uncomment this line if you prefer your vectors to appear as bold letters.
+% By default they will appear with arrows over them.
+% \renewcommand{\vec}[1]{\bm{#1}}
+
+%Cambiar Cuadros por Tablas y lista de...
+%\renewcommand{\listtablename}{Índice de tablas}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\date}{Fecha}
+
+\graphicspath{ {C:/Users/lupam/Mi unidad/Pablo Chehade/Instituto Balseiro (IB)/Métodos numéricos en fluidos I/Metodos_Num_Fluidos_I/Guias/Guia_1/Informe/Figures} } %Para importar imágenes desde una carpeta
+
+
+\usepackage[bottom]{footmisc} %para que las notas al pie aparezcan en la misma página
+
+
+
+\begin{comment}
+
+%Comandos de interés:
+
+* Para ordenar el documento:
+\section{Introducción}
+\section{\label{sec:Formatting}Formatting} %label para luego hacer referencia a esa sección
+
+\ptitle{Start writing while you experiment} %pone nombre y título al documento dependiendo de si en el header están los comandos \ptitletrue y \pnumbertrue
+
+* Ecuaciones:
+\begin{equation}
+a^2+b^2=c^2 \,.
+\label{eqn:Pythagoras}
+\end{equation}
+
+* Conjunto de ecuaciones:
+\begin{eqnarray}
+\label{eqn:diagonal}
+\nonumber d & = & \sqrt{a^2 + b^2 + c^2} \\
+& = & \sqrt{3^2+4^2+12^2} = 13
+\end{eqnarray}
+
+* Para hacer items / enumerar:
+\begin{enumerate}
+  \item
+\end{enumerate}
+
+\begin{itemize}
+  \item
+\end{itemize}
+
+* Figuras:
+\begin{figure}[h]
+    \includegraphics[clip=true,width=\columnwidth]{pixel-compare}
+    \caption{}
+     \label{fig:pixels}
+\end{figure}
+
+* Conjunto de figuras:
+(no recuerdo)
+
+
+* Para hacer referencias a fórmulas, tablas, secciones, ... dentro del documento:
+\ref{tab:spacing}
+
+* Para citar
+Elementos de .bib
+\cite{WhitesidesAdvMat2004}
+url
+\url{http://www.mendeley.com/}\\
+
+* Agradecimientos:
+\begin{acknowledgments}
+We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fig:pixels}.
+\end{acknowledgments}
+
+* Apéndice:
+\appendix
+\section{\label{app:Mendeley}Mendeley}
+
+* Bibliografía:
+\bibliography{Hoffman-example-paper}
+
+\end{comment}
+
+
+
+\begin{document}
+
+% Allows to rewrite the same title in the supplement
+\newcommand{\mytitle}{Laboratorio 1}
+
+\title{\mytitle}
+
+\author{Pablo Chehade \\
+    \small \textit{pablo.chehade@ib.edu.ar} \\
+    \small \textit{Métodos Numéricos en Fluidos I, Instituto Balseiro, CNEA-UNCuyo, Bariloche, Argentina, 2022} \\}
+
+
+\begin{abstract}
+
+Se estudió el comportamiento de distintas aproximaciones numéricas en un problema de valores de contorno tipo Dirichlet de solución exacta conocida.
+
+
+Se obtuvo...
+
+\end{abstract}
+
+\maketitle
+
+\textcolor{red}{
+\begin{itemize}
+    \item ¿Tengo que mencionar la computadora que usé? ¿En qué sección lo hago?
+    \item ¿Está bien el nombre de la sección "Método Numérico"?
+    \item ¿Cuánto desarrollo hay que hacer en b y c?
+    \item ¿Es necesario hacer el desarrollo para obtener la solución exacta o se puede dar por sabido?
+\end{itemize}}
+
+\section{Introducción}
+\ptitle{En física, no todos los problemas tienen solución analítica, muchas veces es necesario recurrir a aproximaciones}
+\begin{itemize}
+    \item Estaría bueno mencionar ejemplos de ecuaciones diferenciales lineales que sólo se pueden atacar de forma numérica. No encontré ningún ejemplo
+\end{itemize}
+    
+\end{array}
+
+\ptitle{En este trabajo se estudió el comportamiento de distintas aproximaciones numéricas en el siguiente problema de valores de contorno tipo Dirichlet}
+\begin{itemize}
+    \item Describir la ec
+    \item Este problema tiene solución exacta conocida. Describir la solución exacta y referenciar a un anexo para la discusión de cómo se encontró la solución
+\end{itemize}
+
+\section{Método Numérico}
+
+\ptitle{Discretización del dominio}
+\begin{itemize}
+    \item Discretización del dominio
+\end{itemize}
+
+El dominio se discretiza con puntos xi = ih, i = 1, . . . , N , y h = 1/(N + 1). Notar que no hay puntos en los contornos. En este problema yi es la estimacion de y en el punto xi, y $\mathrm{y_{vec}}$ = (y1, y2, ..., yN )T es el vector soluci ́on
+
+\ptitle{Para estimar y'' emplearon diferencias finitas centradas de segundo orden y el \textcolor{red}{esquema} de Padé \textcolor{red}{de 4to orden}}
+\textcolor{red}{Parafrasear: } El valor de y'' se puede estimar como combinaci ́on  lineal de los valores de y empleando diferencias finitas, transformando el problema de EDO en  un sistema de ecuaciones lineales.
+
+\subsection{Diferencias finitas centradas}
+
+\ptitle{Obtención del sistema lineal}
+\begin{itemize}
+    \item Ec del Moine para dif centradas (referencia al Moin)
+    \item Aplicación de la aproximación a la EDO. Poner directamente la ec. final
+    \item Esta aproximación vale también en los puntos del borde, bajo la consideración de que $y_0 = y(0)$ e $y_{N+1} = y(1)$. Presentación de las ecuaciones
+    \item El sistema de ecuaciones algebraicas anterior se puede describir a través de la ec. A1y_vec = b1_vec, donde
+\end{itemize}
+
+
+\subsection{Padé}
+
+\ptitle{Obtención del sistema lineal en los nodos internos}
+
+\begin{itemize}
+    \item Presentación de la aprox (referenciada al Moin) junto a la región de validez sobre i.
+\end{itemize}
+
+\ptitle{Obtención del sistema lineal en el borde izquierdo}
+\begin{itemize}
+    \item Para los nodos del borde se puede deribar una aproximación de Padé para y1'' e yN''. Para esto basta plantear \textcolor{blue}{ec. para encontrar la aprox de Padé en el nodo izq} y determinar los coeficientes a0, a1, a2 y b2, de modo de obtener el mayor orden de aproximación posible. Para esto, se desarrolla en Taylor y2, y2'' e y0 alrededor de \textcolor{red}{x1?}.
+    \item \textcolor{blue}{Ec y1'' = y1(...)....}
+    \item Igualando ambos miembros se obtienen los coeficientes \textcolor{blue}{Coefs}
+\end{itemize}
+
+\ptitle{Obtención del sistema lineal en el borde derecho}
+Análogo al caso anterior, presentar las ecuaciones y las soluciones
+
+\ptitle{Obtención del sistema lineal}
+\begin{itemize}
+    \item Empleando las fórmulas de Padé para los nodos internos y los bordes, se obtiene la relación lineal A2y_vec'' = B2 y_vec + c, donde
+    \item Aplicandola a la ecuación diferencial (ref) se obtiene
+    \item \textcolor{blue}{ec. encuadrada luego de la presentación de la relación lineal}
+\end{itemize}
+
+\ptitle{Resumen de los que se tratará en Resultados}
+
+\section{Resultados}
+
+\ptitle{Comportamiento cualitativo}
+En primer lugar, se observó cualitativamente el comportamiento de los esquemas numéricos para K = 6 y N = 23
+
+\ptitle{Error en el punto central en función de h}
+
+
+
+
+\begin{itemize}
+    \item
+\end{itemize}
+
+\section{Conclusión}
+\begin{itemize}
+    \item
+\end{itemize}
+
+\section{Anexo}
+
+\subsection{Solución exacta del problema de valores de contorno}
+\begin{itemize}
+    \item La solución general se puede expresar como una solución de la ec homogéna
+    \item \textcolor{blue}{ec. homogénea}
+    \item y una solución particular
+    \item Obtención de la solución homogénea (brevemente, sin hacer muchas cuentas)
+    \item Obtención de la solución particular
+    \item Obtención de las ctes C1 y C2
+    \item Solución gral
+\end{itemize}
+
+\bibliography{Chehade_guia1.bib}
+
+\end{document}
+
+
+
+
+

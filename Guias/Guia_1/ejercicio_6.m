@@ -96,7 +96,7 @@ function [DC_x, DC_ysol] = DC_num_sol(Nn,K,UL,UR,SIZE_DOMAIN)
 
     DC_ysol=A\b.';  # SIEMPRE USAR EL COMANDO "\" PARA RESOLVER SISTEMAS LINEALES - MAS ECONOMICO
     #El operador ".'" calcula la transpuesta. Esto es necesario porque el vector b es un vector fila.
-    DC_x = x;
+    DC_x = x.';
 
 endfunction
 
@@ -126,9 +126,8 @@ endfunction
 % plot(DC_x,DC_ysol,".","markersize", 10);
 % hold on;
 % ysol = y(DC_x, 6);
-% plot(DC_x,ysol,".","markersize", 10);
+% plot(DC_x,ysol,";Sol;","linewidth", 2);
 % pause(10)
-
 
 #---------------------------------------------
 #MÉTODO DE PADÉ
@@ -182,7 +181,7 @@ function [P_x, P_ysol] = P_num_sol(Nn,K,UL,UR,SIZE_DOMAIN)
 
     #Resuelvo el problema
     P_ysol = (B2-A2)\(A2*g(x,K).' - c);
-    P_x = x;
+    P_x = x.';
 
 endfunction
 
@@ -318,12 +317,49 @@ endif
 #INCISO f
 #---------------------------------------------
 
-function [DC_Nnmin, P_Nnmin] = Nm_minimo(tol)
+function [DC_Nnmin, P_Nnmin] = Nm_minimo(tol, norma, K, UL, UR, SIZE_DOMAIN)
     #Calcula el nro de puntos mínimos Nn necesarios para obtener un error menor a tol.
-    #A priori es muy ineficiente: va calculando con Nn sucesivos hasta llegar a un error menor a tol
-    
+    #A priori es muy ineficiente: va calculando con Nn sucesivos hasta llegar a un error menor a tol.
+    #Sería mejor usar el método de biyección, por ej.
+    err = 1;
+    N = 2;
+
+    while(err > tol)
+        N = N+1;
+        [DC_x, DC_ysol]  = DC_num_sol(N,K,UL,UR,SIZE_DOMAIN);
+        err = error(DC_ysol, DC_x, K, norma);
+    endwhile
+    DC_Nnmin = N
+
+    err = 1;
+    N = 2;
+    while(err > tol)
+        N = N+1;
+        [P_x, P_ysol]  = P_num_sol(N,K,UL,UR,SIZE_DOMAIN);
+        err = error(P_ysol, P_x, K, norma);
+    P_Nnmin = N;
+    endwhile
 
 endfunction
 
+tol = 0.1;
+norma = Inf;
 
+K_array = [3,8,16,32,64,128]
+DC_Nnmin_array = zeros(length(K_array),1).';
+P_Nnmin_array = zeros(length(K_array),1).';
 
+for jj=1:length(K_array)
+    [DC_Nnmin_array(jj), P_Nnmin_array(jj)] = Nm_minimo(tol, norma, K_array(jj), UL, UR, SIZE_DOMAIN);
+endfor
+
+DC_Nnmin_array
+P_Nnmin_array
+
+#Norma 2:
+#DC_Nnmin_array = 14     66    202    626   1962   6188
+#P_Nnmin_array =  10     32     81    204    514   1294
+
+#Norma Inf:
+#DC_Nnmin_array = 10     39    107    295    826   2322
+#P_Nnmin_array = 8    26    59   136   314   724
