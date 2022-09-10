@@ -164,72 +164,169 @@ Se obtuvo...
 
 \section{Introducción}
 \ptitle{En física, no todos los problemas tienen solución analítica, muchas veces es necesario recurrir a aproximaciones}
-\begin{itemize}
-    \item Estaría bueno mencionar ejemplos de ecuaciones diferenciales lineales que sólo se pueden atacar de forma numérica. No encontré ningún ejemplo
-\end{itemize}
-    
-\end{array}
+
+En ciencias físicas no todos los problemas tienen solución analítica \textcolor{blue}{Referencia a Chule}. Debido a esto, es necesario recurrir a aproximaciones que sí posean solución analítica o a esquemas numéricos que permitan permitan resolver computacionalmente el problema. Sin embargo, estos esquemas no están excentos de error, por lo que es necesario estudiarlos con detalle para poder determinar su validez y aplicabilidad. Para esto es útil aplicar estos esquemas a problemas de solución exacta conocida.
 
 \ptitle{En este trabajo se estudió el comportamiento de distintas aproximaciones numéricas en el siguiente problema de valores de contorno tipo Dirichlet}
-\begin{itemize}
-    \item Describir la ec
-    \item Este problema tiene solución exacta conocida. Describir la solución exacta y referenciar a un anexo para la discusión de cómo se encontró la solución
-\end{itemize}
+
+En este trabajo se estudió el comportamiento de distintas aproximaciones numéricas en el siguiente problema de valores de contorno tipo Dirichlet
+\begin{equation}
+    \left\{\begin{matrix}
+        \frac{d^2 y}{dx^2} - y = g(x) =  - \sum_{j = 1}^K (1 + (j \pi)^2)\sin{(j \pi x)}, 0 \leq x \leq 1,\\
+        y(0) = 0,\\
+        y(1) = 1, \\
+        \end{matrix}\right.
+    \label{ec:PVC}
+\end{equation}
+
+con solución analítica
+\begin{equation}
+    y(x) = \frac{e^x - e^{-x}}{e - e^{-1}} + \sum_{j = 1}^K \sin{(j \pi x)}
+    \label{ec:sol_analitica}
+\end{equation}
+La obtención de esta solución se resume en el Anexo \ref{sec:Anexo}.
 
 \section{Método Numérico}
 
 \ptitle{Discretización del dominio}
-\begin{itemize}
-    \item Discretización del dominio
-\end{itemize}
 
-El dominio se discretiza con puntos xi = ih, i = 1, . . . , N , y h = 1/(N + 1). Notar que no hay puntos en los contornos. En este problema yi es la estimacion de y en el punto xi, y $\mathrm{y_{vec}}$ = (y1, y2, ..., yN )T es el vector soluci ́on
+Para resolver numéricamente el problema de valores de contorno es necesario discretizar el dominio y proponer un esquema numérico que permita obtener la solución aproximada. El dominio se discretizó con puntos equiespaciados $x_i = i h$ donde $i = 1,\cdots, N$ y $h = 1/(N+1)$. En base a esto, el problema de valores iniciales \ref{ec:PVC} se puede escribir como
+\begin{equation}
+    \left\{\begin{matrix}
+        y_i^{''} - y_i = g_i, i = 1, \cdots, N\\
+        y_0 = y(0) = 0,\\
+        y_{N+1} = y(1) = 1, \\
+        \end{matrix}\right.
+    \label{ec:PVC_numerico}
+\end{equation}
+donde $y_i^{''} = \frac{d^2 y_i}{dx^2}$ y $g_i = g(x_i)$.
 
 \ptitle{Para estimar y'' emplearon diferencias finitas centradas de segundo orden y el \textcolor{red}{esquema} de Padé \textcolor{red}{de 4to orden}}
-\textcolor{red}{Parafrasear: } El valor de y'' se puede estimar como combinaci ́on  lineal de los valores de y empleando diferencias finitas, transformando el problema de EDO en  un sistema de ecuaciones lineales.
+Para estimar $y_i^{''}$ se pueden utilizar distintos esquemas numéricos. En este trabajo se empleó diferencias finitas centradas y la aproximación de Padé.
+
 
 \subsection{Diferencias finitas centradas}
+La fórmula de diferencias centradas finitas de segundo orden para la derivada segunda es \textcolor{blue}{ref Moine pag 15}
+\begin{equation}
+    y_i^{''} = \frac{y_{i+1} - 2 y_i + y_{i-1}}{h^2} + O(h^2).
+    \label{ec:diferencias_centradas}
+\end{equation}
+Aplicándola a la ecuación diferencial \ref{ec:PVC_numerico} se obtiene
+\[ \frac{1}{h^2} y_{i-1} + \left (-\frac{2}{h^2} - 1 \right ) y_i + \frac{1}{h^2} y_{i-1} = g_i\]
+para los nodos internos $i = 2, \cdots, N-2$. Para los nodos del borde se puede emplear la misma aproximación bajo la consideración de que $y_0 = y(0)$ e $y_{N+1} = y(1)$, es decir,
+\[\frac{1}{h^2}y_2 + \left (-\frac{2}{h^2} - 1 \right ) y_1 = g_1 - \frac{1}{h^2}y(0)  \]
+\[\frac{1}{h^2}y_N + \left (-\frac{2}{h^2} - 1 \right ) y_{N-1} = g_N - \frac{1}{h^2}y(1)  \]
+El sistema de ecuaciones algebraicas anterior se puede escribir de la forma $A_{DC} \vec{y} = \vec{b}$, donde
+\[
+    A_{DC} = \left(\begin{matrix}
+        -\frac{2}{h^2} - 1 & \frac{1}{h^2} & 0 & \cdots & 0 & 0\\
+        \frac{1}{h^2} & -\frac{2}{h^2} - 1 & \frac{1}{h^2} & \cdots & 0 & 0\\
+        0 & \frac{1}{h^2} & -\frac{2}{h^2} - 1 & \cdots & 0 & 0\\
+        \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+        0 & 0 & 0 & \cdots & -\frac{2}{h^2} - 1 & \frac{1}{h^2}\\
+        0 & 0 & 0 & \cdots & \frac{1}{h^2} & -\frac{2}{h^2} - 1\\
+        \end{matrix}\right),
+\]
+\[\vec{y} = (y_1, y_2, \cdots, y_N)\]
+y
+\[\vec{b} = (g_1 - y(0)/h^2, g_2, \cdots, g_{N-1}, g_N -  y(1)/h^2)\]
 
-\ptitle{Obtención del sistema lineal}
-\begin{itemize}
-    \item Ec del Moine para dif centradas (referencia al Moin)
-    \item Aplicación de la aproximación a la EDO. Poner directamente la ec. final
-    \item Esta aproximación vale también en los puntos del borde, bajo la consideración de que $y_0 = y(0)$ e $y_{N+1} = y(1)$. Presentación de las ecuaciones
-    \item El sistema de ecuaciones algebraicas anterior se puede describir a través de la ec. A1y_vec = b1_vec, donde
-\end{itemize}
 
-
-\subsection{Padé}
+\subsection{Aproximación de Padé}
 
 \ptitle{Obtención del sistema lineal en los nodos internos}
-
-\begin{itemize}
-    \item Presentación de la aprox (referenciada al Moin) junto a la región de validez sobre i.
-\end{itemize}
+La fórmula de Padé de 4to orden para la derivada segunda es \textcolor{blue}{ref Moine pag 23}
+\begin{equation}
+    \frac{1}{12} y_{i-1}'' + \frac{10}{12} y_i'' + \frac{1}{12} y_{i+1}'' = \frac{y_{i+1} - 2 y_i + y_{i-1}}{h^2}
+    \label{ec:Pade_interior}
+\end{equation}
+válida sólo para los nodos internos $i = 2, \cdots, N-2$.
 
 \ptitle{Obtención del sistema lineal en el borde izquierdo}
-\begin{itemize}
-    \item Para los nodos del borde se puede deribar una aproximación de Padé para y1'' e yN''. Para esto basta plantear \textcolor{blue}{ec. para encontrar la aprox de Padé en el nodo izq} y determinar los coeficientes a0, a1, a2 y b2, de modo de obtener el mayor orden de aproximación posible. Para esto, se desarrolla en Taylor y2, y2'' e y0 alrededor de \textcolor{red}{x1?}.
-    \item \textcolor{blue}{Ec y1'' = y1(...)....}
-    \item Igualando ambos miembros se obtienen los coeficientes \textcolor{blue}{Coefs}
-\end{itemize}
+
+Para los nodos del borde con $i = 1$ e $i = N$ es necesario derivar una aproximación de Padé. Para esto basta plantear
+\begin{equation}
+    y_1'' + b_2 y_2'' = a_0 y_0 + a_1 y_1 + a_2 y_2 +O(h^\alpha)
+    \label{ec:Pade_izq_gral}
+\end{equation}
+y determinar los coeficientes $a_0$, $a_1$, $a_2$ y $b_2$ de modo de obtener el mayor orden de aproximación $\alpha$ posible. Para esto, se desarrolla en Taylor $y_2''$, $y_0$ e $y_2$ alrededor de $x_1$. De este modo,
+\[y_2'' = y_1'' + h y_1''' + \frac{h^2}{2} y_1^{(IV)} + O(h^3)  \]
+\[y_2 = y_1 + h y_1' + \frac{h^2}{2} y_1'' + \frac{h^3}{6}y_1''' + \frac{h^4}{24} y_1^{(IV)} + O(h^3) \]
+\[y_0 = y_1 - h y_1' + \frac{h^2}{2} y_1'' - \frac{h^3}{6}y_1''' + \frac{h^4}{24} y_1^{(IV)} + O(h^3), \]
+donde se consideró que $a_2$ tiene unidades de $1/h^2$. Reemplazando estas expresiones en \ref{ec:Pade_izq} se obtiene
+\[y_1'' = y_1( a_0 + a_1 + a_2) + y_1'(-a_0 h + a_2 h) + y_1''(a_0 \frac{h^2}{2} + a_2 \frac{h^2}{2} - b_2) + y_1'''(- a_0 \frac{h^3}{6} + a_2 \frac{h^3}{6} - b_2 h) + y_1^{(IV)}(a_0 \frac{h^4}{24} + a_2 \frac{h^4}{24} - b_2 \frac{h^2}{2} ) + O(h^3), \]
+que igualando ambos miembros da lugar al siguiente conjunto de ecuaciones para los coeficientes
+\[\left\{\begin{matrix}
+    a_0 + a_1 + a_2 = 0 \\
+    h(-a_0 + a_2) = 0 \\
+    a_0 \frac{h^2}{2} + a_2 \frac{h^2}{2} - b_2 = 1\\
+    h(- a_0 \frac{h^2}{6} + a_2 \frac{h^2}{6} - b_2) = 0 \\
+    \frac{h^2}{2}(a_0 \frac{h^2}{12} + a_2 \frac{h^2}{12} - b_2) = 0
+    \end{matrix}\right.
+\]
+
+Solo es posible cumplir las cuatro primeras ecuaciones mediante la elección  $a_0 = 1/h^2$, $a_1 = -2/h^2$, $a_2 = 1/h^2$ y $b_2 = 0$. Al no ser posible anular el término de orden $h^2$, la aproximación de Padé resultante es de segundo orden. La expresión final es
+\begin{equation}
+    y_1'' = \frac{y_{2} - 2 y_1 + y_{0}}{h^2} + O(h^2).
+    \label{eq:Pade_izq}
+\end{equation}
+que coincide con diferencias centradas de orden dos \ref{ec:diferencias_centradas}.
 
 \ptitle{Obtención del sistema lineal en el borde derecho}
-Análogo al caso anterior, presentar las ecuaciones y las soluciones
+Análogamente, se puede repetir el procedimiento para el nodo de borde $i = N-1$. Planteando
+\[y_N'' + b_{N-1} y_{N-1}'' = a_{N-1} y_{N-1} + a_N y_N + a_{N+1} y_{N+1} +O(h^\alpha)\]
+y desarrollando en Taylor $y_{N-1}''$, $y_{N-1}$ e $y_{N+1}$ alrededor de $x_N$, se obtiene un sistema de ecuaciones para los coeficientes \textcolor{red}{cuales}. La aproximación de Padé resultante es de segundo orden y su expresión es
+\begin{equation}
+    y_N'' = \frac{y_{N+1} - 2 y_N + y_{N-1}}{h^2} + O(h^2),
+    \label{eq:Pade_der}
+\end{equation}
+idéntica a la de diferencias centradas de orden dos \ref{ec:diferencias_centradas}.
 
 \ptitle{Obtención del sistema lineal}
-\begin{itemize}
-    \item Empleando las fórmulas de Padé para los nodos internos y los bordes, se obtiene la relación lineal A2y_vec'' = B2 y_vec + c, donde
-    \item Aplicandola a la ecuación diferencial (ref) se obtiene
-    \item \textcolor{blue}{ec. encuadrada luego de la presentación de la relación lineal}
-\end{itemize}
+Empleando las fórmulas de diferencia finita de Padé de segundo orden (\ref{eq:Pade_izq}, \ref{eq:Pade_der} y \ref{ec:Pade_interior}) se puede escribir la relación lineal $A_P \vec{y''} = B_P \vec{y} + \vec{c}$, donde
+\begin{equation}
+    A_P = \left(\begin{matrix}
+    1 & 0 & 0 & \cdots & 0 & 0 & 0 \\
+    \frac{1}{12} & \frac{10}{12} & \frac{1}{12} & \cdots & 0 & 0 & 0 \\
+    0 & \frac{1}{12} & \frac{10}{12} & \cdots & 0 & 0 & 0 \\
+    \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+    0 & 0 & 0 & \cdots & \frac{10}{12} & \frac{1}{12} & 0 \\
+    0 & 0 & 0 & \cdots & \frac{1}{12} & \frac{10}{12} & \frac{1}{12} \\
+    0 & 0 & 0 & \cdots & 0 & 0 & 1
+    \end{matrix}\right)
+\end{equation}
+
+\begin{equation}
+    B_P = \frac{1}{h^2} \left(\begin{matrix}
+    -2 & 1 & 0 & \cdots & 0 & 0 & 0 \\
+    1 & -2 & 1 & \cdots & 0 & 0 & 0 \\
+    0 & 1 & -2 & \cdots & 0 & 0 & 0 \\
+    \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+    0 & 0 & 0 & \cdots & -2 & 1 & 0 \\
+    0 & 0 & 0 & \cdots & 1 & -2 & 1 \\
+    0 & 0 & 0 & \cdots & 0 & 1 & -2
+    \end{matrix}\right)
+\end{equation}
+
+ambas matrices tridiagonales. Mientras que
+\[\vec{y''} = (y_1'', y_2'', \cdots, y_N''),\]
+\[\vec{y} = (y_1, y_2, \cdots, y_N)\]
+y
+\[\vec{c} = (y(0)/h^2, 0, \cdots, 0, y(1)/h^2)\]
+
+Aplicando esta relación lineal a la ecuación diferencial \ref{ec:PVC_numerico} se obtiene
+\[(B_P - A_P)\vec{y} = A_P\vec{g} - \vec{c}\]
+donde $\vec{g} = (g_1, g_2, \cdots, g_N)$. 
+
 
 \ptitle{Resumen de los que se tratará en Resultados}
+Habiendo desarrollado ambos métodos y habiéndolos aplicado a la ecuación diferencial, se está en condiciones de resolver el problema y comparar con la solución exacta.
+
 
 \section{Resultados}
 
 \ptitle{Comportamiento cualitativo}
-En primer lugar, se observó cualitativamente el comportamiento de los esquemas numéricos para K = 6 y N = 23
+En primer lugar, se observó cualitativamente el comportamiento de los esquemas numéricos para% K = 6 y N = 23
 
 \ptitle{Error en el punto central en función de h}
 
@@ -245,7 +342,7 @@ En primer lugar, se observó cualitativamente el comportamiento de los esquemas 
     \item
 \end{itemize}
 
-\section{Anexo}
+\section{Anexo\label{sec:Anexo}}
 
 \subsection{Solución exacta del problema de valores de contorno}
 \begin{itemize}
