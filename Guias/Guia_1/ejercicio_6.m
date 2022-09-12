@@ -267,9 +267,9 @@ function [DF_errorx0, P_errorx0] = error_en_x(x0, Nn, K, UL, UR, SIZE_DOMAIN)
 endfunction
 
 
-Nn_array = [5,7,9,11,15,21,41,81,161,321, 641, 1281, 2561, 5121, 10241, 20481,  40961]; %tienen que ser valores impares
+%Nn_array = [5,7,9,11,15,21,41,81,161,321, 641, 1281, 2561, 5121, 10241, 20481,  40961]; %tienen que ser valores impares
 %Le tomamucho tiempo cargar:
-%Nn_array = [5,7,9,11,15,21,41,81,161,321, 641, 1281, 2561, 5121, 10241, 20481,  40961, 81921, 163841, 327681, 655361, 1310721]; %tienen que ser valores impares
+Nn_array = [5,7,9,11,15,21,41,81,161,321, 641, 1281, 2561, 5121, 10241, 20481,  40961, 81921, 163841, 327681, 655361, 1310721]; %tienen que ser valores impares
 h_array = zeros(length(Nn_array),1).';
 DC_error = zeros(length(Nn_array),1).';
 P_error = zeros(length(Nn_array),1).';
@@ -283,11 +283,11 @@ if (plotear == true)
     plot(h_array,DC_error,".","markersize", 10)
     hold on
     plot(h_array,P_error,".","markersize", 10)
-    pause(10)
+    pause(1000)
 endif
 
 #Determino el orden de truncamiento
-plotear = false;
+plotear = true;
 if (plotear == true)
     #Recta con dependencia de orden 2
     y2 = zeros(length(Nn_array),1).';
