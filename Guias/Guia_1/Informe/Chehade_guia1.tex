@@ -147,8 +147,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 Se estudió el comportamiento de distintas aproximaciones numéricas en un problema de valores de contorno tipo Dirichlet de solución exacta conocida.
 
-
-Se obtuvo...
+En primer lugar, se analizó cualitativamente ambas aproximaciones para $K$ y $N$ fijos. En segundo lugar, se estudió la dependencia del error local en un punto particular en función del espaciamiento $h$. Finalmente, se estudió cuántos puntos discretos $N$ son necesarios para obtener un determinado error global en función de las oscilaciones de la solución representadas por el parámetro $K$.
 
 \end{abstract}
 
@@ -165,14 +164,15 @@ Se obtuvo...
 \section{Introducción}
 \ptitle{En física, no todos los problemas tienen solución analítica, muchas veces es necesario recurrir a aproximaciones}
 
-En ciencias físicas no todos los problemas tienen solución analítica \textcolor{blue}{Referencia a Chule}. Debido a esto, es necesario recurrir a aproximaciones del mismo que sí posean solución analítica o a esquemas numéricos que permitan aproximarlo computacionalmente. Sin embargo, estos esquemas no están excentos de error, por lo que es necesario estudiarlos con detalle para determinar su validez y aplicabilidad. Para esto es útil aplicar estos esquemas a problemas de solución exacta conocida.
+En ciencias físicas no todos los problemas tienen solución analítica \cite{Chule}. Debido a esto, es necesario recurrir a aproximaciones del mismo que sí posean solución o a esquemas numéricos que permitan aproximarlo computacionalmente. Sin embargo, estos esquemas no están excentos de error, por lo que deben ser estudiados en detalle para determinar su validez y aplicabilidad. Para esto es útil aplicar estos esquemas a problemas de solución exacta conocida.
 
 \ptitle{En este trabajo se estudió el comportamiento de distintas aproximaciones numéricas en el siguiente problema de valores de contorno tipo Dirichlet}
 
 En este trabajo se estudió el comportamiento de distintas aproximaciones numéricas en el siguiente problema de valores de contorno tipo Dirichlet
 \begin{equation}
     \left\{\begin{matrix}
-        \frac{d^2 y}{dx^2} - y = g(x) =  - \sum_{j = 1}^K (1 + (j \pi)^2)\sin{(j \pi x)}, 0 \leq x \leq 1,\\
+        \frac{d^2 y}{dx^2} - y = g(x), \\ 
+        g (x) = - \sum_{j = 1}^K (1 + (j \pi)^2)\sin{(j \pi x)}, 0 \leq x \leq 1,\\
         y(0) = 0,\\
         y(1) = 1, \\
         \end{matrix}\right.
@@ -184,7 +184,6 @@ con solución analítica
     y(x) = \frac{e^x - e^{-x}}{e - e^{-1}} + \sum_{j = 1}^K \sin{(j \pi x)}
     \label{ec:sol_analitica}
 \end{equation}
-La obtención de esta solución se resume en el Anexo \ref{sec:Anexo}.
 
 \section{Método Numérico}
 
@@ -193,27 +192,27 @@ La obtención de esta solución se resume en el Anexo \ref{sec:Anexo}.
 Para resolver numéricamente el problema de valores de contorno es necesario discretizar el dominio y proponer un esquema numérico que permita obtener la solución aproximada. El dominio se discretizó con puntos equiespaciados $x_i = i h$ donde $i = 1,\cdots, N$ y $h = 1/(N+1)$. En base a esto, el problema de valores iniciales \ref{ec:PVC} se puede escribir como
 \begin{equation}
     \left\{\begin{matrix}
-        y_i^{''} - y_i = g_i, i = 1, \cdots, N\\
+        y_i'' - y_i = g_i, i = 1, \cdots, N\\
         y_0 = y(0) = 0,\\
         y_{N+1} = y(1) = 1, \\
         \end{matrix}\right.
     \label{ec:PVC_numerico}
 \end{equation}
-donde $y_i^{''} = \frac{d^2 y_i}{dx^2}$ y $g_i = g(x_i)$.
+donde $y_i''= \frac{d^2 y_i}{dx^2}$ y $g_i = g(x_i)$.
 
 \ptitle{Para estimar y'' emplearon diferencias finitas centradas de segundo orden y el \textcolor{red}{esquema} de Padé \textcolor{red}{de 4to orden}}
-Para estimar $y_i^{''}$ se pueden utilizar distintos esquemas numéricos. En este trabajo se empleó diferencias finitas centradas y la aproximación de Padé.
+Para estimar $y_i''$ se pueden utilizar distintos esquemas numéricos. En este trabajo se emplearon diferencias finitas centradas y la aproximación de Padé.
 
 
 \subsection{Diferencias finitas centradas}
-La fórmula de diferencias centradas finitas de segundo orden para la derivada segunda es \textcolor{blue}{ref Moine pag 15}
+La fórmula de diferencias finitas centradas de segundo orden para la derivada segunda es \cite{Moin}
 \begin{equation}
-    y_i^{''} = \frac{y_{i+1} - 2 y_i + y_{i-1}}{h^2} + O(h^2).
+    y_i'' = \frac{y_{i+1} - 2 y_i + y_{i-1}}{h^2} + O(h^2).
     \label{ec:diferencias_centradas}
 \end{equation}
-Aplicándola a la ecuación diferencial \ref{ec:PVC_numerico} se obtiene
-\[ \frac{1}{h^2} y_{i-1} + \left (-\frac{2}{h^2} - 1 \right ) y_i + \frac{1}{h^2} y_{i-1} = g_i\]
-para los nodos internos $i = 2, \cdots, N-2$. Para los nodos del borde se puede emplear la misma aproximación bajo la consideración de que $y_0 = y(0)$ e $y_{N+1} = y(1)$, es decir,
+Aplicándola a la ecuación diferencial \ref{ec:PVC_numerico} para los nodos internos $i = 2, \cdots, N-2$, se obtiene
+\[ \frac{1}{h^2} y_{i-1} + \left (-\frac{2}{h^2} - 1 \right ) y_i + \frac{1}{h^2} y_{i-1} = g_i.\]
+Para los nodos del borde se puede emplear la misma aproximación bajo la consideración de que $y_0 = y(0)$ e $y_{N+1} = y(1)$, es decir,
 \[\frac{1}{h^2}y_2 + \left (-\frac{2}{h^2} - 1 \right ) y_1 = g_1 - \frac{1}{h^2}y(0)  \]
 \[\frac{1}{h^2}y_N + \left (-\frac{2}{h^2} - 1 \right ) y_{N-1} = g_N - \frac{1}{h^2}y(1)  \]
 El sistema de ecuaciones algebraicas anterior se puede escribir de la forma $A_{DC} \vec{y} = \vec{b}$, donde
@@ -235,7 +234,7 @@ y
 \subsection{Aproximación de Padé}
 
 \ptitle{Obtención del sistema lineal en los nodos internos}
-La fórmula de Padé de 4to orden para la derivada segunda es \textcolor{blue}{ref Moine pag 23}
+La fórmula de Padé de 4to orden para la derivada segunda es \cite{Moin}
 \begin{equation}
     \frac{1}{12} y_{i-1}'' + \frac{10}{12} y_i'' + \frac{1}{12} y_{i+1}'' = \frac{y_{i+1} - 2 y_i + y_{i-1}}{h^2}
     \label{ec:Pade_interior}
@@ -243,19 +242,24 @@ La fórmula de Padé de 4to orden para la derivada segunda es \textcolor{blue}{r
 válida sólo para los nodos internos $i = 2, \cdots, N-2$.
 
 \ptitle{Obtención del sistema lineal en el borde izquierdo}
-
-Para los nodos del borde con $i = 1$ e $i = N$ es necesario derivar una aproximación de Padé. Para esto basta plantear
+Por otro lado, para los nodos del borde con $i = 1$ e $i = N$ es necesario derivar una aproximación de Padé. Para esto basta plantear
 \begin{equation}
     y_1'' + b_2 y_2'' = a_0 y_0 + a_1 y_1 + a_2 y_2 +O(h^\alpha)
     \label{ec:Pade_izq_gral}
 \end{equation}
-y determinar los coeficientes $a_0$, $a_1$, $a_2$ y $b_2$ de modo de obtener el mayor orden de aproximación $\alpha$ posible. Para esto, se desarrolla en Taylor $y_2''$, $y_0$ e $y_2$ alrededor de $x_1$. De este modo,
-\[y_2'' = y_1'' + h y_1''' + \frac{h^2}{2} y_1^{(IV)} + O(h^3)  \]
-\[y_2 = y_1 + h y_1' + \frac{h^2}{2} y_1'' + \frac{h^3}{6}y_1''' + \frac{h^4}{24} y_1^{(IV)} + O(h^3) \]
-\[y_0 = y_1 - h y_1' + \frac{h^2}{2} y_1'' - \frac{h^3}{6}y_1''' + \frac{h^4}{24} y_1^{(IV)} + O(h^3), \]
+y determinar los coeficientes $a_0$, $a_1$, $a_2$ y $b_2$ de modo de obtener el mayor orden de aproximación $\alpha$ posible. Para esto se desarrolla en Taylor $y_2''$, $y_0$ e $y_2$ alrededor de $x_1$. De este modo,
+\begin{eqnarray}
+    \nonumber y_2'' & = & y_1'' + h y_1''' + \frac{h^2}{2} y_1^{(IV)} + O(h^3), \\ 
+    \nonumber y_2 & = & y_1 + h y_1' + \frac{h^2}{2} y_1'' + \frac{h^3}{6}y_1''' + \frac{h^4}{24} y_1^{(IV)} + O(h^3), \\
+    \nonumber y_0 & = & y_1 - h y_1' + \frac{h^2}{2} y_1'' - \frac{h^3}{6}y_1''' + \frac{h^4}{24} y_1^{(IV)} + O(h^3),
+\end{eqnarray}
 donde se consideró que $a_2$ tiene unidades de $1/h^2$. Reemplazando estas expresiones en \ref{ec:Pade_izq} se obtiene
-\[y_1'' = y_1( a_0 + a_1 + a_2) + y_1'(-a_0 h + a_2 h) + y_1''(a_0 \frac{h^2}{2} + a_2 \frac{h^2}{2} - b_2) + y_1'''(- a_0 \frac{h^3}{6} + a_2 \frac{h^3}{6} - b_2 h) + y_1^{(IV)}(a_0 \frac{h^4}{24} + a_2 \frac{h^4}{24} - b_2 \frac{h^2}{2} ) + O(h^3), \]
-que igualando ambos miembros da lugar al siguiente conjunto de ecuaciones para los coeficientes
+\begin{eqnarray}
+    \nonumber y_1'' & = & y_1( a_0 + a_1 + a_2) + y_1'(-a_0 h + a_2 h) \\ 
+    \nonumber & + & y_1''(a_0 \frac{h^2}{2} + a_2 \frac{h^2}{2} - b_2) + y_1'''(- a_0 \frac{h^3}{6} + a_2 \frac{h^3}{6} - b_2 h) \\
+    \nonumber & + & y_1^{(IV)}(a_0 \frac{h^4}{24} + a_2 \frac{h^4}{24} - b_2 \frac{h^2}{2} ) + O(h^3).
+\end{eqnarray}
+Igualando ambos miembros da lugar al siguiente conjunto de ecuaciones para los coeficientes $a_0$, $a_1$, $a_2$ y $b_2$
 \[\left\{\begin{matrix}
     a_0 + a_1 + a_2 = 0 \\
     h(-a_0 + a_2) = 0 \\
@@ -264,7 +268,6 @@ que igualando ambos miembros da lugar al siguiente conjunto de ecuaciones para l
     \frac{h^2}{2}(a_0 \frac{h^2}{12} + a_2 \frac{h^2}{12} - b_2) = 0
     \end{matrix}\right.
 \]
-
 Solo es posible cumplir las cuatro primeras ecuaciones mediante la elección  $a_0 = 1/h^2$, $a_1 = -2/h^2$, $a_2 = 1/h^2$ y $b_2 = 0$. Al no ser posible anular el término de orden $h^2$, la aproximación de Padé resultante es de segundo orden. La expresión final es
 \begin{equation}
     y_1'' = \frac{y_{2} - 2 y_1 + y_{0}}{h^2} + O(h^2).
@@ -273,9 +276,9 @@ Solo es posible cumplir las cuatro primeras ecuaciones mediante la elección  $a
 que coincide con diferencias centradas de orden dos \ref{ec:diferencias_centradas}.
 
 \ptitle{Obtención del sistema lineal en el borde derecho}
-Análogamente, se puede repetir el procedimiento para el nodo de borde $i = N-1$. Planteando
+Análogamente, se puede repetir el procedimiento para el nodo de borde $i = N$. Planteando
 \[y_N'' + b_{N-1} y_{N-1}'' = a_{N-1} y_{N-1} + a_N y_N + a_{N+1} y_{N+1} +O(h^\alpha)\]
-y desarrollando en Taylor $y_{N-1}''$, $y_{N-1}$ e $y_{N+1}$ alrededor de $x_N$, se obtiene un sistema de ecuaciones para los coeficientes \textcolor{red}{cuales}. La aproximación de Padé resultante es de segundo orden y su expresión es
+y desarrollando en Taylor $y_{N-1}''$, $y_{N-1}$ e $y_{N+1}$ alrededor de $x_N$, se obtiene un sistema de ecuaciones para los coeficientes. La aproximación de Padé resultante es de segundo orden y su expresión es
 \begin{equation}
     y_N'' = \frac{y_{N+1} - 2 y_N + y_{N-1}}{h^2} + O(h^2),
     \label{eq:Pade_der}
@@ -324,36 +327,63 @@ Habiendo desarrollado ambos métodos y habiéndolos aplicado a la ecuación dife
 
 
 \section{Resultados}
+\textcolor{red}{Borrar: En primer lugar, se analizó cualitativamente ambas aproximaciones para $K$ y $N$ fijos. En segundo lugar, se estudió la dependencia del error local en un punto particular en función del espaciamiento $h$. Finalmente, se estudió cuántos puntos discretos $N$ son necesarios para obtener un determinado error global en función de las oscilaciones de la solución representadas por el parámetro $K$.}
 
 \ptitle{Comportamiento cualitativo}
-En primer lugar, se observó cualitativamente el comportamiento de los esquemas numéricos para% K = 6 y N = 23
+Se analizó cualitativamente ambas aproximaciones para $K$ y $N$ fijos. En la figura \ref{fig:comportamiento_cuali} se grafica la solución exacta junto a las soluciones aproximadas en puntos discretos por ambos métodos.
+\textcolor{red}{¿Qué se boserva?}
+
+\begin{figure}[h]
+    \includegraphics[clip=true,width=\columnwidth]{nada.png}
+    \caption{Solución exacta y soluciones aproximadas en puntos discretos por los métodos de diferencias finitas centradas y aproximación de Padé para $K = 6$ y $N = 23$.}
+     \label{fig:comportamiento_cuali}
+\end{figure}
+
+\ptitle{Error en x = 0.5}
+Además, se calculó el error local en el punto central $x = 0.5$ en función del espaciamiento $h$ para ambos métodos numéricos. Esta dependencia se grafica en la figura \ref{fig:error_local_0.5} en escala log-log.
+
+
+\begin{itemize}
+    \item Discutir la dependencia en cada zona: para h grande el error es grande. A medida que h disminuye se encuentra un comportamiento polinómico. Luego de este régimen intermedio el error vuelve a aumentar como consecuencia del error de precisión de la computadora.
+    \item En base a la dependecia observada en la zona intermedia se ajustó una función del tipo $x^\beta$ para ambas, donde $\beta$ sería el orden del error de truncamiento en ese punto
+    \item Se obtuvo para el método de diferencias finitas centradas \textcolor{red}{$\beta = 2$} y para el método de Padé \textcolor{red}{$\beta = 4$}.
+    \item Es consistente que el método de Padé tenga mayor orden que el de diferencias centradas debido a que el error local en los puntos intermedios es mayor, como se verifica al comparar \ref{ec:diferencias_centradas} y \ref{ec:Pade_interior}.
+    \item Sin embargo, como el orden de aproximación en los bordes en ambos casos es 2, se esperaría que en Padé el orden local esté entre 2 y 4. Habría que estudiar esto con mayor detalle.
+\end{itemize}
+
+\begin{figure}[h]
+    \includegraphics[clip=true,width=\columnwidth]{nada.png}
+    \caption{Error local en el punto $x = 0.5$ en función del espaciamiento $h$ para diferencias finitas centradas y aproximación de Padé en escala log-log. Se ajustó en ambos casos una dependencia $x^\beta$ correspondiente a una línea de pendiente $\beta$ en escala log-log. En el caso de diferencias finitas se obtuvo una pendiente $\beta_{DF} = $ \textcolor{red}{cuánto?}. Mientras que en la aproximación de Padé, $\beta_P = $ \textcolor{red}{cuánto?} }
+     \label{fig:error_local_0.5}
+\end{figure}
+
+\ptitle{Se determinó el nro de puntos mínimos necesarios para obtener un error menor a $10e-1$ en distintas normas en función de la frecuencia K}
+
+\begin{itemize}
+    \item Se determinó el nro de puntos mínimos necesarios para obtener un error menor a 10e-1 en distintas normas en función de la frecuencia K
+    \item \ref{fig:NvsK}
+    \item Se obtuvo que a mayor $K$, es decir, oscilaciones de mayor frecuencia en la solución exacta, más puntos se necesitan para disminuir el error global.
+\end{itemize}
+
+\begin{figure}[h]
+    \includegraphics[clip=true,width=\columnwidth]{nada.png}
+    \caption{\textcolor{blue}{N tal que el error es menor a $10e-1$ en función de K apra distintas normas}.}
+     \label{fig:NvsK}
+\end{figure}
+
 
 \ptitle{Error en el punto central en función de h}
 
 
-
-
 \begin{itemize}
-    \item
-\end{itemize}
+    \item test
+\end{itemize} 
 
 \section{Conclusión}
 \begin{itemize}
-    \item
+    \item test
 \end{itemize}
 
-\section{Anexo\label{sec:Anexo}}
-
-\subsection{Solución exacta del problema de valores de contorno}
-\begin{itemize}
-    \item La solución general se puede expresar como una solución de la ec homogéna
-    \item \textcolor{blue}{ec. homogénea}
-    \item y una solución particular
-    \item Obtención de la solución homogénea (brevemente, sin hacer muchas cuentas)
-    \item Obtención de la solución particular
-    \item Obtención de las ctes C1 y C2
-    \item Solución gral
-\end{itemize}
 
 \bibliography{Chehade_guia1.bib}
 
