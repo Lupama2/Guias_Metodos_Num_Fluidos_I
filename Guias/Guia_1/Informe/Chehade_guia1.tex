@@ -134,7 +134,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 \begin{document}
 
 % Allows to rewrite the same title in the supplement
-\newcommand{\mytitle}{Laboratorio 1}
+\newcommand{\mytitle}{Laboratorio 1 - Diferencias finitas}
 
 \title{\mytitle}
 
@@ -145,21 +145,11 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \begin{abstract}
 
-Se estudió el comportamiento de distintas aproximaciones numéricas en un problema de valores de contorno tipo Dirichlet de solución exacta conocida.
-
-En primer lugar, se analizó cualitativamente ambas aproximaciones para $K$ y $N$ fijos. En segundo lugar, se estudió la dependencia del error local en un punto particular en función del espaciamiento $h$. Finalmente, se estudió cuántos puntos discretos $N$ son necesarios para obtener un determinado error global en función de las oscilaciones de la solución representadas por el parámetro $K$.
+Se estudió el comportamiento de distintas aproximaciones numéricas en un problema de valores de contorno tipo Dirichlet de solución exacta conocida. Se empleó el método de diferencias finitas centradas de orden 2 y la aproximación de Padé de orden 4. En primer lugar, se analizó cualitativamente ambas aproximaciones para $K$ y $N$ fijos. Se observó que la aproximación de Padé es más precisa que la de diferencias centradas. En segundo lugar, se estudió la dependencia del error en un punto particular en función del espaciamiento $h$. En ambos métodos, el error disminuye a medida que $h$ también lo hace, con distinto ritmo para cada aproximación. Finalmente, se estudió la capacidad de ambos métodos para adaptarse a soluciones oscilatorias. En concreto, se calculó cuántos puntos discretos $\mathrm{N_{min}}$ son necesarios para obtener un error total menor a una tolerancia determinada en función de las oscilaciones de la solución exacta. Se obtuvo que en la aproximación de Padé se necesitan menos puntos que en la de diferencias centradas para obtener el mismo error total, independientemente de la frecuencia de las oscilaciones y de la norma elegida para calcular el error.
 
 \end{abstract}
 
 \maketitle
-
-\textcolor{red}{
-\begin{itemize}
-    \item ¿Tengo que mencionar la computadora que usé? ¿En qué sección lo hago? NO. Nosotros no lo tenemos que poner. En los papers para cálculos grandes se suele poner.
-    \item ¿Está bien el nombre de la sección "Método Numérico"?
-    \item ¿Cuánto desarrollo hay que hacer en b y c?
-    \item ¿Es necesario hacer el desarrollo para obtener la solución exacta o se puede dar por sabido? Puedo poner directamente la solución exacta.
-\end{itemize}}
 
 \section{Introducción}
 \ptitle{En física, no todos los problemas tienen solución analítica, muchas veces es necesario recurrir a aproximaciones}
@@ -215,20 +205,21 @@ Aplicándola a la ecuación diferencial \ref{ec:PVC_numerico} para los nodos int
 Para los nodos del borde se puede emplear la misma aproximación bajo la consideración de que $y_0 = y(0)$ e $y_{N+1} = y(1)$, es decir,
 \[\frac{1}{h^2}y_2 + \left (-\frac{2}{h^2} - 1 \right ) y_1 = g_1 - \frac{1}{h^2}y(0)  \]
 \[\frac{1}{h^2}y_N + \left (-\frac{2}{h^2} - 1 \right ) y_{N-1} = g_N - \frac{1}{h^2}y(1)  \]
-El sistema de ecuaciones algebraicas anterior se puede escribir de la forma $A_{DC} \vec{y} = \vec{b}$, donde
+El sistema de ecuaciones algebraicas anterior se puede escribir de la forma lineal $A_{DC} \vec{y} = \vec{b}$, donde
 \[
-    A_{DC} = \left(\begin{matrix}
-        -\frac{2}{h^2} - 1 & \frac{1}{h^2} & 0 & \cdots & 0 & 0\\
-        \frac{1}{h^2} & -\frac{2}{h^2} - 1 & \frac{1}{h^2} & \cdots & 0 & 0\\
-        0 & \frac{1}{h^2} & -\frac{2}{h^2} - 1 & \cdots & 0 & 0\\
+    A_{DC} = \frac{-1}{h^2}\left(\begin{matrix}
+        2 + h^2 & -1 & 0 & \cdots & 0 & 0\\
+        -1 & 2 + h^2 & -1 & \cdots & 0 & 0\\
+        0 & -1 & 2 + h^2 & \cdots & 0 & 0\\
         \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
-        0 & 0 & 0 & \cdots & -\frac{2}{h^2} - 1 & \frac{1}{h^2}\\
-        0 & 0 & 0 & \cdots & \frac{1}{h^2} & -\frac{2}{h^2} - 1\\
+        0 & 0 & 0 & \cdots & 2 + h^2 & -1\\
+        0 & 0 & 0 & \cdots & -1 & 2 + h^2\\
         \end{matrix}\right),
 \]
-\[\vec{y} = (y_1, y_2, \cdots, y_N)\]
-y
-\[\vec{b} = (g_1 - y(0)/h^2, g_2, \cdots, g_{N-1}, g_N -  y(1)/h^2)\]
+\[\vec{y} = (y_1, y_2, \cdots, y_N)^T \, \mathrm{y}\]
+\[\vec{b} = (g_1 - y(0)/h^2, g_2, \cdots, g_{N-1}, g_N -  y(1)/h^2)^T\]
+
+
 
 
 \subsection{Aproximación de Padé}
@@ -236,7 +227,7 @@ y
 \ptitle{Obtención del sistema lineal en los nodos internos}
 La fórmula de Padé de 4to orden para la derivada segunda es \cite{Moin}
 \begin{equation}
-    \frac{1}{12} y_{i-1}'' + \frac{10}{12} y_i'' + \frac{1}{12} y_{i+1}'' = \frac{y_{i+1} - 2 y_i + y_{i-1}}{h^2}
+    \frac{1}{12} y_{i-1}'' + \frac{10}{12} y_i'' + \frac{1}{12} y_{i+1}'' = \frac{y_{i+1} - 2 y_i + y_{i-1}}{h^2} + O(h^4)
     \label{ec:Pade_interior}
 \end{equation}
 válida sólo para los nodos internos $i = 2, \cdots, N-2$.
@@ -298,7 +289,6 @@ Empleando las fórmulas de diferencia finita de Padé de segundo orden (\ref{eq:
     0 & 0 & 0 & \cdots & 0 & 0 & 1
     \end{matrix}\right)
 \end{equation}
-
 \begin{equation}
     B_P = \frac{1}{h^2} \left(\begin{matrix}
     -2 & 1 & 0 & \cdots & 0 & 0 & 0 \\
@@ -310,14 +300,13 @@ Empleando las fórmulas de diferencia finita de Padé de segundo orden (\ref{eq:
     0 & 0 & 0 & \cdots & 0 & 1 & -2
     \end{matrix}\right)
 \end{equation}
-
 ambas matrices tridiagonales. Mientras que
-\[\vec{y''} = (y_1'', y_2'', \cdots, y_N''),\]
-\[\vec{y} = (y_1, y_2, \cdots, y_N)\]
+$\vec{y''} = (y_1'', y_2'', \cdots, y_N'')^T,$
+$\vec{y} = (y_1, y_2, \cdots, y_N)^T$
 y
-\[\vec{c} = (y(0)/h^2, 0, \cdots, 0, y(1)/h^2)\]
+$\vec{c} = (y(0)/h^2, 0, \cdots, 0, y(1)/h^2)^T$
 
-Aplicando esta relación lineal a la ecuación diferencial \ref{ec:PVC_numerico} se obtiene
+Aplicando esta relación lineal a la ecuación diferencial \ref{ec:PVC_numerico} se obtiene el sistema lineal
 \[(B_P - A_P)\vec{y} = A_P\vec{g} - \vec{c}\]
 donde $\vec{g} = (g_1, g_2, \cdots, g_N)$. 
 
@@ -327,63 +316,61 @@ Habiendo desarrollado ambos métodos y habiéndolos aplicado a la ecuación dife
 
 
 \section{Resultados}
-\textcolor{red}{Borrar: En primer lugar, se analizó cualitativamente ambas aproximaciones para $K$ y $N$ fijos. En segundo lugar, se estudió la dependencia del error local en un punto particular en función del espaciamiento $h$. Finalmente, se estudió cuántos puntos discretos $N$ son necesarios para obtener un determinado error global en función de las oscilaciones de la solución representadas por el parámetro $K$.}
-
-\ptitle{Comportamiento cualitativo}
-Se analizaron cualitativamente ambas aproximaciones para $K$ y $N$ fijos. En la figura \ref{fig:comportamiento_cuali} se grafica la solución exacta junto a las soluciones aproximadas en puntos discretos por ambos métodos.
-\textcolor{red}{¿Qué se boserva?}
 
 \begin{figure}[h]
-    \includegraphics[clip=true,width=\columnwidth]{Figures/nada.png}
+    \includegraphics[clip=true,width=\columnwidth]{Figures/comportamiento_cuali.eps}
     \caption{Solución exacta y soluciones aproximadas en puntos discretos por los métodos de diferencias finitas centradas y aproximación de Padé para $K = 6$ y $N = 23$.}
      \label{fig:comportamiento_cuali}
 \end{figure}
 
-\ptitle{Error en x = 0.5}
-Además, se calculó el error local en el punto central $x = 0.5$ en función del espaciamiento $h$ para ambos métodos numéricos. Esta dependencia se grafica en la figura \ref{fig:error_local_0.5} en escala log-log.
-
-
-\begin{itemize}
-    \item Discutir la dependencia en cada zona: para h grande el error es grande. A medida que h disminuye se encuentra un comportamiento polinómico. Luego de este régimen intermedio el error vuelve a aumentar como consecuencia del error de precisión de la computadora.
-    \item En base a la dependecia observada en la zona intermedia se ajustó una función del tipo $x^\beta$ para ambas, donde $\beta$ sería el orden del error de truncamiento en ese punto
-    \item Se obtuvo para el método de diferencias finitas centradas \textcolor{red}{$\beta = 2$} y para el método de Padé \textcolor{red}{$\beta = 4$}.
-    \item Es consistente que el método de Padé tenga mayor orden que el de diferencias centradas debido a que el error local en los puntos intermedios es mayor, como se verifica al comparar \ref{ec:diferencias_centradas} y \ref{ec:Pade_interior}.
-    \item Sin embargo, como el orden de aproximación en los bordes en ambos casos es 2, se esperaría que en Padé el orden local esté entre 2 y 4. Habría que estudiar esto con mayor detalle.
-\end{itemize}
+\ptitle{Comportamiento cualitativo}
+Se analizaron cualitativamente ambas aproximaciones para $K=6$ y $N=23$ fijos. En la figura \ref{fig:comportamiento_cuali} se grafica la solución exacta junto a las soluciones aproximadas en puntos discretos obtenidas mediante ambos métodos. A grandes rasgos se observa que si bien ambos logran aproximar la solución, el método de diferencias centradas tiene mayor error que la aproximación de Padé, especialmente en los puntos máximos y mínimos de la oscilación. Para analizar cuantitativamente la diferencia se calculó el error local en el punto central $x = 0.5$ en función del espaciamiento $h$. Esta dependencia se grafica en la figura \ref{fig:error_local_0.5} en escala log-log. Se observa una dependencia similar para ambos métodos. Inicialmente, para $h$ grande, el error presenta un comportamiento aleatorio. A medida que $h$ disminuye, el error varía como una potencia de $h$, es decir, de forma lineal en escala logarítmica. Por último, para valores de $h$ menores, el error aumenta debido a los errores de precisión de la computadora. En base a la dependencia observada en la zona intermedia se ajustó una recta en escala log-log, es decir, la función $\mathrm{log(error)} = a \mathrm{log(h)} + b$ con $a$ pendiente y $b$ ordenada al origen. De este modo $a$ representa el orden del error de truncamiento. Para diferencias finitas centradas se obtuvo un orden $a_{DC} = 1.995 \pm 0.004$. Esto es consistente con el orden de aproximación de orden 2 del método numérico, tal como se observa en \ref{ec:diferencias_centradas}. Por otro lado, para la aproximación de Padé se obtuvo un orden $a_P = 4.47 \pm 0.07$. Como en los nodos del borde el orden de aproximación es 2 y en los nodos internos el orden es 4, se hubiera esperado que el orden de aproximación en el punto central se encuentre entre 2 y 4. Este no es el caso y habría que estudiar con mayor detalle a qué se debe este comportamiento.
 
 \begin{figure}[h]
-    \includegraphics[clip=true,width=\columnwidth]{Figures/nada.png}
-    \caption{Error local en el punto $x = 0.5$ en función del espaciamiento $h$ para diferencias finitas centradas y aproximación de Padé en escala log-log. Se ajustó en ambos casos una dependencia $x^\beta$ correspondiente a una línea de pendiente $\beta$ en escala log-log. En el caso de diferencias finitas se obtuvo una pendiente $\beta_{DF} = $ \textcolor{red}{cuánto?}. Mientras que en la aproximación de Padé, $\beta_P = $ \textcolor{red}{cuánto?} }
+    \includegraphics[clip=true,width=\columnwidth]{Figures/error_local_0.5.eps}
+    \caption{Error local en el punto $x = 0.5$ en función del espaciamiento $h$ para diferencias finitas centradas y aproximación de Padé en escala log-log. Se ajustó en ambos casos una dependencia lineal $a \mathrm{log(h)} + b$. En el caso de diferencias finitas se obtuvo una pendiente $a_{DC} = 1.995 \pm 0.004 $ y una ordenada al origen $b_{DC} = 1.13 \pm 0.02$. Mientras que en la aproximación de Padé, $a_P = 4.47 \pm 0.07$ y $b_P = 3.9 \pm 0.2$.}
      \label{fig:error_local_0.5}
 \end{figure}
 
 \ptitle{Se determinó el nro de puntos mínimos necesarios para obtener un error menor a $10e-1$ en distintas normas en función de la frecuencia K}
 
-\begin{itemize}
-    \item Se determinó el nro de puntos mínimos necesarios para obtener un error menor a 10e-1 en distintas normas en función de la frecuencia K
-    \item \ref{fig:NvsK}
-    \item Se obtuvo que a mayor $K$, es decir, oscilaciones de mayor frecuencia en la solución exacta, más puntos se necesitan para disminuir el error global.
-\end{itemize}
+\begin{table}[]
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    \multicolumn{1}{|c|}{K$\textbackslash \mathrm{N_{min}}$} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}DC\\ norma 2\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Padé\\ norma 2\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}DC\\ norma $\infty$\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Padé\\ norma $\infty$\end{tabular}} \\ \hline
+    3 & 14 & 10 & 10 & 8 \\ \hline
+    8 & 66 & 32 & 39 & 26 \\ \hline
+    16 & 202 & 81 & 107 & 59 \\ \hline
+    32 & 626 & 204 & 295 & 136 \\ \hline
+    64 & 1962 & 514 & 826 & 314 \\ \hline
+    128 & 6188 & 1294 & 2322 & 724 \\ \hline
+    \end{tabular}
+    \caption{\label{tab:NvsK}Número de puntos mínimos necesarios para obtener un error menor a $0.1$ en norma 2 y norma infinito en función de la frecuencia $K$ para el método de diferencias centradas (DC) y la aproximación de Padé.}
+\end{table}
 
 \begin{figure}[h]
-    \includegraphics[clip=true,width=\columnwidth]{Figures/nada.png}
-    \caption{\textcolor{blue}{N tal que el error es menor a $10e-1$ en función de K apra distintas normas}.}
+    \includegraphics[clip=true,width=\columnwidth]{Figures/NvsK.eps}
+    \caption{Número de puntos mínimos $\mathrm{N_{min}}$ necesarios para obtener un error menor a $0.1$ en función de la frecuencia $K$ para diferencias finitas centradas y aproximación de Padé en escala log-log. El error fue calculado en norma 2 y norma infinito.}
      \label{fig:NvsK}
 \end{figure}
 
-
-\ptitle{Error en el punto central en función de h}
-
-
-\begin{itemize}
-    \item test
-\end{itemize} 
+Por último, se analizó la capacidad de cada método para adaptarse a soluciones oscilatorias. Las oscilaciones están caracterizadas en este problema mediante el parámetro $K$. A mayor $K$, la solución exacta contiene componentes con mayor frecuencia, tal como se verifica en la ecuación \ref{ec:sol_analitica}. De este modo, se determinó para ambos métodos el número de puntos mínimos $\mathrm{N_{min}}$ necesarios para obtener un error total menor a $0.1$ en función del parámetro $K$. El error fue calculado en norma 2 y norma infinito. Los resultados se resumen en la tabla \ref{tab:NvsK} y se grafican en escala log-log en la figura \ref{fig:NvsK}. Como se observa $\mathrm{N_{min}}$ crece con $K$, es decir, frente a oscilaciones de mayor frecuencia son necesarios más puntos para mantener el mismo error. Sin embargo, independientemente de la norma, se necesitan más puntos en diferencias centradas que en la aproximación de Padé. Esto se debe a que esta útlima aproximación es de mayor orden que el método de diferencias centradas. Además, en ambos casos se necesitan menos puntos cuando el error se calcula en norma infinito que en norma 2. Esto se debe a que en esta última se suman cuadráticamente los errores en todos los puntos, mientras que en norma infinito solo se considera el máximo de los errores en todos los puntos. En base a esto, a igual $\mathrm{N_{min}}$ se obtendría menor error en norma infinito que en norma 2. Análogamente, a igual error, se necesitarían más puntos en norma 2 que en norma infinito.
 
 \section{Conclusión}
-\begin{itemize}
-    \item test
-\end{itemize}
 
+Se estudió el comportamiento de distintas aproximaciones numéricas en el siguiente problema de valores de contorno tipo Dirichlet con solución exacta conocida
+\begin{equation}
+    \left\{\begin{matrix}
+        \frac{d^2 y}{dx^2} - y = g(x), \\ 
+        g (x) = - \sum_{j = 1}^K (1 + (j \pi)^2)\sin{(j \pi x)}, 0 \leq x \leq 1,\\
+        y(0) = 0,\\
+        y(1) = 1, \\
+        \end{matrix}\right.
+\end{equation}
+
+Para los nodos internos se emplearon el método de diferencias finitas centradas de orden 2 y la aproximación de Padé de orden 4. Mientras que en los nodos del borde se emplearon diferencias finitas centradas.
+
+En primer lugar, se analizó cualitativamente ambas aproximaciones para $K = 6$ y $N = 23$ fijos. Se observó que la aproximación de Padé es más precisa que la de diferencias centradas. En segundo lugar, con el objetivo de fundamentar cuantitativamente la afirmación anterior, se estudió la dependencia del error en el punto central en función del espaciamiento $h$. Para diferencias centradas el error disminuye con orden $1.995 \pm 0.004$, mientras que para la aproximación de Padé, con orden $ 4.47 \pm 0.07$. Finalmente, se estudió la capacidad de ambos métodos para adaptarse a las oscilaciones, representadas en este problema por el parámetro $K$ en la ecuación diferencial. Con tal fin, se calculó cuántos puntos discretos $\mathrm{N_{min}}$ son necesarios para obtener un error total menor a $0.1$ en función de $K$. El error se calculó en norma 2 y norma infinito. Se obtuvo que en la aproximación de Padé se necesitan menos puntos que en la de diferencias centradas para obtener el mismo error total, independientemente de la frecuencia de las oscilaciones y de la norma utilizada.
 
 \bibliography{Chehade_guia1.bib}
 
