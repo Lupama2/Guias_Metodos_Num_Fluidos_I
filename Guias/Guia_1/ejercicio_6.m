@@ -243,6 +243,13 @@ if(plotear == true)
     pause(10)
 endif
 
+#Exporto los datos:
+datos = [DC_x, DC_ysol, P_x, P_ysol];
+csvwrite ("comportamiento_cuali_aproximacion.csv", datos);
+datos = [xsol.', ysol.'];
+csvwrite ("comportamiento_cuali_solucion.csv", datos);
+
+
 #Grafico el error en el punto central x = 0.5 en función de h
 #El punto central es x((Nn+1)/2)
 
@@ -262,8 +269,6 @@ function [DF_errorx0, P_errorx0] = error_en_x(x0, Nn, K, UL, UR, SIZE_DOMAIN)
     [P_x, P_ysol]  = P_num_sol(Nn ,K ,UL,UR,SIZE_DOMAIN);  
     norma = 2;
     P_errorx0 = error(P_ysol((Nn+1)/2), x0, K, norma);
-
-
 endfunction
 
 
@@ -287,7 +292,7 @@ if (plotear == true)
 endif
 
 #Determino el orden de truncamiento
-plotear = true;
+plotear = false;
 if (plotear == true)
     #Recta con dependencia de orden 2
     y2 = zeros(length(Nn_array),1).';
@@ -313,6 +318,10 @@ if (plotear == true)
 endif
 
 
+#Exporto los datos
+datos = [h_array.',DC_error.',P_error.'];
+csvwrite("error_local_0.5.csv",datos)
+
 #---------------------------------------------
 #INCISO f
 #---------------------------------------------
@@ -329,7 +338,7 @@ function [DC_Nnmin, P_Nnmin] = Nm_minimo(tol, norma, K, UL, UR, SIZE_DOMAIN)
         [DC_x, DC_ysol]  = DC_num_sol(N,K,UL,UR,SIZE_DOMAIN);
         err = error(DC_ysol, DC_x, K, norma);
     endwhile
-    DC_Nnmin = N
+    DC_Nnmin = N;
 
     err = 1;
     N = 2;
@@ -343,18 +352,37 @@ function [DC_Nnmin, P_Nnmin] = Nm_minimo(tol, norma, K, UL, UR, SIZE_DOMAIN)
 endfunction
 
 tol = 0.1;
-norma = Inf;
 
-K_array = [3,8,16,32,64,128]
-DC_Nnmin_array = zeros(length(K_array),1).';
-P_Nnmin_array = zeros(length(K_array),1).';
+K_array = [3,8,16,32,64,128];
+
+
+#Norma 2
+norma = 2;
+DC_Nnmin_array_norm2 = zeros(length(K_array),1).';
+P_Nnmin_array_norm2= zeros(length(K_array),1).';
 
 for jj=1:length(K_array)
-    [DC_Nnmin_array(jj), P_Nnmin_array(jj)] = Nm_minimo(tol, norma, K_array(jj), UL, UR, SIZE_DOMAIN);
+    [DC_Nnmin_array_norm2(jj), P_Nnmin_array_norm2(jj)] = Nm_minimo(tol, norma, K_array(jj), UL, UR, SIZE_DOMAIN);
 endfor
 
-DC_Nnmin_array
-P_Nnmin_array
+DC_Nnmin_array_norm2
+P_Nnmin_array_norm2
+
+#Normal Inf
+norma = Inf;
+DC_Nnmin_array_normInf = zeros(length(K_array),1).';
+P_Nnmin_array_normInf= zeros(length(K_array),1).';
+
+for jj=1:length(K_array)
+    [DC_Nnmin_array_normInf(jj), P_Nnmin_array_normInf(jj)] = Nm_minimo(tol, norma, K_array(jj), UL, UR, SIZE_DOMAIN);
+endfor
+
+DC_Nnmin_array_normInf
+P_Nnmin_array_normInf
+
+#Exporto los datos:
+datos = [K_array.', DC_Nnmin_array_norm2.', P_Nnmin_array_norm2.', DC_Nnmin_array_normInf.', P_Nnmin_array_normInf.'];
+csvwrite("NvsK.csv", datos)
 
 #Norma 2:
 #DC_Nnmin_array = 14     66    202    626   1962   6188
