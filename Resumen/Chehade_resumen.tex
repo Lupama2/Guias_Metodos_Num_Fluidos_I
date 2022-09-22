@@ -1,0 +1,291 @@
+\documentclass[aps,prb,twocolumn,superscriptaddress,floatfix,longbibliography]{revtex4-2}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{wrapfig} 
+\usepackage[export]{adjustbox}
+
+\usepackage{amsmath,amssymb} % math symbols
+\usepackage{bm} % bold math font
+\usepackage{graphicx} % for figures
+\usepackage{comment} % allows block comments
+\usepackage{textcomp} % This package is just to give the text quote '
+%\usepackage{ulem} % allows strikeout text, e.g. \sout{text}
+
+\usepackage[spanish]{babel}
+
+\usepackage{enumitem}
+\setlist{noitemsep,leftmargin=*,topsep=0pt,parsep=0pt}
+
+\usepackage{xcolor} % \textcolor{red}{text} will be red for notes
+\definecolor{lightgray}{gray}{0.6}
+\definecolor{medgray}{gray}{0.4}
+
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+urlcolor= blue,
+citecolor=blue,
+linkcolor= blue,
+bookmarks=true,
+bookmarksopen=false,
+}
+
+% Code to add paragraph numbers and titles
+\newif\ifptitle
+\newif\ifpnumber
+\newcounter{para}
+\newcommand\ptitle[1]{\par\refstepcounter{para}
+{\ifpnumber{\noindent\textcolor{lightgray}{\textbf{\thepara}}\indent}\fi}
+{\ifptitle{\textbf{[{#1}]}}\fi}}
+%\ptitletrue  % comment this line to hide paragraph titles
+%\pnumbertrue  % comment this line to hide paragraph numbers
+
+% minimum font size for figures
+\newcommand{\minfont}{6}
+
+% Uncomment this line if you prefer your vectors to appear as bold letters.
+% By default they will appear with arrows over them.
+% \renewcommand{\vec}[1]{\bm{#1}}
+
+%Cambiar Cuadros por Tablas y lista de...
+%\renewcommand{\listtablename}{Índice de tablas}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\date}{Fecha}
+
+%\graphicspath{ {C:/Users/lupam/Mi unidad/Pablo Chehade/Instituto Balseiro (IB)/Métodos numéricos en fluidos I/Metodos_Num_Fluidos_I/Guias/Guia_1/Informe/Figures} } %Para importar imágenes desde una carpeta
+
+
+\usepackage[bottom]{footmisc} %para que las notas al pie aparezcan en la misma página
+
+
+
+\begin{comment}
+
+%Comandos de interés:
+
+* Para ordenar el documento:
+\section{Introducción}
+\section{\label{sec:Formatting}Formatting} %label para luego hacer referencia a esa sección
+
+\ptitle{Start writing while you experiment} %pone nombre y título al documento dependiendo de si en el header están los comandos \ptitletrue y \pnumbertrue
+
+* Ecuaciones:
+\begin{equation}
+a^2+b^2=c^2 \,.
+\label{eqn:Pythagoras}
+\end{equation}
+
+* Conjunto de ecuaciones:
+\begin{eqnarray}
+\label{eqn:diagonal}
+\nonumber d & = & \sqrt{a^2 + b^2 + c^2} \\
+& = & \sqrt{3^2+4^2+12^2} = 13
+\end{eqnarray}
+
+* Para hacer items / enumerar:
+\begin{enumerate}
+  \item
+\end{enumerate}
+
+\begin{itemize}
+  \item
+\end{itemize}
+
+* Figuras:
+\begin{figure}[h]
+    \includegraphics[clip=true,width=\columnwidth]{pixel-compare}
+    \caption{}
+     \label{fig:pixels}
+\end{figure}
+
+* Conjunto de figuras:
+(no recuerdo)
+
+
+* Para hacer referencias a fórmulas, tablas, secciones, ... dentro del documento:
+\ref{tab:spacing}
+
+* Para citar
+Elementos de .bib
+\cite{WhitesidesAdvMat2004}
+url
+\url{http://www.mendeley.com/}\\
+
+* Agradecimientos:
+\begin{acknowledgments}
+We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fig:pixels}.
+\end{acknowledgments}
+
+* Apéndice:
+\appendix
+\section{\label{app:Mendeley}Mendeley}
+
+* Bibliografía:
+\bibliography{Hoffman-example-paper}
+
+\end{comment}
+
+
+
+\begin{document}
+
+% Allows to rewrite the same title in the supplement
+\newcommand{\mytitle}{Resumen de la materia}
+
+\title{\mytitle}
+
+\author{Pablo Chehade \\
+    \small \textit{pablo.chehade@ib.edu.ar} \\
+    \small \textit{Métodos Numéricos en Fluidos I, Instituto Balseiro, CNEA-UNCuyo, Bariloche, Argentina, 2022} \\}
+
+
+\begin{abstract}
+El objetivo es hacer un cuadro sinóptico de la materia como la hoja de fórmulas
+\end{abstract}
+
+\maketitle
+
+
+\section{PVI}
+\begin{itemize}
+    \item Una ec. de orden n se puede transformar en n ecuaciones de orden 1
+\end{itemize}
+
+\subsubsection{Problema en $R^1$}
+\begin{itemize}
+    \item Problema gral: encontrar $y(t): R \rightarrow R /$
+    $\frac{dy}{dt} = f(y,t); t>0$
+    $y(0) = y_0$
+\end{itemize}
+
+\subsubsubsection{Error}
+Hay que diferenciar entre
+\begin{itemize}
+    \item Error local: error en el paso $n$ asumiento que $y_{n-1}$ es conocido. Se obtiene a partir de serie de Taylor sobre el esquema numérico y comparando con la serie de Taylor correcta.
+    \item Error global: error en un punto considerando el error de aproximación en todos los $y_n$ anteriores. Si un método es de orden local $p$, entonces el error global será de orden o, de otra manera, ''converge con velocidad'', $p-1$.
+\end{itemize}
+
+\subsubsubsection{Estabilidad numérica}
+En la práctica se dice que un método es
+\begin{itemize}
+    \item Inestable
+    \item Estable: si no magnifica los errores que aparecen. Puede explotar la solución como no.
+    \item Condicionalmente estable: condición sobre $\Delta t$
+\end{itemize}
+
+\subsubsubsubsection{Estabilidad lineal}
+Es un modo de estudiar la estabilidad de un método. Propone estudiar la ecuación modelo $y' = \lambda y$ cuya solución es $y(t) = y_0 e^{\lambda t}$. Permite estudiar para soluciones reales acotadas si la solución numérica es acotada
+
+\textcolor{red}{Tengo que ver con cuidado euler explícito y demás}
+
+
+\textcolor{red}{¿Cómo hacer la cuenta con métodos implícitos?
+Método de biyección, newton rapson, de punto fijo}
+
+
+
+
+
+\subsubsection{Sistemas de EDOs}
+
+y_vec' = f(y_vec, t), t>0, y_vec \in R^n
+y_vec(0) = y_vec_0
+
+\subsubsubsection{Problemas modelo en R^m}
+(ec.)
+Condiciones de estabilidad similares a R^1 pero sobre $\rho ()$ de una matriz.
+
+\subsubsubsection{Problemas rígidos}
+\begin{itemize}
+    \item Por razones de estabilidad (debido a que unas componentes varían mucho más que las demás) se necesitaría usar un h muy pequeño.
+    \item Solución: si solo interesan tiempos largos --> métodos implícitos
+    \item Ej: ec. de difusión
+\end{itemize}
+
+\subsubsubsection{Problema no lineal}
+y_vec' = f_vec(y_vec,t) != A y_vec
+Linealización sobre el esquema numérico
+
+
+\subsubsection{Normas}
+Existen distintas normas, aunque están "relacionadas" por la propiedad de equivalencia entre normas.
+\begin{itemize}
+    \item Normas vectoriales
+    \item Normas matriciales
+    \item Normas matriciales inducidas
+\end{itemize}
+
+
+\subsection{Solución numérica de EDPs}
+
+\subsubsection{Procedimiento estándar}
+\begin{enumerate}
+    \item Discretizar el dominio
+    \item Semidiscretizar la ecuación diferencial, planteando un esquema para las variables espaciales
+    \item Se obtiene un sistema de EDOs \textcolor{red}{Esto es gral?}
+\end{enumerate}
+
+
+\subsubsection{''Caballitos de batalla''}
+Ecuación de advección
+
+Ecuación de difusión
+
+\subsubsection{Consistencia}
+\begin{itemize}
+    \item Si al poner la sol exacta en la ec en diferencias el residuo tiende a cero cuando $\Delta t, \Delta x \leftarrow 0$.
+    \item Permite hacer elecciones adecuadas de los parámetros del método numérico para disminuir el error, aunque hay que verificar estabilidad bajo esas condiciones
+    \item Teorema de Lax-Richtryer sobre consistencia en un problema lineal
+\end{itemize}
+
+\subsubsection{Estabilidad}
+\begin{itemize}
+    \item Existen distintas definiciones
+    \item Métodos para evaluar la estabilidad en EDPs
+    \begin{itemize}
+        \item Método matricial: exacto pero costoso
+        \item Método de Von Neumann: simple, asume varias hipótesis
+        \item Método del nro de onda modificado: más gral que el anterior, asume las mismas hipótesis
+    \end{itemize}
+\end{itemize}
+
+\subsection{Problemas multidimensionales}
+Se pueden aplicar métodos explícitos (caros para problemas stiff) o implícitos. A mayor dimensión, mayor costo computacional
+
+\subsubsection{Resolución eficiente de problemas $A \vec{u}^{n+1} = \vec{f}^n$}
+Existen distintos métodos
+
+\begin{itemize}
+    \item Método directo
+    \begin{itemize}
+        \item Muy eficiente si la malla es uniforme
+        \item Ej: Transformada discreta de Fourier. Limitada para condiciones de borde y grillas particulares
+    \end{itemize}
+    \item Métodos iterativos: 
+    \begin{itemize}
+        \item Más gral
+        \item Ej: multigrid
+    \end{itemize}
+    \item Método de Factorización aproximada
+    \begin{itemize}
+        \item Factorizar los operadores en diferencias finitas, manteniendo el orden, para trabajar con problemas unidimensionales
+        \item Útil para problemas difusivos
+        \item En el camino es necesario introducir aproximaciones y, por lo tanto, hay que estudiar consistencia y estabilidad.
+    \end{itemize}
+\end{itemize}
+
+
+\textcolor{red}{Llegué hasta esquemas mixtos sin incluir}
+
+\bibliography{Chehade_resumen.bib}
+
+\end{document}
+
+
+
+
+
