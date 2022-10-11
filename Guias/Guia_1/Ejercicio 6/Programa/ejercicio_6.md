@@ -34,3 +34,8 @@ Arreglar en el código:
 *X Ver si ambas aproximaciones convergen a la solución exacta para N grande. No lo hacen, creo que hay un error en alguna de ellas.
 
 Encontré el error en ambas. Ahora van a converger a la misma función. Falta ver que esa sea la función solución
+
+
+Para ejecutar el código con Octave:
+cd C:\Users\lupam\OneDrive\Escritorio\GitHub\Metodos_Num_Fluidos_I\Guias\Guia_1\Ejercicio 6\Programa
+octave ejercicio_6.m

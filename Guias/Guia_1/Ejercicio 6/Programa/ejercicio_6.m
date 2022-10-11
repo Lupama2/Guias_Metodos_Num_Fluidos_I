@@ -232,7 +232,7 @@ ysol = y(xsol, K_e);
 [DC_x, DC_ysol]  = DC_num_sol(Nn_e,K_e,UL,UR,SIZE_DOMAIN);
 [P_x, P_ysol]  = P_num_sol(Nn_e,K_e,UL,UR,SIZE_DOMAIN);
 
-plotear = false;
+plotear = true;
 
 if(plotear == true)
     plot(xsol,ysol,";Exacta;","linewidth", 2);
