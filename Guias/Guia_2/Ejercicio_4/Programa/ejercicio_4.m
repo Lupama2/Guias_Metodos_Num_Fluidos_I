@@ -192,17 +192,157 @@ if plotear == true
     pause(1000)
 endif
 
-function error_fase
-    #Dado t_array, tita_array y tita_punto_array, calculo el error de fase
+function Tau = Periodo_exacto(l,g,tita,tol_periodo)
+    #Calcula el período del péndulo simple con la fórmula exacta para dado l y g. Para esto se emplea una suma infinita truncada hasta cierto término. El truncamiento está dado por la tolerancia aceptada tol_periodo, donde el error se calcula como la diferencia entre considerar o no el siguiente término en la suma.
+    #l es la longitud del péndulo
+    #g es la aceleración de la gravedad
+    #tol_periodo es la tolerancia de truncamiento, da la cantidad de términos considerados en la suma infinita
+    #tita es la amplitud angular
+
+    T0 = 2*pi*sqrt(l/g);
+    Tau = T0;
+    error_trunc = tol_periodo + 1;
+    nn = 0;
+    while(error_trunc > tol_periodo)
+        #Calculo el siguiente término de la suma (adimensional)
+        termino_suma = ( factorial(2*nn) / (2^(2*nn)*(factorial(nn))^2) )^2 * sin(tita/2)^(2*nn);
+        #Actualizo el valor de nn
+        nn = nn + 1;
+        #Calculo el error de truncamiento
+        error_trunc = T0*termino_suma;
+        #Actualizo el valor de Tau
+        Tau = Tau + error_trunc;
+    endwhile
+
+endfunction
+
+function e_fase = error_fase(t_array, tita_array,tita_punto_array, Tau)
+    #Dado t_array, tita_array y tita_punto_array, calculo el error de fase (tan−1(tita′/tita))
+    #a t = Tau período exacto, fase_exacta = 0, entonces el error estará dado por la fase
+
+    #tol_fase es el error en la determinación del tiempo tal que t = Tau. Si es muy pequeño podría no encontrarse el tiempo que cumpla la condición.
+
+    #Busco el tiempo t en t_array tal que t = Tau (no considero múltiplos)
+    e_fase = 10;
+    for ii=1:length(t_array)
+        #Calculo la fase a ese tiempo
+        if(abs(t_array(ii) - Tau) < 0.001) #considero que el error en la determinación de este nro está dado solamente por un error de punto flotante
+            e_fase = atan(tita_punto_array(ii)/tita_array(ii));
+        endif
+    endfor
+
+endfunction
+
+function ampli = amplitud(tita_punto, tita, l, g)
+    ampli = 1/2 * l^2 * tita_punto ^2 - g*l*cos(tita);
+endfunction
+
+function e_ampli = erroramplitud(t_array, tita_array,tita_punto_array, Tau, l, g)
+    #Dado t_array, tita_array y tita_punto_array, calculo el error de amplitud (1/2l^2tita′^2 − gl cos(tita)) en t = Tau período exacto
+
+    amplitud_exacta = amplitud(tita_punto_array(1), tita_array(1), l, g);
+    #Busco el tiempo t en t_array tal que t = Tau (no considero múltiplos)
+    e_ampli = 10;
+    for ii=1:length(t_array)
+        #Calculo el error de amplitud
+        if(abs(t_array(ii) - Tau)< 0.001)
+            e_ampli = amplitud_exacta - amplitud(tita_punto_array(ii), tita_array(ii), l, g);
+        endif
+    endfor
 endfunction
 
 
-function erroramplitud
-    #Dado t_array, tita_array y tita_punto_array, calculo el error de amplitud
-endfunction
+#Aplico los métodos y calculo para cada uno de ellos el error de fase y el error de amplitud
+plotear = true;
 
+if plotear == true
 
+    y_ini = [pi/2,0]; #condiciones iniciales
+    t_ini = 0;
 
+    #Calculo el período
+    tol_periodo = 0.00000001;
+    Tau = Periodo_exacto(l,g,y_ini(1),tol_periodo);
+
+    #Elijo n múltiplo de 3
+    n_array = 33*[1,3,9,27]; #debe ser impar para que Tau esté contenido en t_array
+    #n_array = 33*[1,3,9,27,81,243, 729]; #debe ser impar para que Tau esté contenido en t_array
+    #Elijo h tal que el período esté contenido en t_array una cantidad k de veces
+    k = 2;
+    h_array = zeros(length(n_array),1);
+    for ii = 1:length(n_array)
+        h_array(ii) = k*Tau/n_array(ii);
+    endfor
+
+    e_fase = zeros(length(n_array),4); #Las filas serán los distintos métodos en el orden EI, CN, RK4, CNFL
+    e_amplitud = zeros(length(n_array),4);
+
+    for ii=1:length(n_array)
+        t_array = linspace(0, n_array(ii)*h_array(ii), n_array(ii));
+
+        [tita_array_EI, tita_punto_array_EI] = Metodo_implicito(@Euler_implicito, y_ini, t_ini, h_array(ii), n_array(ii), a, b, Nmax_bis, tol_bis, alea);
+        e_fase(ii,1) = error_fase(t_array, tita_array_EI,tita_punto_array_EI, Tau);
+        e_amplitud(ii,1) = erroramplitud(t_array, tita_array_EI,tita_punto_array_EI, Tau, l, g);
+
+        [tita_array_CN, tita_punto_array_CN] = Metodo_implicito(@CrackNicholson, y_ini, t_ini, h_array(ii), n_array(ii), a, b, Nmax_bis, tol_bis, alea);
+        e_fase(ii,2) = error_fase(t_array, tita_array_CN,tita_punto_array_CN, Tau);
+        e_amplitud(ii,2) = erroramplitud(t_array, tita_array_CN,tita_punto_array_CN, Tau, l, g);
+
+        [tita_array_RK4, tita_punto_array_RK4] = Metodo_explicito(@RK4, y_ini, t_ini, h_array(ii), n_array(ii));
+        e_fase(ii,3) = error_fase(t_array, tita_array_RK4,tita_punto_array_RK4, Tau);
+        e_amplitud(ii,3) = erroramplitud(t_array, tita_array_RK4,tita_punto_array_RK4, Tau, l, g);
+
+        [tita_array_CNLF, tita_punto_array_CNLF] = CN_LeapFrog(y_ini, t_ini, h_array(ii), n_array(ii), a, b, Nmax_bis, tol_bis, alea);
+        e_fase(ii,4) = error_fase(t_array, tita_array_CNLF,tita_punto_array_CNLF, Tau);
+        e_amplitud(ii,4) = erroramplitud(t_array, tita_array_CNLF,tita_punto_array_CNLF, Tau, l, g);
+
+    endfor
+
+    % #Ploteo los errores vs h_array:
+    % plot(h_array,e_fase(:,1),";Euler Implícito;","linewidth", 2);
+    % hold on;
+    % plot(h_array,e_fase(:,2),";Crack - Nicholson;","linewidth", 2);
+    % hold on;
+    % plot(h_array,e_fase(:,3),";RK4;","linewidth", 2);
+    % hold on;
+    % plot(h_array,e_fase(:,4),";CN + Leap Frog;","linewidth", 2);
+    % pause(2)
+    % hold off;
+
+    % plot(h_array,e_amplitud(:,1),";Euler Implícito;","linewidth", 2);
+    % hold on;
+    % plot(h_array,e_amplitud(:,2),";Crack - Nicholson;","linewidth", 2);
+    % hold on;
+    % plot(h_array,e_amplitud(:,3),";RK4;","linewidth", 2);
+    % hold on;
+    % plot(h_array,e_amplitud(:,4),";CN + Leap Frog;","linewidth", 2);
+    % pause(2)
+    % hold off;
+
+    #Ploteo los errores vs h_array en escala log-log
+    loglog(h_array,abs(e_fase(:,1)),";Euler Implícito;","linewidth", 2);
+    hold on;
+    loglog(h_array,abs(e_fase(:,2)),";Crack - Nicholson;","linewidth", 2);
+    hold on;
+    loglog(h_array,abs(e_fase(:,3)),";RK4;","linewidth", 2);
+    hold on;
+    loglog(h_array,abs(e_fase(:,4)),";CN + Leap Frog;","linewidth", 2);
+    pause(10)
+    hold off;
+
+    loglog(h_array,abs(e_amplitud(:,1)),";Euler Implícito;","linewidth", 2);
+    hold on;
+    loglog(h_array,abs(e_amplitud(:,2)),";Crack - Nicholson;","linewidth", 2);
+    hold on;
+    loglog(h_array,abs(e_amplitud(:,3)),";RK4;","linewidth", 2);
+    hold on;
+    loglog(h_array,abs(e_amplitud(:,4)),";CN + Leap Frog;","linewidth", 2);
+    pause(10)
+    hold off;
+
+endif
+
+#Agrego rectas con distintas dependencias
 
 
 
