@@ -105,6 +105,7 @@ function [tita_array, tita_punto_array] = Metodo_implicito(metodo, y_ini, t_ini,
     for ii = 1:n
         [tita_array(ii), tita_punto_array(ii)] = biseccion_gral(metodo,y_ini_copia,t_old,h, a, b, Nmax_bis, tol_bis, alea);
         y_ini_copia = [tita_array(ii), tita_punto_array(ii)];
+        t_old = t_old + h;
     endfor
 endfunction
 
@@ -122,11 +123,12 @@ function [tita_array, tita_punto_array] = Metodo_explicito(metodo, y_ini, t_ini,
     t_old = t_ini;
     y_ini_copia = y_ini;
     for ii = 1:n
-        y_new = metodo(y_ini_copia,t_ini,h);
+        y_new = metodo(y_ini_copia,t_old,h);
         tita_array(ii) = y_new(1);
         tita_punto_array(ii) = y_new(2);
         #No se puede hacer directamente [tita_array(ii), tita_punto_array(ii)] = metodo(y_ini_copia,t_ini,h); porque la función metodo registra un único output, no varios.
         y_ini_copia = [tita_array(ii), tita_punto_array(ii)];
+        t_old = t_old + h;
     endfor
 
 endfunction
@@ -253,7 +255,7 @@ endfunction
 
 
 #Aplico los métodos y calculo para cada uno de ellos el error de fase y el error de amplitud
-plotear = true;
+plotear = false;
 
 if plotear == true
 
@@ -343,23 +345,119 @@ if plotear == true
 endif
 
 #Agrego rectas con distintas dependencias
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#Estaría bueno hacer una corrida grande y exportar los datos anteriores para luego graficarlos
 
 
 
 
 #Inciso b: péndulo doble
-#
+
+function fb_vec =  fb_vec(y_vec, t)
+    f1 = y_vec(3);
+    f2 = y_vec(4);
+    f3 = (y_vec(4)^2*sin(y_vec(2)-y_vec(1)) - 20*sin(y_vec(1)) + y_vec(3)^2*sin(y_vec(2)-y_vec(1))*cos(y_vec(2)-y_vec(1)) + 10*sin(y_vec(2))*cos(y_vec(2)-y_vec(1))  )  /  (  2 - cos(y_vec(2)-y_vec(1))^2  );
+    f4 = -y_vec(3)^2*sin(y_vec(2)-y_vec(1)) -10*sin(y_vec(2)) - f3*cos(y_vec(2)-y_vec(1));
+
+    % (v2^2*sin(u2-u1) - 20*sin(u1) + v1^2*sin(u2-u1)*cos(u2-u1) + 10*sin(u2)*cos(u2-u1)  )  /  (  2 - cos(u2-u1)^2  )
+    % -v1^2*sin(u2-u1) -10*sin(u2) - (v2^2*sin(u2-u1) - 20*sin(u1) + v1^2*sin(u2-u1)*cos(u2-u1) + 10*sin(u2)*cos(u2-u1)  )  /  (  2 - cos(u2-u1)^2  )*cos(u2-u1)
+
+    fb_vec = [f1,f2,f3,f4];
+endfunction
+
+function y_new1 = RK4b(y_old, t_old, h)
+    # Dado y_n calcula y_{n+1} mediante el método de Runge-Kutta de orden 4
+    #y_new1 es el vector [y1_{n+1}, y2_{n+1}]. No se coloca como input porque se trata de un método explícito
+    #y_old es el vector [y1_n, y2_n]
+    #t_old es el tiempo t_n
+    #h es el paso de tiempo
+    t_new = t_old + h;
+    k1 = fb_vec(y_old,t_old);
+    k2 = fb_vec(y_old + h/2*k1,t_old + h/2);
+    k3 = fb_vec(y_old + h/2*k2,t_old + h/2);
+    k4 = fb_vec(y_old + h*k3,t_old + h);
+    y_new1 = y_old + h/6*(k1 + 2*k2 + 2*k3 + k4);
+endfunction
+
+function [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble(y_ini, t_ini, h, n)
+    #Aplico un método explícito al pendulo doble y retorno tita y tita_punto para todo t discreto entre 0 y h*n
+    #y_ini es el vector [y1_0, y2_0, y3_0, y4_0] = [tita1_0, tita2_0, tita1_punto_0, tita2_punto_0]
+    #t_ini es el tiempo t_0
+    #h es el paso de tiempo
+    #n es el número de pasos de tiempo
+
+    tita1_array = zeros(n,1);
+    tita2_array = zeros(n,1);
+    tita1_punto_array = zeros(n,1);
+    tita2_punto_array = zeros(n,1);
+
+    #Aplico el método n veces
+    t_old = t_ini;
+    y_ini_copia = y_ini;
+    for ii = 1:n
+        y_new = RK4b(y_ini_copia,t_old,h);
+        tita1_array(ii) = y_new(1);
+        tita2_array(ii) = y_new(2);
+        tita1_punto_array(ii) = y_new(3);
+        tita2_punto_array(ii) = y_new(4);
+        y_ini_copia = [tita1_array(ii), tita2_array(ii),tita1_punto_array(ii), tita2_punto_array(ii)];
+        t_old = t_old + h;
+    endfor
+
+endfunction
+
+#Test de la solución para las condiciones de la cátedra
+y_ini = [pi/2, pi/2, 0, 0];
+t_ini = 0;
+t_max = pi;
+n = 1000; #discretización
+h = (t_max - t_ini)/n;
+
+[tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble(y_ini, t_ini, h, n);
+
+#Resulta ser el mismo valor que la cátedra
+[tita1_array(length(tita1_array)), tita2_array(length(tita1_array)), tita1_punto_array(length(tita1_array)), tita2_punto_array(length(tita1_array))]
+
+
+
+#Estudio la solución para distintas condiciones iniciales hasta t = pi
+#Grafico las diferencias entre tita1, tita2, tita1_punto y tita2_punto para distintas condiciones iniciales respecto a una de ellas
+y_ini = [pi/2, a, 0, 0];
+a = pi/2, 
+a = 1.00001*pi/2
+a = 0.99999*pi/2
+
+#Grafico las diferencias entre tita1, tita2, tita1_punto, tita2_punto para t = pi para distintos valores de h
+
+
+
+
+#Grafico con la función comet (VER EJEMPLO DE CÁTEDRA)
+
+
+#Calculo el error de amplitud
+function ampli_b = amplitud_b(tita_array, l, g)
+    #tita_array = [tita1, tita2, tita1_punto, tita2_punto]
+
+    % ampli_b = 1/2 * l^2 * tita_punto ^2 - g*l*cos(tita);
+endfunction
+
+function e_ampli_b = erroramplitud_b(t_array, tita_array,Tau, l, g)
+    #Dado t_array, tita_array y tita_punto_array, calculo el error de amplitud (1/2l^2tita′^2 − gl cos(tita)) en t = Tau período exacto
+
+    tita1_array = tita_array(:,1);
+    tita2_array = tita_array(:,2);
+    tita1_punto_array = tita_array(:,3);
+    tita2_punto_array = tita_array(:,4);
+
+    % amplitud_exacta = amplitud(tita_punto_array(1), tita_array(1), l, g);
+    % #Busco el tiempo t en t_array tal que t = Tau (no considero múltiplos)
+    % e_ampli_b = 10;
+    % for ii=1:length(t_array)
+    %     #Calculo el error de amplitud
+    %     if(abs(t_array(ii) - Tau)< 0.001)
+    %         e_ampli_b = amplitud_exacta - amplitud(tita_punto_array(ii), tita_array(ii), l, g);
+    %     endif
+    % endfor
+endfunction
+
+
