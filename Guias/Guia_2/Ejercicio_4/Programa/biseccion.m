@@ -52,3 +52,17 @@ function x = biseccion(f, a, b, Nmax_bis, tol_bis)
     endif
 
 endfunction
+
+#Test del método de bisección
+#Busco resolver la ec sqrt(x) = 2, sol x = 4
+#La planteo como sqrt(x) - 2 = 0 con límites a = 0, b = 8
+
+% function f_ = f(x)
+%     f_ = sqrt(x) - 2;
+% endfunction
+% a = 2;
+% b = 8;
+% #Parámetros de corte:
+% Nmax = 10;
+% tol = 0.01;
+% biseccion(@f,a,b, Nmax, tol)
