@@ -451,7 +451,7 @@ h = (t_max - t_ini)/n;
 #Estudio la solución para distintas condiciones iniciales hasta t = 10*pi
 #Grafico las diferencias entre tita1, tita2, tita1_punto y tita2_punto para distintas condiciones iniciales respecto a una de ellas
 
-plotear = true;
+plotear = false;
 if plotear == true
     t_ini = 0;
     t_max = 10*pi;
@@ -549,60 +549,52 @@ endif
 
 
 #Grafico con la función comet (VER EJEMPLO DE CÁTEDRA)
-t_ini = 0;
-t_max = 10*pi;
-n = 1000; #discretización
-h = (t_max - t_ini)/n;
-t_array = linspace(0, n*h, n);
 
-a = pi/2;
-[tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble([pi/2, a, 0, 0], t_ini, h, n);
-tita_array_A = [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array];
+plotear = false;
+if plotear == true
 
-a = 1.00001*pi/2;
-[tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble([pi/2, a, 0, 0], t_ini, h, n);
-tita_array_B = [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array];
+    t_ini = 0;
+    t_max = 10*pi;
+    n = 10000; #50000 #discretización
+    h = (t_max - t_ini)/n;
 
-a = 0.99999*pi/2;
-[tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble([pi/2, a, 0, 0], t_ini, h, n);
-tita_array_C = [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array];
+    t_array = linspace(0, n*h, n);
 
+    a = pi/2;
+    [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble([pi/2, a, 0, 0], t_ini, h, n);
+    tita_array_A = [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array];
 
-% title ("Trayectorias de los péndulos");
-% for l=1:n
-%     pendulo1_A = [sin(tita_array_A(l,1)), -cos(tita_array_A(l,1))];
-%     pendulo1_B = pendulo1_A + [sin(tita_array_A(l,2)), -cos(tita_array_A(l,2))];
-%     plot(pendulo1_A(1), pendulo1_A(2), 'r'); hold on;
-%     plot(pendulo1_B(1), pendulo1_B(2), 'r'); hold off;
+    % title ("Trayectorias de los péndulos");
+    % for l=1:n
+    %     pendulo1_A = [sin(tita_array_A(l,1)), -cos(tita_array_A(l,1))];
+    %     pendulo1_B = pendulo1_A + [sin(tita_array_A(l,2)), -cos(tita_array_A(l,2))];
+    %     plot(pendulo1_A(1), pendulo1_A(2), 'r'); hold on;
+    %     plot(pendulo1_B(1), pendulo1_B(2), 'r'); hold off;
 
-%     % plot(sin(uexacta(1,l)),-cos(uexacta(1,l)),sin(uee(1,l)),-cos(uee(1,l)),sin(uei(1,l)),-cos(uei(1,l)),sin(ucn(1,l)),-cos(ucn(1,l)),'linewidth',1.5);
-%     % legend("Exacto","EE","EI","CN");
-%     axis([-3 3 -3 3]); 
-%     pause(0.1);
-% endfor
+    %     % plot(sin(uexacta(1,l)),-cos(uexacta(1,l)),sin(uee(1,l)),-cos(uee(1,l)),sin(uei(1,l)),-cos(uei(1,l)),sin(ucn(1,l)),-cos(ucn(1,l)),'linewidth',1.5);
+    %     % legend("Exacto","EE","EI","CN");
+    %     axis([-3 3 -3 3]); 
+    %     pause(0.1);
+    % endfor
 
-
+    #Creo vectores con las posiciones de los péndulos
+    pendulo1_A = [sin(tita_array_A(:,1)), -cos(tita_array_A(:,1))];
+    pendulo1_B = pendulo1_A + [sin(tita_array_A(:,2)), -cos(tita_array_A(:,2))];
 
 
 
+    %plot(t_array, tita_array_A(:,1))
+    plot(pendulo1_A(:,1), pendulo1_A(:,2)); hold on;
+    plot(pendulo1_B(:,1), pendulo1_B(:,2)); hold off;
 
 
+    #Exporto los datos
+    datos = [pendulo1_A, pendulo1_B];
+    csvwrite("graficos/datos/doble_1CI_trayectorias.csv", datos);
+    pause(10)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+endif
 
 
 
@@ -650,12 +642,12 @@ endfunction
 
 #Calculo el error de amplitud para todo tiempo
 
-plotear == false;
+plotear = false;
 if plotear == true
     y_ini = [pi/2, pi/2, 0, 0];
     t_ini = 0;
-    t_max = pi;
-    n = 1000; #discretización
+    t_max = 10*pi;
+    n = 10000; #discretización
     h = (t_max - t_ini)/n;
 
     [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble(y_ini, t_ini, h, n);
@@ -666,21 +658,29 @@ if plotear == true
 
     #Grafico
     plot(t_array, e_ampli_b_array, 'r');
+
+    #Exporto datos
+    datos = [t_array.', e_ampli_b_array];
+    csvwrite("graficos/datos/doble_error_amplitud.csv", datos);
+
     pause(10);
+
 endif
 
-#Calculo el error a t = pi en función de h
-plotear = false
+
+
+#Calculo el error a t = 10*pi en función de h
+plotear = true
 if plotear == true
     y_ini = [pi/2, pi/2, 0, 0];
     t_ini = 0;
-    t_max = pi;
+    t_max = 10*pi;
     #n_array = [10,20,50,100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000];
-    n_array = [10,20,50,100, 200, 500, 1000, 2000, 5000, 10000];
+    n_array = [200,500, 1000, 2000, 5000, 10000,20000,50000,100000,200000,500000,1000000,2000000,5000000];
     h_array = zeros(length(n_array),1);
     e_ampli_b_array_h = zeros(length(n_array),1);
     for ii=1:length(n_array)
-        n = n_array(ii);
+        n = n_array(ii)
         h_array(ii) = (t_max - t_ini)/n;
         h = h_array(ii);
         [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array] = Pendulo_doble(y_ini, t_ini, h, n);
@@ -691,5 +691,10 @@ if plotear == true
 
     #Grafico
     loglog(h_array, e_ampli_b_array_h, 'r');
-    pause(10);
+
+    #Guardo los datos
+    datos = [t_array.', e_ampli_b_array_h];
+    csvwrite("graficos/datos/doble_orden_error_amplitud.csv", datos);
+
+    pause(1000);
 endif
