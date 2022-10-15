@@ -84,7 +84,6 @@ function y_new1 = LeapFrog(y_old,y_old_old, t_old,h)
 endfunction
 
 
-
 function [tita_array, tita_punto_array] = Metodo_implicito(metodo, y_ini, t_ini, h, n, a, b, Nmax_bis, tol_bis, alea)
     #Aplico el método implícito al problema y retorno tita y tita_punto para todo t discreto entre 0 y h*n
     #metodo es un puntero al método implícito
@@ -172,14 +171,13 @@ y_ini = [pi/2,0]; #condiciones iniciales
 t_ini = 0;
 n = 99;
 h = 0.1;
-plotear = false;
+plotear = true;
 
 if plotear == true
     [tita_array_EI, tita_punto_array_EI] = Metodo_implicito(@Euler_implicito, y_ini, t_ini, h, n, a, b, Nmax_bis, tol_bis, alea);
     [tita_array_CN, tita_punto_array_CN] = Metodo_implicito(@CrackNicholson, y_ini, t_ini, h, n, a, b, Nmax_bis, tol_bis, alea);
     [tita_array_RK4, tita_punto_array_RK4] = Metodo_explicito(@RK4, y_ini, t_ini, h, n);
     [tita_array_CNLF, tita_punto_array_CNLF] = CN_LeapFrog(y_ini, t_ini, h, n, a, b, Nmax_bis, tol_bis, alea);
-
 
     #Ploteo tita_array vs tiempo:
     t_array = linspace(0, n*h, n);
@@ -190,6 +188,10 @@ if plotear == true
     plot(t_array,tita_array_RK4,";RK4;","linewidth", 2);
     hold on;
     plot(t_array,tita_array_CNLF,";CN + Leap Frog;","linewidth", 2);
+
+    #Exporto datos
+    datos = [t_array, tita_array_EI, tita_array_CN, tita_array_RK4, tita_array_CNLF];
+    csvwrite("datos\NvsK.csv", datos);
 
     pause(1000)
 endif
