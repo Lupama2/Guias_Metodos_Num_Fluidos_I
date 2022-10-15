@@ -56,7 +56,7 @@ bookmarksopen=false,
 \renewcommand{\tablename}{Tabla}
 \renewcommand{\date}{Fecha}
 
-\graphicspath{ {C:/Users/lupam/Mi unidad/Pablo Chehade/Instituto Balseiro (IB)/Métodos numéricos en fluidos I/Metodos_Num_Fluidos_I/Guias/Guia_1/Informe/Figures} } %Para importar imágenes desde una carpeta
+\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Programa/graficos} } %Para importar imágenes desde una carpeta
 
 
 \usepackage[bottom]{footmisc} %para que las notas al pie aparezcan en la misma página
@@ -195,6 +195,7 @@ Ecuación vectorial del péndulo simple
   \label{eq:pendulo_simple_vec}
 \end{equation}
 
+
 Ecuación vectorial del péndulo doble
 \begin{equation}
   1
@@ -227,21 +228,101 @@ Ecuación vectorial del péndulo doble
 
 \subsection{Péndulo simple}
 
-\textcolor{blue}{Solución aproximada por los 4 métodos}
 
-\tectcolor{blue}{(a) Error de fase para los 4 métodos para tita inicial de pi/2}
-\tectcolor{blue}{(b) Error de amplitud para los 4 métodos para tita inicial de pi/2}
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{sol_aprox.pdf}
+  \caption{\textcolor{blue}{Solución aproximada por los 4 métodos}}
+   \label{fig:sol_aprox}
+\end{figure}
+% y_ini = [pi/2,0]; #condiciones iniciales
+% t_ini = 0;
+% n = 99;
+% h = 0.1;
 
-\textcolor{blue}{(a) Orden del error de fase en función de tita inicial para los 4 métodos}
-\textcolor{blue}{(b) Orden del error de amplitud en función de tita inicial para los 4 métodos}
+
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{error_amplitud_simple_pi2.pdf}
+  \caption{\textcolor{blue}{(b) Error de amplitud para los 4 métodos para tita inicial de pi/2}}
+   \label{fig:error_amplitud_simple_pi2}
+\end{figure}
+% AMPLITUD:
+% Orden de convergencia Euler implícito:  0.9372575985568138 +/- 0.01902503308713794
+% Orden de convergencia Crack-Nicholson:  5.790183279314054 +/- 0.09070012637078931
+% Orden de convergencia RK4:  4.872347720305063 +/- 0.03460069824650806
+% Orden de convergencia C-N + Leap-Frog:  2.9552896088114005 +/- 0.04216313986505771
+
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{error_fase_simple_pi2.pdf}
+  \caption{\textcolor{blue}{(a) Error de fase para los 4 métodos para tita inicial de pi/2}}
+   \label{fig:error_fase_simple_pi2}
+\end{figure}
+% FASE:
+% Orden de convergencia Euler implícito:  0.9094202564952926 +/- 0.03070835705396524
+% Orden de convergencia Crack-Nicholson:  1.9609514818114762 +/- 0.019260309080823608
+% Orden de convergencia RK4:  3.9163907216640714 +/- 0.02044736620447468
+% Orden de convergencia C-N + Leap-Frog:  1.8573616277295897 +/- 0.04875131838369911
+
+
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{error_amplitud_simple_angulo_bajo.pdf}
+  \caption{\textcolor{blue}{(a) Error de fase para los 4 métodos para tita inicial de 10e-4}}
+   \label{fig:error_amplitud_simple_angulo_bajo}
+\end{figure}
+% AMPLITUD:
+% Orden de convergencia Euler implícito:  0.9125871407963045 +/- 0.023038374694042806
+% Orden de convergencia RK4:  4.940148423340664 +/- 0.023908301779203472
+% Orden de convergencia C-N + Leap-Frog:  3.0099767594644535 +/- 0.004694372715781479
+% CN tiene error cero creo
+
+
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{error_fase_simple_angulo_bajo.pdf}
+  \caption{\textcolor{blue}{(b) Error de amplitud para los 4 métodos para tita inicial de 10e-4}}
+   \label{fig:error_fase_simple_angulo_bajo}
+\end{figure}
+% FASE:
+% Orden de convergencia Euler implícito:  1.969515531340741 +/- 0.02352945286109731
+% Orden de convergencia Crack-Nicholson:  1.9315725179531302 +/- 0.031743969584564165
+% Orden de convergencia RK4:  4.020308658595079 +/- 0.020460933506094077
+% Orden de convergencia C-N + Leap-Frog:  1.9591911569629437 +/- 0.019303222788158225
+
 
 \subsection{Péndulo doble}
 
-\textcolor{blue}{Solución numérica para las 3 distintas condiciones iniciales}
-\textcolor{blue}{Diferencias entre las soluciones numéricas a tiempo fijo en función de h}
-\textcolor{blue}{Trayectorias de las 3 condiciones iniciales}
-\textcolor{blue}{Error de amplitud para todo tiempo}
-\textcolor{blue}{Orden del error de amplitud}
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{doble_3CI.pdf}
+  \caption{\textcolor{blue}{Solución numérica para las 3 distintas condiciones iniciales}}
+   \label{fig:doble_3CI}
+\end{figure}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{doble_3CI_difs.pdf}
+  \caption{\textcolor{blue}{Diferencias entre las soluciones numéricas a tiempo fijo en función de h}}
+   \label{fig:doble_3CI_difs}
+\end{figure}
+
+% \begin{figure}[h]
+%   \includegraphics[clip=true,width=\columnwidth]{doble_3CI_trayectorias.pdf}
+%   \caption{\textcolor{blue}{Trayectorias de las 3 condiciones iniciales}}
+%    \label{fig:doble_3CI_trayectorias}
+% \end{figure}
+
+% \begin{figure}[h]
+%   \includegraphics[clip=true,width=\columnwidth]{doble_error_amplitud.pdf}
+%   \caption{\textcolor{blue}{Error de amplitud para todo tiempo}}
+%    \label{fig:doble_error_amplitud.pdf}
+% \end{figure}
+
+% \begin{figure}[h]
+%   \includegraphics[clip=true,width=\columnwidth]{doble_orden_error_amplitud.pdf}
+%   \caption{\textcolor{blue}{Orden del error de amplitud}}
+%    \label{fig:doble_orden_error_amplitud}
+% \end{figure}
+
 
 \section{Conclusión}
 

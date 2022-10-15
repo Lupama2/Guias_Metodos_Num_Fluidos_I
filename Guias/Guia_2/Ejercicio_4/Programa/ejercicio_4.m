@@ -24,8 +24,8 @@ global l = 1;
 #Datos de la discretización
 #---------------------------------------------
 
-global Nmax_bis = 10000;
-global tol_bis = 0.00001;
+global Nmax_bis = 10000000;
+global tol_bis =  10^-15;
 global alea = 0; #Este es un nro aleatorio necesario para ejecutar el método de bisección. No debería tener impacto en el resultado final
 global a = -10;
 global b = 10;
@@ -171,7 +171,7 @@ y_ini = [pi/2,0]; #condiciones iniciales
 t_ini = 0;
 n = 99;
 h = 0.1;
-plotear = true;
+plotear = false;
 
 if plotear == true
     [tita_array_EI, tita_punto_array_EI] = Metodo_implicito(@Euler_implicito, y_ini, t_ini, h, n, a, b, Nmax_bis, tol_bis, alea);
@@ -190,8 +190,8 @@ if plotear == true
     plot(t_array,tita_array_CNLF,";CN + Leap Frog;","linewidth", 2);
 
     #Exporto datos
-    datos = [t_array, tita_array_EI, tita_array_CN, tita_array_RK4, tita_array_CNLF];
-    csvwrite("datos\NvsK.csv", datos);
+    datos = [t_array.', tita_array_EI, tita_array_CN, tita_array_RK4, tita_array_CNLF];
+    csvwrite("graficos/datos/sol_aprox.csv", datos);
 
     pause(1000)
 endif
@@ -266,16 +266,16 @@ function e_ampli = erroramplitud(t_array, tita_array,tita_punto_array, Tau, l, g
 endfunction
 
 #Aplico los métodos y calculo para cada uno de ellos el error de fase y el error de amplitud
-plotear = true;
+plotear = false;
 
 if plotear == true
 
-    y_ini = [pi/2,0]; #condiciones iniciales
+    y_ini = [0.01,0]; #condiciones iniciales
     t_ini = 0;
 
     #Calculo el período
-    tol_periodo = 0.00000001;
-    Tau = Periodo_exacto(l,g,y_ini(1),tol_periodo)
+    tol_periodo = 10^-15;
+    Tau = Periodo_exacto(l,g,y_ini(1),tol_periodo);
 
     #Elijo n múltiplo de 3
     n_array = 6*[1,2,5,10,20,50,100,200,500,1000,2000]; #debe ser impar para que Tau esté contenido en t_array
@@ -291,6 +291,7 @@ if plotear == true
     e_amplitud = zeros(length(n_array),4);
 
     for ii=1:length(n_array)
+        n_array(ii)/6
         t_array = linspace(0, n_array(ii)*h_array(ii), n_array(ii));
 
         [tita_array_EI, tita_punto_array_EI] = Metodo_implicito(@Euler_implicito, y_ini, t_ini, h_array(ii), n_array(ii), a, b, Nmax_bis, tol_bis, alea);
@@ -319,8 +320,15 @@ if plotear == true
         % plot(t_array,tita_array_CNLF,";CN + Leap Frog;","linewidth", 2); hold off;
         % pause(4)
         
-
     endfor
+
+    #Exporto los datos
+    datos = [h_array];
+    csvwrite("graficos/datos/simple_0.01_error_h.csv", datos);
+    datos = [e_fase];
+    csvwrite("graficos/datos/simple_0.01_error_fase.csv", datos);
+    datos = [e_amplitud];
+    csvwrite("graficos/datos/simple_0.01_error_amplitud.csv", datos);
 
     % #Ploteo los errores vs h_array:
     % plot(h_array,e_fase(:,1),";Euler Implícito;","linewidth", 2);
@@ -368,7 +376,6 @@ endif
 
 #Agrego rectas con distintas dependencias
 #Estaría bueno hacer una corrida grande y exportar los datos anteriores para luego graficarlos
-
 
 
 
@@ -444,7 +451,7 @@ h = (t_max - t_ini)/n;
 #Estudio la solución para distintas condiciones iniciales hasta t = 10*pi
 #Grafico las diferencias entre tita1, tita2, tita1_punto y tita2_punto para distintas condiciones iniciales respecto a una de ellas
 
-plotear = false;
+plotear = true;
 if plotear == true
     t_ini = 0;
     t_max = 10*pi;
@@ -479,6 +486,10 @@ if plotear == true
     % plot(t_array,tita_array_A(:,1) - tita_array_C(:,1),";a = 0.99999*pi/2;","linewidth", 1);
     % pause(10);
 
+    #Exporto los datos
+    datos = [t_array.', tita_array_A(:,1), tita_array_B(:,1), tita_array_C(:,1)];
+    csvwrite("graficos/datos/doble_3CI.csv", datos);
+
 
 endif
 
@@ -490,8 +501,8 @@ plotear = false;
 if plotear == true
     t_ini = 0;
     t_max = 5*pi;
-    n_array = [50,100,200,500,1000, 2000, 5000, 10000]; #discretización
-    #n_array = [50,100,200,500,1000, 2000, 5000, 10000, 20000, 50000]; #discretización
+    #n_array = [100,200,500]; #discretización
+    n_array = [50,100,200,500,1000, 2000, 5000, 10000, 20000, 50000]; #discretización
     h_array = zeros(length(n_array),1);
     diferencias_B = zeros(length(n_array),4);
     diferencias_C = zeros(length(n_array),4);
@@ -526,7 +537,14 @@ if plotear == true
     plot(h_array, diferencias_C(:,2),";C - tita2;","linewidth", 1); hold on;
     plot(h_array, diferencias_C(:,3),";C - tita1_punto;","linewidth", 1); hold on;
     plot(h_array, diferencias_C(:,4),";C - tita2_punto;","linewidth", 1); hold off;
+
+    #Exporto los datos
+    datos = [h_array, diferencias_B(:,1),diferencias_B(:,2), diferencias_C(:,1),diferencias_C(:,2)];
+    csvwrite("graficos/datos/doble_3CI_difs.csv", datos);
+
     pause(100);
+
+
 endif
 
 
@@ -550,18 +568,20 @@ a = 0.99999*pi/2;
 tita_array_C = [tita1_array, tita2_array, tita1_punto_array, tita2_punto_array];
 
 
-title ("Trayectorias");
-for l=1:n
-    pendulo1_A = [sin(tita_array_A(l,1)), -cos(tita_array_A(l,1))];
-    pendulo1_B = pendulo1_A + [sin(tita_array_A(l,2)), -cos(tita_array_A(l,2))];
-    plot(pendulo1_A(1), pendulo1_A(2), 'r'); hold on;
-    plot(pendulo1_B(1), pendulo1_B(2), 'r'); hold off;
+% title ("Trayectorias de los péndulos");
+% for l=1:n
+%     pendulo1_A = [sin(tita_array_A(l,1)), -cos(tita_array_A(l,1))];
+%     pendulo1_B = pendulo1_A + [sin(tita_array_A(l,2)), -cos(tita_array_A(l,2))];
+%     plot(pendulo1_A(1), pendulo1_A(2), 'r'); hold on;
+%     plot(pendulo1_B(1), pendulo1_B(2), 'r'); hold off;
 
-    % plot(sin(uexacta(1,l)),-cos(uexacta(1,l)),sin(uee(1,l)),-cos(uee(1,l)),sin(uei(1,l)),-cos(uei(1,l)),sin(ucn(1,l)),-cos(ucn(1,l)),'linewidth',1.5);
-    % legend("Exacto","EE","EI","CN");
-    axis([-3 3 -3 3]); 
-    pause(0.1);
-endfor
+%     % plot(sin(uexacta(1,l)),-cos(uexacta(1,l)),sin(uee(1,l)),-cos(uee(1,l)),sin(uei(1,l)),-cos(uei(1,l)),sin(ucn(1,l)),-cos(ucn(1,l)),'linewidth',1.5);
+%     % legend("Exacto","EE","EI","CN");
+%     axis([-3 3 -3 3]); 
+%     pause(0.1);
+% endfor
+
+
 
 
 
