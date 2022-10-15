@@ -693,7 +693,7 @@ if plotear == true
     loglog(h_array, e_ampli_b_array_h, 'r');
 
     #Guardo los datos
-    datos = [t_array.', e_ampli_b_array_h];
+    datos = [h_array.', e_ampli_b_array_h];
     csvwrite("graficos/datos/doble_orden_error_amplitud.csv", datos);
 
     pause(1000);
