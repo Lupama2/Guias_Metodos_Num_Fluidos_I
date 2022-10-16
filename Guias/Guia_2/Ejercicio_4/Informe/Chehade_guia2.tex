@@ -246,32 +246,26 @@ Al igual que en el péndulo simple, la energía se conserva y la amplitud $A_D$ 
 \end{equation}
 
 Haciendo el cambio de variables $y_1 = \theta_1$, $y_2 = \theta_2$, $y_3 = \theta_1'$ y $y_4 = \theta_2'$, el problema \ref{eq:pendulo_doble} se convierte en
-
-\begin{eqnarray}
-  \label{eq:pendulo_doble_vec}
-
-  \left\{\begin{matrix}
-    \nonumber \frac{d\vec{y_D}}{dt} & = &
-    \begin{pmatrix}
-      y_3 \\
-      y_4 \\
-      \frac{y_4^2 \sin{\Delta} - 20 \sin{y_1} + y_3^2 \sin{\Delta} \cos{\Delta} + 10 \sin{y_2} \cos{\Delta}}{  2 - \cos^2{\Delta}  } \\
-      \frac{-2 y_3^2 \sin{\Delta} - 20 \sin{y_2} - y_4^2 \sin{\Delta} \cos{\Delta} + 20 \sin{y_1} \cos{\Delta}}{  2 - \cos^2{\Delta}  }
-    \end{pmatrix}
-    = \vec{f_D}(\vec{y_D},t), \\
-
-
-    \vec{y}_S(0) =
-    \begin{pmatrix}
-      \theta_{1 0} \\ \theta_{2 0}  \\ \theta'_{1 0} \\ \theta'_{2 0}
-     \end{pmatrix},
-    \end{matrix}\right.
-  
-   \end{matrix}\right.
-
-\end{eqnarray}
-  % -y_3^2 \sin{\Delta} -10 \sin{y_2} - f_3 \cos{\Delta}
-donde $\vec{y}_D^T = (y_1, y_2, y_3, y_4)$
+% \begin{eqnarray}
+%   \label{eq:pendulo_doble_vec}
+%   \left\{\begin{matrix}
+%     \nonumber \frac{d\vec{y_D}}{dt} & = &
+%     \begin{pmatrix}
+%       y_3 \\
+%       y_4 \\
+%       \frac{y_4^2 \sin{\Delta} - 20 \sin{y_1} + y_3^2 \sin{\Delta} \cos{\Delta} + 10 \sin{y_2} \cos{\Delta}}{  2 - \cos^2{\Delta}  } \\
+%       \frac{-2 y_3^2 \sin{\Delta} - 20 \sin{y_2} - y_4^2 \sin{\Delta} \cos{\Delta} + 20 \sin{y_1} \cos{\Delta}}{  2 - \cos^2{\Delta}  }
+%     \end{pmatrix}
+%     = \vec{f_D}(\vec{y_D},t), \\
+%     \vec{y}_S(0) =
+%     \begin{pmatrix}
+%       \theta_{1 0} \\ \theta_{2 0}  \\ \theta'_{1 0} \\ \theta'_{2 0}
+%      \end{pmatrix},
+%     \end{matrix}\right.
+%    \end{matrix}\right.
+% \end{eqnarray}
+%   % -y_3^2 \sin{\Delta} -10 \sin{y_2} - f_3 \cos{\Delta}
+% donde $\vec{y}_D^T = (y_1, y_2, y_3, y_4)$
 
 
 \section{Método Numérico}
