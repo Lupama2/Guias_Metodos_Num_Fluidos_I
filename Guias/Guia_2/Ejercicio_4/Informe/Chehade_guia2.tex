@@ -163,100 +163,131 @@ En este trabajo se analizaron dos problemas de valores iniciales: la evolución 
 \subsection{Péndulo simple}
 
 \ptitle{Presentar ecuaciones de la dinámica}
-La evolu
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{sol_aprox.pdf}
+  \caption{Esquema del péndulo simple. Una partícula puntual de masa $m$ está suspendida de un punto fijo mediante un hilo de longitud $l$. El ángulo $\theta$ es el ángulo que forma el hilo con la vertical. Figura extraída de \textcolor{red}{Referencia}}
+   \label{fig:simple_esquema}
+\end{figure}
+% https://aquinovara52.wixsite.com/misitio/post/evap3-pendulo-simple
+
+El péndulo simple consta de una partícula puntual de masa $m$ suspendida de un punto fijo mediante un hilo de longitud $l$ (ver esquema en figura \ref{fig:simple_esquema}). La partícula se mueve en un plano y el ángulo $\theta$ que forma el hilo con la vertical se describe mediante la ecuación diferencial
 \begin{equation}
-  \theta'' = -\frac{g}{l} \sin{(\theta)}
+  \left\{\begin{matrix}
+    \theta'' = -\frac{g}{l} \sin{(\theta)} \\
+    \theta(0) = \theta_0, \theta'(0) = \theta'_0
+   \end{matrix}\right.
   \label{eq:pendulo_simple}
 \end{equation}
-
+donde $g$ es la aceleración de la gravedad y $\theta_0$ y $\theta'_0$ corresponden a las condiciones iniciales. Algunos parámetros importantes de la evolución del péndulo simple son el período de oscilación $\tau$ dado por
 \begin{equation}
-  \tau(\theta) = T_0 \left [ \sum_{n = 0}^\infty \left(  \frac{(2n)!}{2^{2n}(n!)^2} \right )^2 \sin^{2n} \left ( \frac{\theta}{2} \right )   \right ], T_0 = 2 \pi \sqrt{\frac{l}{g}}
+  \tau(\theta) = T_0 \left [ \sum_{n = 0}^\infty \left(  \frac{(2n)!}{2^{2n}(n!)^2} \right )^2 \sin^{2n} \left ( \frac{\theta}{2} \right )   \right ], T_0 = 2 \pi \sqrt{\frac{l}{g}},
   \label{eq:periodo_simple}
 \end{equation}
-
-
+la fase $\phi$ dada por
 \begin{equation}
-  \tan^{-1}(\theta'/\theta)
+  \phi = \tan^{-1}(\theta'/\theta)
   \label{eq:fase_simple}
 \end{equation}
-
+y la energía por unidad de masa o amplitud $A_S$ dada por
 \begin{equation}
-  1/2 l^2 \theta'^2 - g l \cos{(\theta)}
+  A_S = 1/2 l^2 \theta'^2 - g l \cos{(\theta)}.
   \label{eq:amplitud_simple}
 \end{equation}
+Debido a que en el sistema actúan solo fuerzas conservativas, la amplitud $A_S$ se mantiene constante durante la evolución.
 
-Mencionar que la energía se conserva en ambos casos
-
-
-\subsection{Péndulo doble}
-\ptitle{Presentar ecuaciones de la dinámica}
-
-Usando $l_1 = 1$, $l_2 = 1$, $m_1 = 1$ y $m_2 = 1$, $g = 10$
-\begin{equation}
-\left\{\begin{matrix}
-  2 \theta_1'' + \theta_2'' \cos{\Delta \theta} = \theta_2'^2 \sin{\Delta \theta} - 20 \sin{(\theta_1)}, \\
-  \theta_1'' \cos{\Delta \theta} + \theta_2'' = - \theta_1'^2 \sin{\Delta \theta} - 10 \sin{(\theta_2)}
-  \end{matrix}\right.
-  \label{eq:pendulo_doble}
-\end{equation}
-
-donde $\Delta \theta = (\theta_2 - \theta_1)$
-
+La ecuación diferencial de orden 2 de \ref{eq:pendulo_simple} se puede convertir en dos ecuaciones diferenciales de ordeen 1 mediante el cambio de variable $y_1 = \theta$, $y_2 = \theta'$. De este modo, el problema \ref{eq:pendulo_simple} se convierte en
 
 \begin{equation}
-  \theta_1'^2 + \frac{1}{2} \theta_2'^2 + \theta_1' \theta_2' \cos{(\theta_2 - \theta_1)} - 20 \cos{\theta_1} - 10 \cos{\theta_2}
-  \label{eq:amplitud_doble}
-\end{equation}
-
-
-\section{Método Numérico}
-
-Para resolver numéricamente el problema de valores de
-contorno es necesario discretizar el dominio y proponer
-un esquema numérico que permita obtener la solución
-aproximada. El dominio se discretizó con puntos equiespaciados $xi = ih$ donde $i = 1, · · · , N$ y $h = 1/(N +1)$
-
-\subsection{Discretización del dominio}
-
-\ptitle{Ecuación vectorial del péndulo simple}
-
-La ecuación diferencial de orden 2 se puede convertir en 2 ecuaciones diferenciales de ordeen 1 mediante el cambio de variable $y_1 = \theta$, $y_2 = \theta'$. De este modo, el problema \ref{eq:pendulo_simple} se convierte en
-\begin{equation}
-  \frac{d\vec{y_S}}{dt} = \frac{d}{dt}
-  \begin{pmatrix}
-   y_1 \\ y_2
-  \end{pmatrix}
-  = 
+  \left\{\begin{matrix}
+  \frac{d\vec{y_S}}{dt}  = 
   \begin{pmatrix}
    y_2 \\ -\frac{g}{l} \sin{y_1}
   \end{pmatrix}
-  = \vec{f_S}(\vec{y_S},t)
+  = \vec{f_S}(\vec{y_S},t) 
+  \\
+  \vec{y}_S(0) = 
+  \begin{pmatrix}
+    \theta_0 \\ \theta'_0
+   \end{pmatrix},
+  \end{matrix}\right.
   \label{eq:pendulo_simple_vec}
 \end{equation}
+donde $\vec{y}_S^T = (y_1, y_2)$.
 
 
-\ptitle{Ecuación vectorial del péndulo doble}
+\subsection{Péndulo doble}
+
+\ptitle{Presentar ecuaciones de la dinámica}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{sol_aprox.pdf}
+  \caption{Esquema del péndulo doble. Una partícula puntual de masa $m_1$ está suspendida de un punto fijo mediante un hilo de longitud $l_1$. El ángulo $\theta_1$ es el ángulo que forma el hilo con la vertical. Sobre esta partícula se encuentra suspendida otra de masa $m_2$ mediante un hilo de longitud $l_2$. El ángulo $\theta_2$ es el ángulo que forma este último hilo con la vertical. Figura extraída de \textcolor{red}{referencia}}
+   \label{fig:doble_esquema}
+\end{figure}
+% http://www.sc.ehu.es/sbweb/fisica/oscilaciones/pendulo_doble/pendulo_doble.htm
+
+El péndulo doble es un sistema más complejo que el anterior. Consta básicamente de un péndulo simple con masa $m_1$, longitud $l_1$ y ángulo $\theta_1$ sobre el que se suspende otro péndulo simple con masa $m_2$, longitud $l_2$ y ángulo $\theta_2$ (ver esquema en la figura \ref{fig:doble_esquema}). Empleando $l_1 = l_2 = 1$, $m_1 = m_2 = 1$ y $g = 10$, las ecuaciones de la evolución de los ángulos involucrados son
+\begin{equation}
+\left\{\begin{matrix}
+  2 \theta_1'' + \theta_2'' \cos{\Delta \theta} = \theta_2'^2 \sin{\Delta \theta} - 20 \sin{(\theta_1)}, \\
+  \theta_1'' \cos{\Delta \theta} + \theta_2'' = - \theta_1'^2 \sin{\Delta \theta} - 10 \sin{(\theta_2)}, \\
+  \theta_1(0) = \theta_{1 0}, \theta_1'(0) = \theta_{1 0}', \\
+  \theta_2(0) = \theta_{2 0}, \theta_2'(0) = \theta_{2 0}',
+  \end{matrix}\right.
+  \label{eq:pendulo_doble}
+\end{equation}
+donde $\Delta \theta = (\theta_2 - \theta_1)$.
+
+Al igual que en el péndulo simple, la energía se conserva y la amplitud $A_D$ se mantiene constante durante la evolución. En este caso, tal amplitud está dada por
+\begin{equation}
+  A_D = \theta_1'^2 + \frac{1}{2} \theta_2'^2 + \theta_1' \theta_2' \cos{(\theta_2 - \theta_1)} - 20 \cos{\theta_1} - 10 \cos{\theta_2}
+  \label{eq:amplitud_doble}
+\end{equation}
 
 Haciendo el cambio de variables $y_1 = \theta_1$, $y_2 = \theta_2$, $y_3 = \theta_1'$ y $y_4 = \theta_2'$, el problema \ref{eq:pendulo_doble} se convierte en
 
 \begin{eqnarray}
   \label{eq:pendulo_doble_vec}
-  \nonumber \frac{d\vec{y_D}}{dt} & = & \frac{d}{dt}
-  \begin{pmatrix}
-    y_1 \\ y_2 \\ y_3 \\ y_4
-  \end{pmatrix}
-  \\
-  \nonumber & = &
-  \begin{pmatrix}
-    y_3 \\
-    y_4 \\
-    \frac{y_4^2 \sin{\Delta} - 20 \sin{y_1} + y_3^2 \sin{\Delta} \cos{\Delta} + 10 \sin{y_2} \cos{\Delta}}{  2 - \cos^2{\Delta}  } \\
-    \frac{-2 y_3^2 \sin{\Delta} - 20 \sin{y_2} - y_4^2 \sin{\Delta} \cos{\Delta} + 20 \sin{y_1} \cos{\Delta}}{  2 - \cos^2{\Delta}  }
-  \end{pmatrix}
-  \\
-  \nonumber & = & \vec{f_D}(\vec{y_D},t)
+
+  \left\{\begin{matrix}
+    \nonumber \frac{d\vec{y_D}}{dt} & = &
+    \begin{pmatrix}
+      y_3 \\
+      y_4 \\
+      \frac{y_4^2 \sin{\Delta} - 20 \sin{y_1} + y_3^2 \sin{\Delta} \cos{\Delta} + 10 \sin{y_2} \cos{\Delta}}{  2 - \cos^2{\Delta}  } \\
+      \frac{-2 y_3^2 \sin{\Delta} - 20 \sin{y_2} - y_4^2 \sin{\Delta} \cos{\Delta} + 20 \sin{y_1} \cos{\Delta}}{  2 - \cos^2{\Delta}  }
+    \end{pmatrix}
+    = \vec{f_D}(\vec{y_D},t), \\
+
+
+    \vec{y}_S(0) =
+    \begin{pmatrix}
+      \theta_{1 0} \\ \theta_{2 0}  \\ \theta'_{1 0} \\ \theta'_{2 0}
+     \end{pmatrix},
+    \end{matrix}\right.
+  
+   \end{matrix}\right.
+
 \end{eqnarray}
   % -y_3^2 \sin{\Delta} -10 \sin{y_2} - f_3 \cos{\Delta}
+donde $\vec{y}_D^T = (y_1, y_2, y_3, y_4)$
+
+
+\section{Método Numérico}
+
+Para resolver numéricamente ambos problemas de valores iniciales es necesario discretizar la variable temporal y proponer un esquema numérico que permita obtener la solución aproximada.
+
+\subsection{Discretización del dominio}
+
+El dominio se discretizó con puntos equiespaciados $t_n = n h$ donde $n = 0, · · · , N$ y $h = 1/N$. En base a esto, las ecuaciones dif cambian?
+
+\ptitle{Ecuación vectorial del péndulo simple}
+
+
+
+\ptitle{Ecuación vectorial del péndulo doble}
+
 
 \ptitle{Para resolver estos problemas se usaron métodos numéricos. De cada método se analizó el error de fase y el error de amplitud}
 
