@@ -676,7 +676,7 @@ if plotear == true
     t_ini = 0;
     t_max = 10*pi;
     #n_array = [10,20,50,100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000];
-    n_array = [200,500, 1000, 2000, 5000, 10000,20000,50000,100000,200000,500000,1000000,2000000,5000000];
+    n_array = [200,500, 1000, 2000, 5000, 10000,20000,50000,100000,200000,500000,1000000];
     h_array = zeros(length(n_array),1);
     e_ampli_b_array_h = zeros(length(n_array),1);
     for ii=1:length(n_array)
@@ -693,7 +693,7 @@ if plotear == true
     loglog(h_array, e_ampli_b_array_h, 'r');
 
     #Guardo los datos
-    datos = [h_array.', e_ampli_b_array_h];
+    datos = [h_array, e_ampli_b_array_h];
     csvwrite("graficos/datos/doble_orden_error_amplitud.csv", datos);
 
     pause(1000);

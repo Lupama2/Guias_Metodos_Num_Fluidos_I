@@ -41,8 +41,8 @@ bookmarksopen=false,
 \newcommand\ptitle[1]{\par\refstepcounter{para}
 {\ifpnumber{\noindent\textcolor{lightgray}{\textbf{\thepara}}\indent}\fi}
 {\ifptitle{\textbf{[{#1}]}}\fi}}
-%\ptitletrue  % comment this line to hide paragraph titles
-%\pnumbertrue  % comment this line to hide paragraph numbers
+\ptitletrue  % comment this line to hide paragraph titles
+\pnumbertrue  % comment this line to hide paragraph numbers
 
 % minimum font size for figures
 \newcommand{\minfont}{6}
@@ -134,7 +134,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 \begin{document}
 
 % Allows to rewrite the same title in the supplement
-\newcommand{\mytitle}{Laboratorio 2 - ????}
+\newcommand{\mytitle}{Laboratorio 2 - Problema de valores iniciales}
 
 \title{\mytitle}
 
@@ -153,81 +153,165 @@ Se estudiaron métodos numéricos para resolver problemas de valores iniciales. 
 
 \section{Introducción}
 
+\ptitle{¿Por qué es importante estudiar numéricamente PVI?}
+
+En ciencias físicas es de gran interés conocer la dinámica de un sistema a partir de sus condiciones iniciales. Sin embargo, dadas las ecuaciones de movimiento, no siempre es posible obtener la dinámica exactamente y es necesario recurrir a métodos numéricos.
+
+\ptitle{En este trabajo se analizaron dos problemas de valores iniciales}
+
+En este trabajo se analizaron dos problemas de valores iniciales: la evolución del péndulo simple y del péndulo doble. Se resolvieron numéricamente a través de distintos métodos numéricos implícitos y explícitos y se estudió la convergencia de los mismos.
+\subsection{Péndulo simple}
+
+\ptitle{Presentar ecuaciones de la dinámica}
+La evolu
 \begin{equation}
-  1
+  \theta'' = -\frac{g}{l} \sin{(\theta)}
   \label{eq:pendulo_simple}
 \end{equation}
 
 \begin{equation}
-  1
+  \tau(\theta) = T_0 \left [ \sum_{n = 0}^\infty \left(  \frac{(2n)!}{2^{2n}(n!)^2} \right )^2 \sin^{2n} \left ( \frac{\theta}{2} \right )   \right ], T_0 = 2 \pi \sqrt{\frac{l}{g}}
   \label{eq:periodo_simple}
 \end{equation}
 
 
 \begin{equation}
-  1
+  \tan^{-1}(\theta'/\theta)
   \label{eq:fase_simple}
 \end{equation}
 
 \begin{equation}
-  1
+  1/2 l^2 \theta'^2 - g l \cos{(\theta)}
   \label{eq:amplitud_simple}
 \end{equation}
 
+Mencionar que la energía se conserva en ambos casos
 
+
+\subsection{Péndulo doble}
+\ptitle{Presentar ecuaciones de la dinámica}
+
+Usando $l_1 = 1$, $l_2 = 1$, $m_1 = 1$ y $m_2 = 1$, $g = 10$
 \begin{equation}
-  1
+\left\{\begin{matrix}
+  2 \theta_1'' + \theta_2'' \cos{\Delta \theta} = \theta_2'^2 \sin{\Delta \theta} - 20 \sin{(\theta_1)}, \\
+  \theta_1'' \cos{\Delta \theta} + \theta_2'' = - \theta_1'^2 \sin{\Delta \theta} - 10 \sin{(\theta_2)}
+  \end{matrix}\right.
   \label{eq:pendulo_doble}
 \end{equation}
 
+donde $\Delta \theta = (\theta_2 - \theta_1)$
+
 
 \begin{equation}
-  1
+  \theta_1'^2 + \frac{1}{2} \theta_2'^2 + \theta_1' \theta_2' \cos{(\theta_2 - \theta_1)} - 20 \cos{\theta_1} - 10 \cos{\theta_2}
   \label{eq:amplitud_doble}
 \end{equation}
 
 
 \section{Método Numérico}
 
-Ecuación vectorial del péndulo simple
+Para resolver numéricamente el problema de valores de
+contorno es necesario discretizar el dominio y proponer
+un esquema numérico que permita obtener la solución
+aproximada. El dominio se discretizó con puntos equiespaciados $xi = ih$ donde $i = 1, · · · , N$ y $h = 1/(N +1)$
+
+\subsection{Discretización del dominio}
+
+\ptitle{Ecuación vectorial del péndulo simple}
+
+La ecuación diferencial de orden 2 se puede convertir en 2 ecuaciones diferenciales de ordeen 1 mediante el cambio de variable $y_1 = \theta$, $y_2 = \theta'$. De este modo, el problema \ref{eq:pendulo_simple} se convierte en
 \begin{equation}
-  1
+  \frac{d\vec{y_S}}{dt} = \frac{d}{dt}
+  \begin{pmatrix}
+   y_1 \\ y_2
+  \end{pmatrix}
+  = 
+  \begin{pmatrix}
+   y_2 \\ -\frac{g}{l} \sin{y_1}
+  \end{pmatrix}
+  = \vec{f_S}(\vec{y_S},t)
   \label{eq:pendulo_simple_vec}
 \end{equation}
 
 
-Ecuación vectorial del péndulo doble
-\begin{equation}
-  1
+\ptitle{Ecuación vectorial del péndulo doble}
+
+Haciendo el cambio de variables $y_1 = \theta_1$, $y_2 = \theta_2$, $y_3 = \theta_1'$ y $y_4 = \theta_2'$, el problema \ref{eq:pendulo_doble} se convierte en
+
+\begin{eqnarray}
   \label{eq:pendulo_doble_vec}
-\end{equation}
+  \nonumber \frac{d\vec{y_D}}{dt} & = & \frac{d}{dt}
+  \begin{pmatrix}
+    y_1 \\ y_2 \\ y_3 \\ y_4
+  \end{pmatrix}
+  \\
+  \nonumber & = &
+  \begin{pmatrix}
+    y_3 \\
+    y_4 \\
+    \frac{y_4^2 \sin{\Delta} - 20 \sin{y_1} + y_3^2 \sin{\Delta} \cos{\Delta} + 10 \sin{y_2} \cos{\Delta}}{  2 - \cos^2{\Delta}  } \\
+    \frac{-2 y_3^2 \sin{\Delta} - 20 \sin{y_2} - y_4^2 \sin{\Delta} \cos{\Delta} + 20 \sin{y_1} \cos{\Delta}}{  2 - \cos^2{\Delta}  }
+  \end{pmatrix}
+  \\
+  \nonumber & = & \vec{f_D}(\vec{y_D},t)
+\end{eqnarray}
+  % -y_3^2 \sin{\Delta} -10 \sin{y_2} - f_3 \cos{\Delta}
+
+\ptitle{Para resolver estos problemas se usaron métodos numéricos. De cada método se analizó el error de fase y el error de amplitud}
+
+\subsection{Métodos numéricos de evolución temporal}
+
+
+\ptitle{Describo cada método (un párrafo por método)}
+
+Los órdenes colocados son los locales \textcolor{red}{Verificar con la tabla}
+
+\ptitle{Euler implícito}
 
 \begin{equation}
-  1
+  \vec{y}_{n+1} = \vec{y}_n + h \vec{f}(\vec{y}_{n+1}, t_{n+1}) + O_{local}(h^2)
   \label{eq:Euler_implicito}
 \end{equation}
 
+\ptitle{Crank Nicholson}
+
 \begin{equation}
-  1
+  \vec{y}_{n+1} = \vec{y}_n + \frac{h}{2} [ \vec{f}(\vec{y}_{n+1}, t_{n+1}) + \vec{f}(\vec{y}_{n}, t_{n}) ]+ O_{local}(h^3)
   \label{eq:Crank_Nicholson}
 \end{equation}
 
-\begin{equation}
-  1
-  \label{eq:Runge_Kutta_4}
-\end{equation}
+\ptitle{Runge Kutta 4}
 
 \begin{equation}
-  1
+  \vec{y}_{n+1} = \vec{y}_n + \frac{1}{6} \vec{k}_1 + \frac{1}{3} (\vec{k}_2 + \vec{k}_3) + \frac{1}{6} \vec{k}_4 + O_{local}(h^5)
+  \label{eq:Runge_Kutta_4}
+\end{equation}
+donde
+
+\[
+  \left\{\begin{matrix}
+    \vec{k}_1 = h \vec{f}(\vec{y}_n, t_n), \\ 
+    \vec{k}_2 = h \vec{f} \left( \vec{y}_n + \frac{1}{2} \vec{k}_1 , t_n + \frac{h}{2}\right), \\
+    \vec{k}_3 = h \vec{f} \left ( \vec{y}_n + \frac{1}{2} \vec{k}_2 , t_n + \frac{h}{2}  \right ), \\
+    \vec{k}_4 = h \vec{f}(\vec{y}_n + \vec{k}_3, t_n + h)
+   \end{matrix}\right.
+\]
+
+\ptitle{Leap Frog}
+
+\begin{equation}
+  \vec{y}_{n+1} = \vec{y}_{n-1} + 2 h \vec{f}(\vec{y}_n, t_n) + O_{local}(h^3)
   \label{eq:Leap_Frog}
 \end{equation}
 
-
+\ptitle{Resumen de lo que se hará. Qué se resuelve con qué}
 
 \section{Resultados y discusión}
 
-\subsection{Péndulo simple}
+\ptitle{Resumen de lo que se hará. Se comenzará analizando el péndulo simple. ¿Qué se va a analizar?}
 
+\subsection{Péndulo simple}
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{sol_aprox.pdf}
@@ -243,9 +327,10 @@ Ecuación vectorial del péndulo doble
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{error_amplitud_simple_pi2.pdf}
-  \caption{\textcolor{blue}{(b) Error de amplitud para los 4 métodos para tita inicial de pi/2}}
+  \caption{\textcolor{blue}{(b) Error de amplitud para los 4 métodos para tita inicial de pi2}}
    \label{fig:error_amplitud_simple_pi2}
 \end{figure}
+
 % AMPLITUD:
 % Orden de convergencia Euler implícito:  0.9372575985568138 +/- 0.01902503308713794
 % Orden de convergencia Crack-Nicholson:  5.790183279314054 +/- 0.09070012637078931
@@ -305,23 +390,23 @@ Ecuación vectorial del péndulo doble
    \label{fig:doble_3CI_difs}
 \end{figure}
 
-% \begin{figure}[h]
-%   \includegraphics[clip=true,width=\columnwidth]{doble_1CI_trayectorias.pdf}
-%   \caption{\textcolor{blue}{Trayectorias de las 1 condiciones iniciales}}
-%    \label{fig:doble_1CI_trayectorias}
-% \end{figure}
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{doble_1CI_trayectorias.pdf}
+  \caption{\textcolor{blue}{Trayectorias de las 1 condiciones iniciales}}
+   \label{fig:doble_1CI_trayectorias}
+\end{figure}
 
-% \begin{figure}[h]
-%   \includegraphics[clip=true,width=\columnwidth]{doble_error_amplitud.pdf}
-%   \caption{\textcolor{blue}{Error de amplitud para todo tiempo}}
-%    \label{fig:doble_error_amplitud.pdf}
-% \end{figure}
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{doble_error_amplitud.pdf}
+  \caption{\textcolor{blue}{Error de amplitud para todo tiempo}}
+   \label{fig:doble_error_amplitud.pdf}
+\end{figure}
 
-% \begin{figure}[h]
-%   \includegraphics[clip=true,width=\columnwidth]{doble_orden_error_amplitud.pdf}
-%   \caption{\textcolor{blue}{Orden del error de amplitud}}
-%    \label{fig:doble_orden_error_amplitud}
-% \end{figure}
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{doble_orden_error_amplitud.pdf}
+  \caption{\textcolor{blue}{Orden del error de amplitud}}
+   \label{fig:doble_orden_error_amplitud}
+\end{figure}
 
 
 \section{Conclusión}
