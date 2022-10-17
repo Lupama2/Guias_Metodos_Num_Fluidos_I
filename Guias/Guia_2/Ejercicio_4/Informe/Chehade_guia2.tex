@@ -59,8 +59,9 @@ bookmarksopen=false,
 \renewcommand{\tablename}{Tabla}
 \renewcommand{\date}{Fecha}
 
-\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Programa/graficos} } %Para importar imágenes desde una carpeta
-
+%Para importar imágenes desde una carpeta:
+\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Programa/graficos} }
+\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Informe/Figures} }
 
 \usepackage[bottom]{footmisc} %para que las notas al pie aparezcan en la misma página
 
@@ -166,7 +167,7 @@ En este trabajo se analizaron dos problemas de valores iniciales: la evolución 
 \ptitle{Presentar ecuaciones de la dinámica}
 
 \begin{figure}[h]
-  \includegraphics[clip=true,width=\columnwidth]{sol_aprox.pdf}
+  \includegraphics[clip=true,width=\columnwidth]{simple_esquema.png}
   \caption{Esquema del péndulo simple. Una partícula puntual de masa $m$ está suspendida de un punto fijo mediante un hilo de longitud $l$. El ángulo $\theta$ es el ángulo que forma el hilo con la vertical. Figura extraída de \textcolor{red}{Referencia}}
    \label{fig:simple_esquema}
 \end{figure}
@@ -219,7 +220,7 @@ La ecuación diferencial de orden 2 de \ref{eq:pendulo_simple} se puede converti
 \ptitle{Presentar ecuaciones de la dinámica}
 
 \begin{figure}[h]
-  \includegraphics[clip=true,width=\columnwidth]{sol_aprox.pdf}
+  \includegraphics[clip=true,width=\columnwidth]{doble_esquema.png}
   \caption{Esquema del péndulo doble. Una partícula puntual de masa $m_1$ está suspendida de un punto fijo mediante un hilo de longitud $l_1$. El ángulo $\theta_1$ es el ángulo que forma el hilo con la vertical. Sobre esta partícula se encuentra suspendida otra de masa $m_2$ mediante un hilo de longitud $l_2$. El ángulo $\theta_2$ es el ángulo que forma este último hilo con la vertical. Figura extraída de \textcolor{red}{referencia}}
    \label{fig:doble_esquema}
 \end{figure}
@@ -345,7 +346,7 @@ En base a lo anterior, a continuación se desarrollan los métodos numéricos ut
     \vec{y}_{n+1} = \vec{y}_{n-1} + 2 h \vec{f}(\vec{y}_n, t_n) + O_{local}(h^3)
     \label{eq:Leap_Frog}
   \end{equation}
-  El objetivo de combinar ambos métodos de esta forma en particular es que los errores de fase se compensan para dar un orden de convergencia mayor, de al menos $O(h^3)$. \textcolor{red}{Está bien esta afirmación?}. Aún más, el factor de amplificación se mantiene unitario.
+  El objetivo de combinar ambos métodos de esta forma en particular es que los errores de fase se compensan para dar un orden de convergencia mayor, de al menos $O(h^3)$. \textcolor{red}{Está bien esta afirmación? Sí}. Aún más, el factor de amplificación se mantiene unitario.
 
 
 \end{itemize}
@@ -363,7 +364,7 @@ Se resolvió el péndulo simple con los cuatro esquemas numéricos mencionados p
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{sol_aprox.pdf}
-  \caption{Evolución de $\theta(t)$ para los cuatro esquemas numéricos ara las condiciones iniciales $\theta_0 = \pi/2$ y $\theta'_0 = 0$ con $h = 0.1$. Ambos ejes se encuentran normalizados: el eje vertical por $\pi$ y el horizontal por el período $\tau$.}
+  \caption{Evolución de $\theta(t)$ para los cuatro esquemas numéricos para las condiciones iniciales $\theta_0 = \pi/2$ y $\theta'_0 = 0$ con $h = 0.1$. Ambos ejes se encuentran normalizados: el eje vertical por $\pi$ y el horizontal por el período $\tau$.}
    \label{fig:sol_aprox}
 \end{figure}
 
@@ -421,25 +422,28 @@ Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden
     \multicolumn{1}{l|}{$1.93 \pm 0.04$} &
     \multicolumn{1}{l|}{0} &
     \multicolumn{1}{l|}{$5.79 \pm 0.09$} &
-    $4.94 \pm 0.03$ \\ \hline
+    0 \\ \hline
   RK4 &
     \multicolumn{1}{l|}{4} &
     \multicolumn{1}{l|}{$3.92 \pm 0.02$} &
     \multicolumn{1}{l|}{$4.02 \pm 0.02$} &
     \multicolumn{1}{l|}{5} &
     \multicolumn{1}{l|}{$4.87 \pm 0.04$} &
-    $3.010 \pm 0.005$ \\ \hline
+    $4.94 \pm 0.03$ \\ \hline
   CN + LF &
     \multicolumn{1}{l|}{3} &
     \multicolumn{1}{l|}{$1.86 \pm 0.05$} &
     \multicolumn{1}{l|}{$1.96 \pm 0.02$} &
     \multicolumn{1}{l|}{0} &
     \multicolumn{1}{l|}{$2.96 \pm 0.05$} &
-    0 \\ \hline
+    $3.010 \pm 0.005$ \\ \hline
   \end{tabular}
+  \caption{\label{tabla:simple_errores} Orden de convergencial del error de fase $e_{fase}$ y del error de amplitud $e_{amp}$ para los cuatro esquemas numéricos bajo las condiciones iniciales $\theta'_0 = 0$ y distintos valores de $\theta_0$. 'EI': Euler implícito, 'C-N': Crank-Nicholson, 'RK4': Runge-Kutta 4 y 'C-N + L-F': dos pasos con Crank Nicholson y uno con Leap-Frog.}
   \end{table}
 
-\textcolor{red}{Caption: }
+\textcolor{red}{En el problema lineal el error de fase cometido en cada paso no depende del paso, entonces tiene sentido hacer sumar y restar errores con CN y LF. Pero en el problema no lineal el error de fase depende del punto en el que estoy mirando y por lo tanto no se cancelan. Aún así, el orden aumenta a menor tita inicial}
+
+\textcolor{red}{En CN y LF el error de amplitud debería ser cero. No lo es, pero aún así cuando bajo tita inicial aumenta el orden de convergencia. Mencionar que no pude disminuir mucho más tita inicial por un problema de representación (sólo puedo usar 16 dígitos en Octave)}
 
 % \begin{figure}[h]
 %   \includegraphics[clip=true,width=\columnwidth]{error_fase_simple_pi2.pdf}
@@ -535,9 +539,10 @@ Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{doble_3CI.pdf}
-  \caption{\textcolor{blue}{Solución numérica para las 3 distintas condiciones iniciales}}
+  \caption{Evolución de $\theta_1(t)$ para los cuatro esquemas numéricos para las condiciones iniciales $\theta_{1 0} = \pi/2$, $\theta_{2 0} = a$ y $\theta'_{1 0} = \theta'_{2 0} = 0$ con $h = \pi/100$. Ambos ejes se encuentran normalizados por $\pi$.}
    \label{fig:doble_3CI}
 \end{figure}
+
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{doble_3CI_difs.pdf}
