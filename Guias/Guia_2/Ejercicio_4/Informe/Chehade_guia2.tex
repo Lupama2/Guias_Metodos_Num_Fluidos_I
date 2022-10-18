@@ -60,8 +60,8 @@ bookmarksopen=false,
 \renewcommand{\date}{Fecha}
 
 %Para importar imágenes desde una carpeta:
-\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Programa/graficos} }
-\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Informe/Figures} }
+\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Programa/graficos} {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_2/Ejercicio_4/Informe/Figures}}
+
 
 \usepackage[bottom]{footmisc} %para que las notas al pie aparezcan en la misma página
 
@@ -167,7 +167,7 @@ En este trabajo se analizaron dos problemas de valores iniciales: la evolución 
 \ptitle{Presentar ecuaciones de la dinámica}
 
 \begin{figure}[h]
-  \includegraphics[clip=true,width=\columnwidth]{simple_esquema.png}
+  \includegraphics[clip=true,width=0.5\columnwidth]{simple_esquema.png}
   \caption{Esquema del péndulo simple. Una partícula puntual de masa $m$ está suspendida de un punto fijo mediante un hilo de longitud $l$. El ángulo $\theta$ es el ángulo que forma el hilo con la vertical. Figura extraída de \textcolor{red}{Referencia}}
    \label{fig:simple_esquema}
 \end{figure}
@@ -220,11 +220,12 @@ La ecuación diferencial de orden 2 de \ref{eq:pendulo_simple} se puede converti
 \ptitle{Presentar ecuaciones de la dinámica}
 
 \begin{figure}[h]
-  \includegraphics[clip=true,width=\columnwidth]{doble_esquema.png}
+  \includegraphics[clip=true,width=0.5\columnwidth]{doble_esquema.png}
   \caption{Esquema del péndulo doble. Una partícula puntual de masa $m_1$ está suspendida de un punto fijo mediante un hilo de longitud $l_1$. El ángulo $\theta_1$ es el ángulo que forma el hilo con la vertical. Sobre esta partícula se encuentra suspendida otra de masa $m_2$ mediante un hilo de longitud $l_2$. El ángulo $\theta_2$ es el ángulo que forma este último hilo con la vertical. Figura extraída de \textcolor{red}{referencia}}
    \label{fig:doble_esquema}
 \end{figure}
-% http://www.sc.ehu.es/sbweb/fisica/oscilaciones/pendulo_doble/pendulo_doble.htm
+La extraje del pdf Double Pendumlum de la página de la materia
+
 
 El péndulo doble es un sistema más complejo que el anterior. Consta básicamente de un péndulo simple con masa $m_1$, longitud $l_1$ y ángulo $\theta_1$ sobre el que se suspende otro péndulo simple con masa $m_2$, longitud $l_2$ y ángulo $\theta_2$ (ver esquema en la figura \ref{fig:doble_esquema}). Empleando $l_1 = l_2 = 1$, $m_1 = m_2 = 1$ y $g = 10$, las ecuaciones de la evolución de los ángulos involucrados son
 \begin{equation}
@@ -371,24 +372,36 @@ Se resolvió el péndulo simple con los cuatro esquemas numéricos mencionados p
 Para todos los métodos se calculó $e_{fase}$ para distintos valores de $h$ y se determinó el orden de convergencia. 
 \begin{itemize}
   \item La dependencia del error con el tamaño de la discretización para todos los esquemas se grafica en la figura \ref{fig:error_fase_simple_pi2} en escala log-log. \item En todos los casos se obtuvo un comportamiento lineal a partir de un valor de $h$ suficientemente pequeño. En base a esto, se ajustó una recta para cada caso, obteniendo el orden de convergencia de cada método.
-  \item Los resultados se resumen en la tabla \textcolor{red}{ref tabla}
-  \item Análisis de resultados
+  \item Los resultados se resumen en la tabla \ref{tabla:simple_errores}
+  \item Análisis de resultados.
+  \item Se observa que en todos los métodos los órdenes de convergencia teóricos y numéricos son distinguibles a más de 3 desviaciones estándar, siendo los más cercanos los de CN y RK4.
 \end{itemize}
 
 
 
-
-Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden de convergencia. Tal dependencia se grafica en la figura \ref{fig:error_amplitud_simple_pi2}. A diferencia del caso anterior, si bien se observa un comportamiento lineal, para $h$ suficientemente pequeño, los métodos RK4 y CN alcanzan un valor constante, \textcolor{red}{lo cual puede deberse a errores de punto flotante? En el caso de ángulo pequeño alcanza errores menores}. De todos modos, se realiza un ajuste lineal sobre la zona con compotamiento lineal. La pendiente del ajuste corresponde al orden de convergencia del error y se resumen en la tabla \textcolor{red}{tabla}.
+Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden de convergencia. Tal dependencia se grafica en la figura \ref{fig:error_amplitud_simple_pi2}. A diferencia del caso anterior, si bien se observa un comportamiento lineal, para $h$ suficientemente pequeño, los métodos RK4 y CN alcanzan un valor constante, \textcolor{red}{lo cual puede deberse a errores de punto flotante? En el caso de ángulo pequeño alcanza errores menores}. De todos modos, se realiza un ajuste lineal sobre la zona con compotamiento lineal. La pendiente del ajuste corresponde al orden de convergencia del error y se resumen en la tabla \ref{tabla:simple_errores}
 \begin{itemize}
-  \item Análisis de la tabla
+  \item Al igual que en $e_{fase}$, los órdenes de convergencia teóricos y numéricos son distinguibles a más de 3 desviaciones estándar. Los casos más extremos corresponden a CN y CN + LF en los que se hubiera esperado un error de amplitud nulo. Aún así, el orden de convergencia de CN es relativamente alto respecto a los demás.
 \end{itemize}
-
 
 
 \begin{itemize}
-  \item En ambos casos anteriores no se obtuvieron los valores teóricos. Esto pudo deberse a que los órdenes de convergencia mencionados se calculan en base a un problema lineal $y' = \lambda y$. En el caso de la ecuación de movimiento, el problema es no lineal y por lo tanto no se puede esperar que los órdenes de convergencia sean los mismos. Sin embargo, sí se esperaría obtener los mismos valores para $\tita \rightarrow 0$, debido a que en este caso la ecuación de movimiento se reduce a un problema lineal.
-  \item En base a esto, se calculó la dependencia de $e_{fase}$ y $e_{amp}$ en función de $h$ para $\theta = 0.01$. Los resultados se grafican en las figuras \ref{fig:error_fase_simple_angulo_bajo} y \ref{fig:error_amplitud_simple_angulo_bajo}, respectivamente. 
+  \item Para ambos errores no se obtuvieron los órdenes de convergencia teóricos. Esto pudo deberse a que los valores teóricos se calculan en base a un problema lineal $y' = \lambda y$. En el caso de la ecuación de movimiento, el problema es no lineal y por lo tanto no se puede esperar que los órdenes de convergencia sean los mismos. Sin embargo, sí se esperaría obtener los mismos valores para $\theta_0 \rightarrow 0$ debido a que en este caso la ecuación de movimiento se reduce a un problema lineal.
+  \item En base a esto se calculó la dependencia de $e_{fase}$ y $e_{amp}$ en función de $h$ para $\theta_0 = 0.01$. Los resultados se grafican en las figuras \ref{fig:error_fase_simple_angulo_bajo} y \ref{fig:error_amplitud_simple_angulo_bajo}, respectivamente.
+  \item Cualitativamente se encuentran tendencias similares respecto al caso $\theta_0 = \pi/2$. La diferencia más notable se encuentra en $e_{amp}$ para el método de CN. Existe un valor de $h$ a partir del cual $e_{amp} = 0$. Esto implica que el método conserva la amplitud, como se esperaría a partir del análisis teórico. Es necesario aclarar que existe un valor de $h$ aún más pequeño con el cual $e_{amp} \neq 0$. Esto podría deberse a errores de punto flotante.
+  \item En base al comportamiento lineal se realizó un ajuste lineal y se obtuvieron los órdenes de convergencia. Los resultados se resumen en la tabla \ref{tabla:simple_errores}.
+  
+
+
+  \item En cuanto a $e_{fase}$, los órdenes teóricos y numéricos son indistinguibles considerando dos desviaciones estándard para EI, CN y RK4. Esto es acorde a la hipótesis sobre $\theta_0$ planteada. Sin embargo, no se obtiene el valor esperado para el método CN + LF. Esto se podría deber a que el error de fase en el problema no lineal no resulta de orden 3, sino que se mantiene en orden 2. Esto se podría justificar en el hecho de que para ser válido el orden 3 es necesario que el error de fase no dependa del paso de integración, lo cual podría no ser cierto para el problema no lineal.
+  \item En el problema lineal el error de fase cometido en cada paso no depende del paso, entonces tiene sentido hacer sumar y restar errores con CN y LF. Pero en el problema no lineal el error de fase depende del punto en el que estoy mirando y por lo tanto no se cancelan. Aún así, el orden aumenta a menor tita inicial
+
+  \item En cuanto a $e_{amp}$, los órdenes teóricos y numéricos son indistinguibles considerando dos desviaciones estándard para CN y RK4. Sin embargo, este no es el caso de EI y CN + LF. En el primer caso, el orden es menor al teórico. Mientras que en el segundo, si bien no se alcanza el valor teórico, al menos el orden es mayor. No es claro a qué se deben ambos comportamientos. Debería estudiarse este problema con mayor detalle. Una opción posible sería considerar $\theta_0$ menor al utilizado. Sin embargo, esto no es posible debido a un problema de representación decimal en el lenguaje de programación empleado.
 \end{itemize}
+
+
+
+
 
 \onecolumngrid
 
@@ -441,9 +454,6 @@ Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden
   \caption{\label{tabla:simple_errores} Orden de convergencial del error de fase $e_{fase}$ y del error de amplitud $e_{amp}$ para los cuatro esquemas numéricos bajo las condiciones iniciales $\theta'_0 = 0$ y distintos valores de $\theta_0$. 'EI': Euler implícito, 'C-N': Crank-Nicholson, 'RK4': Runge-Kutta 4 y 'C-N + L-F': dos pasos con Crank Nicholson y uno con Leap-Frog.}
   \end{table}
 
-\textcolor{red}{En el problema lineal el error de fase cometido en cada paso no depende del paso, entonces tiene sentido hacer sumar y restar errores con CN y LF. Pero en el problema no lineal el error de fase depende del punto en el que estoy mirando y por lo tanto no se cancelan. Aún así, el orden aumenta a menor tita inicial}
-
-\textcolor{red}{En CN y LF el error de amplitud debería ser cero. No lo es, pero aún así cuando bajo tita inicial aumenta el orden de convergencia. Mencionar que no pude disminuir mucho más tita inicial por un problema de representación (sólo puedo usar 16 dígitos en Octave)}
 
 % \begin{figure}[h]
 %   \includegraphics[clip=true,width=\columnwidth]{error_fase_simple_pi2.pdf}
@@ -521,7 +531,7 @@ Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden
       \includegraphics[width=\textwidth]{error_amplitud_simple_angulo_bajo.pdf}
       \caption{\label{fig:error_amplitud_simple_angulo_bajo}}
   \end{subfigure}
-     \caption{Error de fase $e_{fase}$ y error de amplitud $e_{amp}$ en función del tamaño de la discretización $h$ para los cuatro esquemas numéricos bajo las condiciones iniciales \ref{fig:error_fase_simple_pi2} y \ref{fig:error_amplitud_simple_pi2}, $\theta_0 = \pi/2$ y $\theta'_0 = 0$, \ref{fig:error_fase_simple_angulo_bajo} y \ref{fig:error_amplitud_simple_angulo_bajo}, $\theta_0 = 0.01$ y $\theta'_0 = 0$ . Los puntos corresponden a los valores calculados y las líneas a los ajustes lineales. 'EI': Euler implícito, 'C-N': Crank-Nicholson, 'RK4': Runge-Kutta 4 y 'C-N + L-F': dos pasos con Crank Nicholson y uno con Leap-Frog.}
+     \caption{Error de fase $e_{fase}$ y error de amplitud $e_{amp}$ en función del tamaño de la discretización $h$ para los cuatro esquemas numéricos bajo las condiciones iniciales \ref{fig:error_fase_simple_pi2} y \ref{fig:error_amplitud_simple_pi2}, $\theta_0 = \pi/2$ y $\theta'_0 = 0$, \ref{fig:error_fase_simple_angulo_bajo} y \ref{fig:error_amplitud_simple_angulo_bajo}, $\theta_0 = 0.01$ y $\theta'_0 = 0$ . Los puntos corresponden a los valores calculados y las líneas a los ajustes lineales. 'EI': Euler implícito, 'C-N': Crank-Nicholson, 'RK4': Runge-Kutta 4 y 'C-N + L-F': dos pasos con Crank Nicholson y uno con Leap-Frog. En la figura \ref{sub@fig:error_fase_simple_angulo_bajo} los valores correspondientes a CN y CN + LF se encuentran superpuestos.}
      \label{fig:simple_error_vs_h}
 \end{figure}
 
@@ -530,12 +540,20 @@ Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden
 
 \twocolumngrid
 
-
-
-
-
-
 \subsection{Péndulo doble}
+
+Se resolvió el sistema \ref{eq:pendulo_doble_vec} empleando RK4 y se estudió la sensibilidad del sistema frente a perturbaciones, la posibilidad de identificar patrones y la conservación de la energía
+
+En primer lugar, se evaluó la sensibilidad del sistema frente a perturbaciones de las condiciones iniciales.
+\begin{itemize}
+  \item Se calculó la dinámica del péndulo doble para tres condiciones iniciales ligeramente distintas: $\theta_{1 0} = \pi/2$, $\theta_{2 0} = a$ y $\theta'_{1 0} = \theta'_{2 0} = 0$ con $a^A = \pi/2$, $a^B = 1.00001 \pi/2$ y $a^C = 0.99999 \pi/2$.
+  \item $h = \pi/100 \approx 0.0314$
+  \item Se grafica en la figura \ref{fig:doble_3CI} la evolución de $\theta_1(t)$
+  \item Se observa que el comportamiento de $\theta_1(t)$ es muy distinto al de $\theta(t)$ del péndulo simple presentado en la figura \ref{fig:sol_aprox}. Además, la evolución es muy similar para las tres condiciones iniciales hasta $t \approx 5 \pi$ cuando comienzan a diferir considerablemente.
+  \item Esta diferencia se podría justificar en errores del método numérico utilizado. En base a esto se calcularon las diferencias angulares entre las soluciones para $\theta_1$ y $\theta_2$, en función del tamaño de la discretización $h$ a $t = 5 \pi$. Los resultados se grafican en la figura \ref{fig:doble_3CI_difs}. Se observa que la diferencia entre las soluciones se mantiene constante a partir de un valor de $h$ suficientemente pequeño.
+  \item Por lo tanto, las diferencias no se deben al método numérico y el sistema es sensible a las perturbaciones
+\end{itemize}
+
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{doble_3CI.pdf}
@@ -546,15 +564,33 @@ Análogamente, se calculó $e_{amp}$ en función de $h$ y se determinó el orden
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{doble_3CI_difs.pdf}
-  \caption{\textcolor{blue}{Diferencias entre las soluciones numéricas a tiempo fijo en función de h}}
+  \caption{Diferencias angulares entre soluciones numéricas con distintas condiciones iniciales a tiempo $t = 5 \pi$, en función de h. Las condiciones iniciales corresponden a $\theta_{1 0} = \pi/2$, $\theta_{2 0} = a$ y $\theta'_{1 0} = \theta'_{2 0} = 0$ con $a^A = \pi/2$, $a^B = 1.00001 \pi/2$ y $a^C = 0.99999 \pi/2$.}
    \label{fig:doble_3CI_difs}
 \end{figure}
 
+En segundo lugar, se calculó la trayectoria de las partículas que conforman el péndulo doble para las condiciones iniciales $\theta_{1 0} = \theta_{2 0} = \pi/2$ y $\theta'_{1 0} = \theta'_{2 0} = 0$, discretización $h = \pi/1000$ e intervalo de tiempo $t \in [0, 10 \pi]$.
+\begin{itemize}
+  \item Tales trayectorias se grafican en la figura \ref{fig:doble_1CI_trayectorias}
+  \item La trayectoria de la partícula 1 está restringida a una circunferencia de radio 1 alrededor del origen. Mientras que la de la partícula 2 tiene mayor libertad de movimiento.
+  \item Además, no se observan patrones claros en el comportamiento del péndulo.
+\end{itemize}
+
+
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{doble_1CI_trayectorias.pdf}
-  \caption{\textcolor{blue}{Trayectorias de las 1 condiciones iniciales}}
+  \caption{Trayectorias de las dos partículas de un péndulo doble para las condiciones iniciales  $\theta_{1 0} = \theta_{2 0} = \pi/2$ y $\theta'_{1 0} = \theta'_{2 0} = 0$, bajo la discretización $h = \pi/1000$ e intervalo de tiempo $t \in [0, 10 \pi]$.}
    \label{fig:doble_1CI_trayectorias}
 \end{figure}
+
+
+En tercer lugar, se calculó la energía del sistema para las mismas condiciones iniciales y discretización que en el caso anterior. Se calculó el error de amplitud $e_{amp}^D$ a partir de la expresión \ref{eq:doble_e_amp} y se graficó en la figura \ref{fig:doble_error_amplitud.pdf}
+
+\begin{itemize}
+  \item Se observa que la amplitud no se converva, aunque el error es relativamente pequeño.
+  \item En base a esto, se buscó determinar el error de convergencia. Para esto se calculo $e_{amp}^D$ en función de $h$. Los resultados se grafican en la figura \ref{fig:doble_orden_error_amplitud}
+  \item Se distinguen tres regiones \textcolor{red}{Esto lo escribí lindo en la guía 1}
+  \item En base al comportamiento en la región central se realiza un ajuste lineal cuya pendiente corresponde al orden de convergencia. Se obtuvo \textcolor{red}{qué?}
+\end{itemize}
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{doble_error_amplitud.pdf}
