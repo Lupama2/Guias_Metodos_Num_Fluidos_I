@@ -149,7 +149,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \begin{abstract}
 
-Se estudiaron distintos métodos numéricos para resolver problemas de valores iniciales no lineales. En particular se aplicaron los métodos de Euler implícito, Crank-Nicholson, Runge-Kutta 4 y una combinación de Crank-Nisholson con Leap-Frog al problema del péndulo simple y el método de Runge-Kutta 4 al del péndulo doble. En el caso del péndulo simple se analizaron los errores fase y amplitud globales de cada método, se calcularon los órdenes de convergencia y se compararon con los valores teóricos. En el caso del péndulo doble se analizó la sensibilidad del sistema frente a perturbaciones y el error de amplitud global. \textcolor{red}{TEST3}
+Se estudiaron distintos métodos numéricos para resolver problemas de valores iniciales no lineales. En particular se aplicaron los métodos de Euler implícito, Crank-Nicholson, Runge-Kutta 4 y una combinación de Crank-Nisholson con Leap-Frog al problema del péndulo simple y el método de Runge-Kutta 4 al del péndulo doble. En el caso del péndulo simple se analizaron los errores fase y amplitud globales de cada método, se calcularon los órdenes de convergencia y se compararon con los valores teóricos. En el caso del péndulo doble se analizó la sensibilidad del sistema frente a perturbaciones y el error de amplitud global.
 \end{abstract}
 
 \maketitle
@@ -157,19 +157,17 @@ Se estudiaron distintos métodos numéricos para resolver problemas de valores i
 \section{Introducción}
 
 \ptitle{¿Por qué es importante estudiar numéricamente PVI?}
-
-En ciencias físicas es de gran interés conocer la dinámica de un sistema a partir de sus condiciones iniciales. Sin embargo, dadas las ecuaciones de movimiento, no siempre es posible obtener la dinámica exactamente y es necesario recurrir a métodos numéricos.
-
 \ptitle{En este trabajo se analizaron dos problemas de valores iniciales}
 
-En este trabajo se analizaron dos problemas de valores iniciales: la evolución del péndulo simple y del péndulo doble. Se resolvieron numéricamente a través de distintos métodos numéricos implícitos y explícitos y se estudió la convergencia de los mismos.
+En ciencias físicas es de gran interés conocer la dinámica de un sistema a partir de sus condiciones iniciales. Sin embargo, dadas las ecuaciones de movimiento, no siempre es posible obtener la dinámica exactamente y es necesario recurrir a métodos numéricos. Existen una gran variedad de esquemas numéricos y ninguno está excento de error. En este trabajo se analizaron dos problemas de valores iniciales: la evolución del péndulo simple y del péndulo doble. Se resolvieron numéricamente a través de distintos métodos numéricos implícitos y explícitos y se estudió la convergencia de los mismos.
+
 \subsection{Péndulo simple}
 
 \ptitle{Presentar ecuaciones de la dinámica}
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=0.6\columnwidth]{simple_esquema.png}
-  \caption{Esquema del péndulo simple. Una partícula puntual de masa $m$ está suspendida de un punto fijo mediante un hilo de longitud $l$. El ángulo $\theta$ es el ángulo que forma el hilo con la vertical. Imagen extraída de \cite{esquema_pendulo_simple}}
+  \caption{Esquema del péndulo simple. Una partícula puntual de masa $m$ está suspendida de un punto fijo mediante un hilo de longitud $l$. El ángulo $\theta$ es el ángulo que forma el hilo con la vertical. Imagen extraída de \cite{esquema_pendulo_simple}.}
    \label{fig:simple_esquema}
 \end{figure}
 % 
@@ -182,14 +180,14 @@ El péndulo simple consta de una partícula puntual de masa $m$ suspendida de un
    \end{matrix}\right.
   \label{eq:pendulo_simple}
 \end{equation}
-donde $g$ es la aceleración de la gravedad y $\theta_0$ y $\theta'_0$ corresponden a las condiciones iniciales. Algunos parámetros importantes de la evolución del péndulo simple son el período de oscilación $\tau$ dado por \cite{periodo_exacto_pendulo_simple}
+donde $g$ es la aceleración de la gravedad y $\theta_0$ y $\theta'_0$ corresponden a las condiciones iniciales de ángulo y velocidad angular, respectivamente. Algunos parámetros importantes de la evolución de este sistema en particular son el período de oscilación $\tau$ dado por \cite{periodo_exacto_pendulo_simple}
 \begin{equation}
   \tau(\theta) = T_0 \left [ \sum_{n = 0}^\infty \left(  \frac{(2n)!}{2^{2n}(n!)^2} \right )^2 \sin^{2n} \left ( \frac{\theta}{2} \right )   \right ], T_0 = 2 \pi \sqrt{\frac{l}{g}},
   \label{eq:periodo_simple}
 \end{equation}
-la fase $\phi$ dada por
+la fase $\phi_{teo}$ dada por
 \begin{equation}
-  \phi(\theta) = \tan^{-1}(\theta'/\theta)
+  \phi_{teo}(\theta) = \tan^{-1}(\theta'/\theta)
   \label{eq:fase_simple}
 \end{equation}
 y la energía por unidad de masa o amplitud $A_S$ dada por
@@ -197,11 +195,11 @@ y la energía por unidad de masa o amplitud $A_S$ dada por
   A^S(\theta) = 1/2 l^2 \theta'^2 - g l \cos{(\theta)}.
   \label{eq:amplitud_simple}
 \end{equation}
-Debido a que en el sistema actúan solo fuerzas conservativas, la amplitud $A_S$ se mantiene constante durante la evolución.
+Debido a que solo actúan fuerzas conservativas, la amplitud $A_S$ se mantiene constante durante la evolución.
 
 \ptitle{Ecuación vectorial del péndulo simple}
 
-La ecuación diferencial de orden 2 de \ref{eq:pendulo_simple} se puede convertir en dos ecuaciones diferenciales de ordeen 1 mediante el cambio de variable $\vec{y_S} = (y_1, y_2) =  (\theta, \theta')$. De este modo, el problema \ref{eq:pendulo_simple} se convierte en
+La ecuación diferencial de segundo orden de \ref{eq:pendulo_simple} se puede convertir en dos ecuaciones diferenciales de orden 1 mediante el cambio de variable $\vec{y}_S^T = (y_1, y_2) =  (\theta, \theta')$. De este modo, el problema \ref{eq:pendulo_simple} se convierte en
 
 \begin{equation}
   \left\{\begin{matrix}
@@ -211,10 +209,26 @@ La ecuación diferencial de orden 2 de \ref{eq:pendulo_simple} se puede converti
     \end{pmatrix}
     = \vec{f_S}(\vec{y_S},t), 
   \\
-    \vec{y}_S^T(0) = (\theta_0, \theta'_0).
+  \vec{y}_S(0) = 
+  \begin{pmatrix}
+    \theta_0 \\ \theta'_0
+      \end{pmatrix}
   \end{matrix}\right.
   \label{eq:pendulo_simple_vec}
 \end{equation}
+
+% \begin{equation}
+%   \left\{\begin{matrix}
+%     \frac{d\vec{y_S}}{dt}  = 
+%     \begin{pmatrix}
+%     y_2 \\ -\frac{g}{l} \sin{y_1}
+%     \end{pmatrix}
+%     = \vec{f_S}(\vec{y_S},t), 
+%   \\
+%     \vec{y}_S^T(0) = (\theta_0, \theta'_0).
+%   \end{matrix}\right.
+%   \label{eq:pendulo_simple_vec}
+% \end{equation}
 
 \subsection{Péndulo doble}
 
@@ -222,13 +236,13 @@ La ecuación diferencial de orden 2 de \ref{eq:pendulo_simple} se puede converti
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=0.6\columnwidth]{doble_esquema.png}
-  \caption{Esquema del péndulo doble. Una partícula puntual de masa $m_1$ está suspendida de un punto fijo mediante un hilo de longitud $l_1$. El ángulo $\theta_1$ es el ángulo que forma el hilo con la vertical. Sobre esta partícula se encuentra suspendida otra de masa $m_2$ mediante un hilo de longitud $l_2$. El ángulo $\theta_2$ es el ángulo que forma este último hilo con la vertical. Imagen extraída de \cite{Notas_materia}}
+  \caption{Esquema del péndulo doble. Una partícula puntual de masa $m_1$ está suspendida de un punto fijo mediante un hilo de longitud $l_1$. El ángulo $\theta_1$ es el ángulo que forma el hilo con la vertical. Sobre esta partícula se encuentra suspendida otra de masa $m_2$ mediante un hilo de longitud $l_2$. El ángulo $\theta_2$ es el ángulo que forma este último hilo con la vertical. Imagen extraída de \cite{Notas_materia}.}
    \label{fig:doble_esquema}
 \end{figure}
 
 
 
-El péndulo doble es un sistema más complejo que el anterior. Consta básicamente de un péndulo simple con masa $m_1$, longitud $l_1$ y ángulo $\theta_1$ sobre el que se suspende otro péndulo simple con masa $m_2$, longitud $l_2$ y ángulo $\theta_2$ (ver esquema en la figura \ref{fig:doble_esquema}). Empleando $l_1 = l_2 = 1$, $m_1 = m_2 = 1$ y $g = 10$, las ecuaciones de la evolución de los ángulos involucrados son
+El péndulo doble es un sistema más complejo que el anterior. Consta básicamente de un péndulo simple con masa $m_1$, longitud $l_1$ y ángulo $\theta_1$ sobre el que se suspende otro péndulo con masa $m_2$, longitud $l_2$ y ángulo $\theta_2$ (ver esquema en la figura \ref{fig:doble_esquema}). Empleando $l_1 = l_2 = 1$, $m_1 = m_2 = 1$ y $g = 10$, las ecuaciones de la evolución de los ángulos involucrados son
 \begin{equation}
 \left\{\begin{matrix}
   2 \theta_1'' + \theta_2'' \cos{\Delta \theta} = \theta_2'^2 \sin{\Delta \theta} - 20 \sin{(\theta_1)}, \\
@@ -247,23 +261,23 @@ Al igual que en el péndulo simple, la energía se conserva y la amplitud $A_D$ 
 \end{equation}
 
 \ptitle{Ecuación vectorial del péndulo doble}
-Haciendo el cambio de variables $\vec{y_D} = (y_1, y_2, y_3, y_4) = (\theta_1, \theta_2, \theta_1', \theta_2')$, el problema \ref{eq:pendulo_doble} se convierte en
+Haciendo el cambio de variables $\vec{y}_D^T = (y_1, y_2, y_3, y_4) = (\theta_1, \theta_2, \theta_1', \theta_2')$, el problema \ref{eq:pendulo_doble} se convierte en
 
 \begin{eqnarray}
-  \label{eq:pendulo_doble_vec}
   \left\{\begin{matrix}
-    \nonumber \frac{d\vec{y_D}}{dt} & = &
+     \frac{d\vec{y_D}}{dt} & = &
       \begin{pmatrix}
         y_3 \\
         y_4 \\
         \frac{y_4^2 \sin{\Delta} - 20 \sin{y_1} + y_3^2 \sin{\Delta} \cos{\Delta} + 10 \sin{y_2} \cos{\Delta}}{  2 - \cos^2{\Delta}  } \\
         \frac{-2 y_3^2 \sin{\Delta} - 20 \sin{y_2} - y_4^2 \sin{\Delta} \cos{\Delta} + 20 \sin{y_1} \cos{\Delta}}{  2 - \cos^2{\Delta}  }
       \end{pmatrix} \\
-    \nonumber & = & \vec{f_D}(\vec{y_D},t),
+     & = & \vec{f_D}(\vec{y_D},t),
     \\ \\
-    \nonumber \vec{y}_S^T(0) & = &
+    \vec{y}_S^T(0) & = &
     (\theta_{1 0}, \theta_{2 0}, \theta'_{1 0}, \theta'_{2 0})
   \end{matrix}\right.
+  \label{eq:pendulo_doble_vec}
 \end{eqnarray}
   % -y_3^2 \sin{\Delta} -10 \sin{y_2} - f_3 \cos{\Delta}
 
@@ -293,9 +307,9 @@ Haciendo el cambio de variables $\vec{y_D} = (y_1, y_2, y_3, y_4) = (\theta_1, \
 
 \ptitle{Para resolver estos problemas se usaron métodos numéricos. De cada método se analizó el error de fase y el error de amplitud}
 
-Para resolver numéricamente ambos problemas de valores iniciales es necesario discretizar la variable temporal y proponer un esquema numérico que permita obtener la solución aproximada. En cuanto a lo primero, el dominio se discretizó con puntos equiespaciados $t_n = n h$ donde $n = 0, · · · , N$ y $h = 1/N$. En cuanto a lo segundo, se utilizaron en total cuatro métodos numéricos, algunos explícitos y otros implícitos. Su objetivo radica en, dado $\vec{y}_n = \vec{y}(t_n)$, aproximar $\vec{y}_{n+1}$.
+Para resolver numéricamente ambos problemas de valores iniciales es necesario discretizar la variable temporal y proponer un esquema numérico que permita obtener la solución aproximada. En cuanto a lo primero, el dominio se discretizó con puntos equiespaciados $t_n = n h$ donde $n = 0, \dots , N$ y $h = 1/N$. En cuanto a lo segundo, se utilizaron en total cuatro métodos numéricos, algunos explícitos y otros implícitos, que serán descriptos próximamente.
 
-Además, es necesario evaluar de alguna manera la convergencia de los métodos numéricos. Para esto se podría emplear el error respecto a la solución exacta a todo tiempo o bien evaluar el error en un tiempo específico sobre cantidades conocidas. En este trabajo se optó por lo segundo. Se evaluó para el péndulo simple el error de fase en $t = \tau$ dado por
+Además, es necesario evaluar de alguna manera la convergencia de los métodos numéricos. Para esto se podría emplear el error respecto a la solución exacta a todo tiempo o bien evaluar el error en un tiempo específico sobre cantidades conocidas. En este trabajo se optó por la segunda opción. Se evaluó para el péndulo simple el error de fase en $t = \tau$ dado por
 \begin{equation}
   e^S_{fase}(t = \tau) = \phi_{aprox}(\tau) - \phi_{teo}(\tau) = \phi_{aprox}(\tau)
   \label{eq:simple_e_fase}
@@ -305,32 +319,32 @@ pues por definición $\theta'(\tau) = 0$, y el error de amplificación en $t = \
   e^S_{amp}(t = \tau) = A^S_{aprox}(\tau) - A^S_{teo}(\tau),
   \label{eq:simple_e_amp}
 \end{equation}
-donde $A^S_{t}$ es constante. En ambos casos, para determinar $\tau$ se empleó la expresión \ref{eq:periodo_simple} calculada con un error menor a todos los errores obtenidos en este trabajo. Mientras que para el péndulo doble se evaluó sólo el error de amplitud para todo tiempo
+donde $A^S_{teo}$ es constante como se mencionó en la sección anterior. En ambos casos, para determinar $\tau$ se empleó la expresión \ref{eq:periodo_simple} calculada con un error del orden de $10^{-15}$ menor a todos los errores obtenidos en este trabajo. Mientras que para el péndulo doble se evaluó sólo el error de amplitud para todo tiempo
 \begin{equation}
   e^D_{amp}(t) = A^D_{aprox}(t) - A^D_{teo}(t),
   \label{eq:doble_e_amp}
 \end{equation}
-donde $A^D_{t}$ también es constante en el tiempo.
+donde $A^D_{teo}$ también es constante en el tiempo.
 
-Cabe preguntarse, ¿qué errores deberían obtenerse teóricamente? Se esperaría obtener el error de fase y el factor de amplificación de cada método numérico. Estos valores se encuentran tabulados y se obtienen al analizar la ecuación diferencial $y' = \lambda y$ con $\lambda$ constante con cada método en particular.
+Tanto el error de fase como el de amplitud dependen del método numérico a utilizar. Se encuentran tabulados sus órdenes de convergencia teóricos en \cite{Notas_materia}, los cuales se obtienen al analizar la ecuación diferencial $y' = \lambda y$ con $\lambda$ constante.
 
-En base a lo anterior, a continuación se desarrollan los métodos numéricos utilizados, junto con los órdenes de convergencia globales del factor de amplificación  y del error de fase \cite{Notas_materia}. Es necesario aclarar que en el caso de los métodos implícitos se utilizó el método de bisección para resolver el sistema de ecuaciones resultantes, con un error menor a todos los errores obtenidos en este trabajo.
+En base a lo anterior, a continuación se desarrollan los métodos numéricos utilizados, junto con los órdenes de convergencia globales del error de amplificación o error de amplitud y del error de fase. Es necesario aclarar que en el caso de los métodos implícitos se utilizó el método de bisección para resolver el sistema de ecuaciones resultantes, con un error del orden de $10^{-15}$ menor a todos los errores obtenidos en este trabajo.
 \begin{itemize}
   \item Euler implícito (EI): este método es implícito, el factor de amplificación converge con orden $O(h^1)$ y el error de fase, con orden $O(h^2)$. Su fórmula es
   \begin{equation}
-    \vec{y}_{n+1} = \vec{y}_n + h \vec{f}(\vec{y}_{n+1}, t_{n+1}) + O_{local}(h^2)
+    \nonumber \vec{y}_{n+1} = \vec{y}_n + h \vec{f}(\vec{y}_{n+1}, t_{n+1}) + O_{local}(h^2)
     \label{eq:Euler_implicito}
   \end{equation}
 
   \item Crank-Nicholson (CN): este método es implícito, el factor de amplificación es 1, por lo que se esperaría $e^S_{amp} = 0$ y el error de fase converge con orden $O(h^2)$. Su fórmula es
   \begin{equation}
-    \vec{y}_{n+1} = \vec{y}_n + \frac{h}{2} [ \vec{f}(\vec{y}_{n+1}, t_{n+1}) + \vec{f}(\vec{y}_{n}, t_{n}) ]+ O_{local}(h^3)
+    \nonumber \vec{y}_{n+1} = \vec{y}_n + \frac{h}{2} [ \vec{f}(\vec{y}_{n+1}, t_{n+1}) + \vec{f}(\vec{y}_{n}, t_{n}) ]+ O_{local}(h^3)
     \label{eq:Crank_Nicholson}
   \end{equation}
 
   \item Runge Kutta 4 (RK4): este método es explícito, el factor de amplificación converge con orden $O(h^5)$ y el error de fase, con orden $O(h^4)$. Su fórmula es
   \begin{equation}
-    \vec{y}_{n+1} = \vec{y}_n + \frac{1}{6} \vec{k}_1 + \frac{1}{3} (\vec{k}_2 + \vec{k}_3) + \frac{1}{6} \vec{k}_4 + O_{local}(h^5)
+    \nonumber \vec{y}_{n+1} = \vec{y}_n + \frac{1}{6} \vec{k}_1 + \frac{1}{3} (\vec{k}_2 + \vec{k}_3) + \frac{1}{6} \vec{k}_4 + O_{local}(h^5)
     \label{eq:Runge_Kutta_4}
   \end{equation}
   donde
@@ -345,10 +359,10 @@ En base a lo anterior, a continuación se desarrollan los métodos numéricos ut
 
   \item 2 pasos con Crank-Nicholson y uno con Leap Frog (CN + LF). Este último método es explícito, el factor de amplificación es unitario y el error de fase converge con orden $O(h^2)$. Su fórmula es
   \begin{equation}
-    \vec{y}_{n+1} = \vec{y}_{n-1} + 2 h \vec{f}(\vec{y}_n, t_n) + O_{local}(h^3)
+    \nonumber \vec{y}_{n+1} = \vec{y}_{n-1} + 2 h \vec{f}(\vec{y}_n, t_n) + O_{local}(h^3)
     \label{eq:Leap_Frog}
   \end{equation}
-  El objetivo de combinar ambos métodos de esta forma en particular es que los errores de fase se compensan para dar un orden de convergencia mayor, de al menos $O(h^3)$. Aún más, el factor de amplificación se mantiene unitario.
+  El objetivo de combinar ambos métodos de esta forma en particular es que los errores de fase se compensan para dar un orden de convergencia mayor, de al menos $O(h^3)$. Además, el factor de amplificación se mantendría unitario.
 
 
 \end{itemize}
@@ -526,7 +540,7 @@ En el análisis de ambos errores no se obtuvieron los órdenes de convergencia t
 
 \hfill
 
-\textcolor{red}{Fijarse que este párrafo esté bien ubicado el Latex} En base al comportamiento lineal se realizó un ajuste lineal y se obtuvieron los órdenes de convergencia. Los resultados se resumen en la tabla \ref{tabla:simple_errores}. En cuanto a $e^S_{fase}$, los órdenes teóricos y numéricos son indistinguibles considerando dos desviaciones estándard para EI, CN y RK4. Esto es acorde a la hipótesis sobre $\theta_0$ planteada. Sin embargo, no se obtiene el valor esperado para el método CN + LF. Esto se podría deber a que el error de fase en el problema no lineal no resulta de orden 3, sino que se mantiene en orden 2. Para ser válido el orden 3 se deberían compensar los errores de fase de cada método mutuamente, para lo cual también es necesario que el error de fase no dependa del paso de integración. Esto podría no ser cierto para el problema no lineal y por lo tanto sería razonable mantener el orden 2.
+En base al comportamiento lineal se realizó un ajuste lineal y se obtuvieron los órdenes de convergencia. Los resultados se resumen en la tabla \ref{tabla:simple_errores}. En cuanto a $e^S_{fase}$, los órdenes teóricos y numéricos son indistinguibles considerando dos desviaciones estándard para EI, CN y RK4. Esto es acorde a la hipótesis sobre $\theta_0$ planteada. Sin embargo, no se obtiene el valor esperado para el método CN + LF. Esto se podría deber a que el error de fase en el problema no lineal no resulta de orden 3, sino que se mantiene en orden 2. Para ser válido el orden 3 se deberían compensar los errores de fase de cada método mutuamente, para lo cual también es necesario que el error de fase no dependa del paso de integración. Esto podría no ser cierto para el problema no lineal y por lo tanto sería razonable mantener el orden 2.
 
 En cuanto a $e^S_{amp}$, los órdenes teóricos y numéricos son indistinguibles considerando dos desviaciones estándard para CN y RK4. Sin embargo, este no es el caso de EI y CN + LF. No es claro a qué se deben ambos comportamientos. Debería estudiarse este problema con mayor detalle. Una opción posible sería considerar $\theta_0$ menor al utilizado. Esto no es factible de realizar en Octave debido a un problema de representación decimal en el lenguaje de programación.
 
@@ -537,6 +551,7 @@ En cuanto a $e^S_{amp}$, los órdenes teóricos y numéricos son indistinguibles
 \subsection{Péndulo doble}
 
 Se resolvió el sistema \ref{eq:pendulo_doble_vec} empleando el método RK4 y se estudió la sensibilidad del sistema frente a perturbaciones, la posibilidad de identificar patrones en la trayectoria de las partículas que conforman el péndulo y la conservación de la energía
+
 
 En primer lugar, se evaluó la sensibilidad del sistema frente a perturbaciones sobre las condiciones iniciales. Para esto se calculó la dinámica del péndulo doble para tres condiciones iniciales ligeramente distintas: $\theta_{1 0} = \pi/2$, $\theta_{2 0} = a$ y $\theta'_{1 0} = \theta'_{2 0} = 0$ con $a^A = \pi/2$, $a^B = 1.00001 \pi/2$ y $a^C = 0.99999 \pi/2$. Para la evolución numérica se empleó $h = \pi/100 \approx 0.0314$. En la figura \ref{fig:doble_3CI} se grafica la evolución de $\theta_1(t)$. Se observa que la evolución es similar para las tres condiciones iniciales hasta $t \approx 5 \pi$ cuando comienzan a diferir considerablemente. Esta diferencia se podría justificar en una sensibilidad frente a las condiciones iniciales o bien a errores del método numérico utilizado. En base a esto se calcularon las diferencias angulares entre las soluciones para $\theta_1$ y $\theta_2$, en función de $h$ a $t = 5 \pi$. Los resultados se grafican en la figura \ref{fig:doble_3CI_difs}. Se observa que la diferencia entre las soluciones se mantiene constante a partir de un valor de $h$ suficientemente pequeño. Por lo tanto, las diferencias no se deben al método numérico y el sistema es sensible a las perturbaciones
 
@@ -553,19 +568,13 @@ En primer lugar, se evaluó la sensibilidad del sistema frente a perturbaciones 
    \label{fig:doble_3CI_difs}
 \end{figure}
 
-En segundo lugar, se calculó la trayectoria de las partículas que conforman el péndulo doble para las condiciones iniciales $\theta_{1 0} = \theta_{2 0} = \pi/2$ y $\theta'_{1 0} = \theta'_{2 0} = 0$, discretización $h = \pi/1000$ e intervalo de tiempo $t \in [0, 10 \pi]$. \textcolor{red}{Latex está cortando mal esta parte}. Tales trayectorias se grafican en la figura \ref{fig:doble_1CI_trayectorias}. La trayectoria de la partícula 1 está restringida a una circunferencia de radio 1 alrededor del origen. Mientras que la de la partícula 2 tiene mayor libertad de movimiento, no observándose patrones claros en el comportamiento del péndulo.
-
-
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{doble_1CI_trayectorias.pdf}
   \caption{Trayectorias de las dos partículas de un péndulo doble para las condiciones iniciales  $\theta_{1 0} = \theta_{2 0} = \pi/2$ y $\theta'_{1 0} = \theta'_{2 0} = 0$, bajo la discretización $h = \pi/1000$ e intervalo de tiempo $t \in [0, 10 \pi]$. La evolución se realizó mediante el método numérico Runge-Kutta 4.}
    \label{fig:doble_1CI_trayectorias}
 \end{figure}
 
-En tercer lugar, se calculó la energía del sistema para las mismas condiciones iniciales y discretización que en el caso anterior. Se calculó el error de amplitud $e_{amp}^D$ a partir de la expresión \ref{eq:doble_e_amp} y se graficó en función del tiempo en la figura \ref{fig:doble_error_amplitud.pdf}. Se observa que la amplitud no se converva, aunque el error es relativamente pequeño. En base a esto, se buscó determinar el error de convergencia, calculando $e_{amp}^D$ en función de $h$. Los resultados se grafican en la figura \ref{fig:doble_orden_error_amplitud}. Se distinguen tres regiones. Inicialmente, para $h$ grande,
-el error presenta un comportamiento aleatorio. A medida que $h$ disminuye, el error varía como una potencia de $h$, es decir, de forma lineal en escala logarítmica. Por
-último, para valores de $h$ menores, el error aumenta debido a los errores de precisión de la computadora. En base al comportamiento en la región central se realiza un ajuste lineal cuya pendiente $m = 4.6 \pm 0.2$ corresponde al orden de convergencia. Este valor no es consistente con el error teórico de orden $5$, aunque la diferencia se podría justificar en el comportamiento no lineal del sistema.
-
+En segundo lugar, se calculó la trayectoria de las partículas que conforman el péndulo doble para las condiciones iniciales $\theta_{1 0} = \theta_{2 0} = \pi/2$ y $\theta'_{1 0} = \theta'_{2 0} = 0$, discretización $h = \pi/1000$ e intervalo de tiempo $t \in [0, 10 \pi]$. Tales trayectorias se grafican en la figura \ref{fig:doble_1CI_trayectorias}. La trayectoria de la partícula 1 está restringida a una circunferencia de radio 1 alrededor del origen. Mientras que la de la partícula 2 tiene mayor libertad de movimiento, no observándose patrones claros en el comportamiento del péndulo.
 
 
 \begin{figure}
@@ -581,9 +590,17 @@ el error presenta un comportamiento aleatorio. A medida que $h$ disminuye, el er
       \includegraphics[width=\textwidth]{doble_orden_error_amplitud.pdf}
       \caption{\label{fig:doble_orden_error_amplitud}}
   \end{subfigure}
-     \caption{\ref{fig:doble_error_amplitud} error de amplitud  $e_{amp}^D$ en función del tiempo $t$. \ref{fig:doble_orden_error_amplitud} error de amplitud  $e_{amp}^D$ en función del tamaño de la discretización $h$. Ambos cálculos se realizaron para las condiciones iniciales $\theta_{1 0} = \theta_{2 0} = \pi/2$ y $\theta'_{1 0} = \theta'_{2 0} = 0$, discretización $h = \pi/1000$ e intervalo de tiempo $t \in [0, 10 \pi]$. La evolución se realizó mediante el método numérico Runge-Kutta 4. \textcolor{red}{Fijarse que se hayan referenciado bien las subfiguras}}
+     \caption{\ref{fig:doble_error_amplitud} error de amplitud  $e_{amp}^D$ en función del tiempo $t$. \ref{fig:doble_orden_error_amplitud} error de amplitud  $e_{amp}^D$ en función del tamaño de la discretización $h$. Ambos cálculos se realizaron para las condiciones iniciales $\theta_{1 0} = \theta_{2 0} = \pi/2$ y $\theta'_{1 0} = \theta'_{2 0} = 0$, discretización $h = \pi/1000$ e intervalo de tiempo $t \in [0, 10 \pi]$. La evolución se realizó mediante el método numérico Runge-Kutta 4.}
      \label{fig:doble_e_amp}
 \end{figure}
+
+
+En tercer lugar, se calculó la energía del sistema para las mismas condiciones iniciales y discretización que en el caso anterior. Se calculó el error de amplitud $e_{amp}^D$ a partir de la expresión \ref{eq:doble_e_amp} y se graficó en función del tiempo en la figura \ref{fig:doble_error_amplitud}. Se observa que la amplitud no se converva, aunque el error es relativamente pequeño. En base a esto, se buscó determinar el error de convergencia, calculando $e_{amp}^D$ en función de $h$. Los resultados se grafican en la figura \ref{fig:doble_orden_error_amplitud}. Se distinguen tres regiones. Inicialmente, para $h$ grande,
+el error presenta un comportamiento aleatorio. A medida que $h$ disminuye, el error varía como una potencia de $h$, es decir, de forma lineal en escala logarítmica. Por
+último, para valores de $h$ menores, el error aumenta debido a los errores de precisión de la computadora. En base al comportamiento en la región central se realiza un ajuste lineal cuya pendiente $m = 4.6 \pm 0.2$ corresponde al orden de convergencia. Este valor no es consistente con el error teórico de orden $5$, aunque la diferencia se podría justificar en el comportamiento no lineal del sistema.
+
+
+
 
 % \begin{figure}[h]
 %   \includegraphics[clip=true,width=\columnwidth]{doble_error_amplitud.pdf}
@@ -602,7 +619,7 @@ el error presenta un comportamiento aleatorio. A medida que $h$ disminuye, el er
 
 Se estudiaron distintos métodos numéricos para resolver problemas de valores iniciales no lineales. En primer lugar, se aplicaron los métodos de Euler implícito, Crank-Nicholson, Runge-Kutta 4 y una combinación de Crank-Nicholson con Leap-Frog al problema del péndulo simple. El último método se propuso con el objetivo de obtener un error de fase de mayor orden que los métodos por separado. Se analizaron los errores de fase y amplitud globales de cada método, se calcularon los órdenes de convergencia y se compararon con los valores teóricos, calculados en base a un problema lineal. En cuanto al error de fase, se encontraron valores similares a los teóricos, salvo para la combinación de Crank-Nicholson y Leap-Frog. Se encontró que el error no aumenta de orden debido a que en problemas no lineales el error de fase depende del paso de tiempo y la compensación esperada no ocurre. En cuanto al de amplitud, se encontraron valores similares a los teóricos, salvo para el método de Crank-Nicholson y la combinación de este con Leap-Frog. En ambos casos se hubiera esperado encontrar error nulo y no fue así. La razón de este comportamiento podría deberse a la no linealidad del problema. En base a esto, debería recuperarse el comportamiento teórico para el péndulo simple con ángulo bajo. Esto ocurre para el método de Crank-Nisholson pero no para la combinación de métodos. Debería estudiarse este caso en particular con mayor detalle. 
 
-En segundo lugar, se aplicó el método de Runge-Kutta 4 para el problema del péndulo doble. Se obtuvo una gran sensibilidad del sistema frente a perturbaciones de las condiciones iniciales. Además, se observó la dificultad de reconocer patrones sobre las trayectorias de las partículas. Por último, se encontró que la energía proporcional a la amplitud no se conserva. Se encontró un orden de convergencia para el error de amplitud distinto al valor teórico. Tal discrepancia se podría justificar con la misma razón que el péndulo simple: el sistema analizado es no lineal y los valores teóricos se calculan sobre problemas lineales.
+En segundo lugar, se aplicó el método Runge-Kutta 4 para el problema del péndulo doble. Se obtuvo una gran sensibilidad del sistema frente a perturbaciones de las condiciones iniciales. Además, se observó la dificultad de reconocer patrones sobre las trayectorias de las partículas. Por último, se encontró que la energía proporcional a la amplitud no se conserva. Se encontró un orden de convergencia para el error de amplitud distinto al valor teórico. Tal discrepancia se podría justificar con la misma razón que el péndulo simple: el sistema analizado es no lineal y los valores teóricos se calculan sobre problemas lineales.
 
 
 \bibliography{Chehade_guia2.bib}
