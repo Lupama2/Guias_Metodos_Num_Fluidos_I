@@ -1,10 +1,10 @@
-\documentclass[aps,prb,twocolumn,superscriptaddress,floatfix,longbibliography]{revtex4-2}
+\documentclass[aps,prb,twocolumn,superscriptaddress,floatfix,longbibliography,10pt]{revtex4-2}
 
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{subcaption}
+% \usepackage{subcaption}
 \usepackage{wrapfig} 
 \usepackage[export]{adjustbox}
 
@@ -169,10 +169,10 @@ En este trabajo se analizaron dos problemas de valores iniciales: la evolución 
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=0.6\columnwidth]{simple_esquema.png}
-  \caption{Esquema del péndulo simple. Una partícula puntual de masa $m$ está suspendida de un punto fijo mediante un hilo de longitud $l$. El ángulo $\theta$ es el ángulo que forma el hilo con la vertical. Figura extraída de \textcolor{red}{Pongo la Referencia?}}
+  \caption{Esquema del péndulo simple. Una partícula puntual de masa $m$ está suspendida de un punto fijo mediante un hilo de longitud $l$. El ángulo $\theta$ es el ángulo que forma el hilo con la vertical. Imagen extraída de \cite{esquema_pendulo_simple}}
    \label{fig:simple_esquema}
 \end{figure}
-% https://aquinovara52.wixsite.com/misitio/post/evap3-pendulo-simple
+% 
 
 El péndulo simple consta de una partícula puntual de masa $m$ suspendida de un punto fijo mediante un hilo de longitud $l$ (ver esquema en figura \ref{fig:simple_esquema}). La partícula se mueve en un plano y el ángulo $\theta$ que forma el hilo con la vertical se describe mediante la ecuación diferencial
 \begin{equation}
@@ -182,7 +182,7 @@ El péndulo simple consta de una partícula puntual de masa $m$ suspendida de un
    \end{matrix}\right.
   \label{eq:pendulo_simple}
 \end{equation}
-donde $g$ es la aceleración de la gravedad y $\theta_0$ y $\theta'_0$ corresponden a las condiciones iniciales. Algunos parámetros importantes de la evolución del péndulo simple son el período de oscilación $\tau$ dado por
+donde $g$ es la aceleración de la gravedad y $\theta_0$ y $\theta'_0$ corresponden a las condiciones iniciales. Algunos parámetros importantes de la evolución del péndulo simple son el período de oscilación $\tau$ dado por \cite{periodo_exacto_pendulo_simple}
 \begin{equation}
   \tau(\theta) = T_0 \left [ \sum_{n = 0}^\infty \left(  \frac{(2n)!}{2^{2n}(n!)^2} \right )^2 \sin^{2n} \left ( \frac{\theta}{2} \right )   \right ], T_0 = 2 \pi \sqrt{\frac{l}{g}},
   \label{eq:periodo_simple}
@@ -192,7 +192,7 @@ la fase $\phi$ dada por
   \phi(\theta) = \tan^{-1}(\theta'/\theta)
   \label{eq:fase_simple}
 \end{equation}
-\textcolor{red}{ESTO ES LA FASE O EL ERROR DE FASE? LA FASE NO ES $\theta$??} y la energía por unidad de masa o amplitud $A_S$ dada por
+y la energía por unidad de masa o amplitud $A_S$ dada por
 \begin{equation}
   A^S(\theta) = 1/2 l^2 \theta'^2 - g l \cos{(\theta)}.
   \label{eq:amplitud_simple}
@@ -222,7 +222,7 @@ La ecuación diferencial de orden 2 de \ref{eq:pendulo_simple} se puede converti
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=0.6\columnwidth]{doble_esquema.png}
-  \caption{Esquema del péndulo doble. Una partícula puntual de masa $m_1$ está suspendida de un punto fijo mediante un hilo de longitud $l_1$. El ángulo $\theta_1$ es el ángulo que forma el hilo con la vertical. Sobre esta partícula se encuentra suspendida otra de masa $m_2$ mediante un hilo de longitud $l_2$. El ángulo $\theta_2$ es el ángulo que forma este último hilo con la vertical. Figura extraída de \textcolor{red}{referencia. La extraje del pdf Double Pendumlum de la página de la materia}}
+  \caption{Esquema del péndulo doble. Una partícula puntual de masa $m_1$ está suspendida de un punto fijo mediante un hilo de longitud $l_1$. El ángulo $\theta_1$ es el ángulo que forma el hilo con la vertical. Sobre esta partícula se encuentra suspendida otra de masa $m_2$ mediante un hilo de longitud $l_2$. El ángulo $\theta_2$ es el ángulo que forma este último hilo con la vertical. Imagen extraída de \cite{Notas_materia}}
    \label{fig:doble_esquema}
 \end{figure}
 
@@ -314,7 +314,7 @@ donde $A^D_{t}$ también es constante en el tiempo.
 
 Cabe preguntarse, ¿qué errores deberían obtenerse teóricamente? Se esperaría obtener el error de fase y el factor de amplificación de cada método numérico. Estos valores se encuentran tabulados y se obtienen al analizar la ecuación diferencial $y' = \lambda y$ con $\lambda$ constante con cada método en particular.
 
-En base a lo anterior, a continuación se desarrollan los métodos numéricos utilizados, junto con el orden global de convergencia del factor de amplificación  y del error de fase. \textcolor{red}{referencia?}. Es necesario aclarar que en el caso de los métodos implícitos se utilizó el método de bisección para resolver el sistema de ecuaciones resultantes, con un error menor a todos los errores obtenidos en este trabajo.
+En base a lo anterior, a continuación se desarrollan los métodos numéricos utilizados, junto con los órdenes de convergencia globales del factor de amplificación  y del error de fase \cite{Notas_materia}. Es necesario aclarar que en el caso de los métodos implícitos se utilizó el método de bisección para resolver el sistema de ecuaciones resultantes, con un error menor a todos los errores obtenidos en este trabajo.
 \begin{itemize}
   \item Euler implícito (EI): este método es implícito, el factor de amplificación converge con orden $O(h^1)$ y el error de fase, con orden $O(h^2)$. Su fórmula es
   \begin{equation}
@@ -500,9 +500,9 @@ En el análisis de ambos errores no se obtuvieron los órdenes de convergencia t
     \multicolumn{1}{l|}{2} &
     \multicolumn{1}{l|}{$1.96 \pm 0.02$} &
     \multicolumn{1}{l|}{$1.93 \pm 0.04$} &
-    \multicolumn{1}{l|}{0} &
+    \multicolumn{1}{l|}{error nulo} &
     \multicolumn{1}{l|}{$5.79 \pm 0.09$} &
-    0 \\ \hline
+    error nulo \\ \hline
   RK4 &
     \multicolumn{1}{l|}{4} &
     \multicolumn{1}{l|}{$3.92 \pm 0.02$} &
@@ -514,11 +514,11 @@ En el análisis de ambos errores no se obtuvieron los órdenes de convergencia t
     \multicolumn{1}{l|}{3} &
     \multicolumn{1}{l|}{$1.86 \pm 0.05$} &
     \multicolumn{1}{l|}{$1.96 \pm 0.02$} &
-    \multicolumn{1}{l|}{0} &
+    \multicolumn{1}{l|}{error nulo} &
     \multicolumn{1}{l|}{$2.96 \pm 0.05$} &
     $3.010 \pm 0.005$ \\ \hline
   \end{tabular}
-  \caption{\label{tabla:simple_errores} Orden de convergencial del error de fase $e^S_{fase}$ y del error de amplitud $e^S_{amp}$ para los cuatro esquemas numéricos bajo las condiciones iniciales $\theta'_0 = 0$ y distintos valores de $\theta_0$. 'EI': Euler implícito, 'C-N': Crank-Nicholson, 'RK4': Runge-Kutta 4 y 'C-N + L-F': dos pasos con Crank Nicholson y uno con Leap-Frog. \textcolor{red}{Cuando un método tiene error 0, se dice que tiene orden de convergencia 0 o $\infty$??}}
+  \caption{\label{tabla:simple_errores} Orden de convergencial del error de fase $e^S_{fase}$ y del error de amplitud $e^S_{amp}$ para los cuatro esquemas numéricos bajo las condiciones iniciales $\theta'_0 = 0$ y distintos valores de $\theta_0$. 'EI': Euler implícito, 'C-N': Crank-Nicholson, 'RK4': Runge-Kutta 4 y 'C-N + L-F': dos pasos con Crank Nicholson y uno con Leap-Frog. Los valores teóricos provienen fueron extraídos de \cite{Notas_materia}.}
   \end{table}
 
 \twocolumngrid
@@ -605,7 +605,7 @@ Se estudiaron distintos métodos numéricos para resolver problemas de valores i
 En segundo lugar, se aplicó el método de Runge-Kutta 4 para el problema del péndulo doble. Se obtuvo una gran sensibilidad del sistema frente a perturbaciones de las condiciones iniciales. Además, se observó la dificultad de reconocer patrones sobre las trayectorias de las partículas. Por último, se encontró que la energía proporcional a la amplitud no se conserva. Se encontró un orden de convergencia para el error de amplitud distinto al valor teórico. Tal discrepancia se podría justificar con la misma razón que el péndulo simple: el sistema analizado es no lineal y los valores teóricos se calculan sobre problemas lineales.
 
 
-\bibliography{Chehade_guia1.bib}
+\bibliography{Chehade_guia2.bib}
 
 \end{document}
 
