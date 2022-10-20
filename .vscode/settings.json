@@ -1,0 +1,16 @@
+{
+    "editor.codeActionsOnSave": {
+    
+    },
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex ➞ bibtex ➞ pdflatex ➞ pdflatex",
+            "tools": [
+                "pdflatex",
+                "bibtex",
+                "pdflatex",
+                "pdflatex"
+            ]
+        }
+    ]
+}
