@@ -5,9 +5,9 @@
 
 a = 1; %Este statement es necesario para que octave no piense que este archivo es un archivo de funciones
 
-function u0_ = u0(x)
+function u0_ = u0_CI(x)
     %Condición inicial: velocidad en x a t = 0 
-    u0_ = exp(-200(x-0.25)^2);
+    u0_ = exp(-200*(x-0.25)^2);
 endfunction
 
 function c_ = c(x, inciso)
@@ -18,13 +18,16 @@ function c_ = c(x, inciso)
             c_ = 1;
         case "b"
             %Transición a arenisca impermeable
-            c_ = 1.25 - 0.25*tanh(40*(0.75-x))
+            c_ = 1.25 - 0.25*tanh(40*(0.75-x));
         case "c"
             %Arenisca impermeable
             c_ = 1.5;
         case "d"
             %Nave alienígena sepultada
             c_ = 1.5 - exp(-300*(x-1.75)^2);
+        case "e"
+            %Verificación de la CB para c'(0) != 0
+            c_ = x^2 + x + 1;
         otherwise
             error("La velocidad c no fue asignada")
     endswitch
@@ -34,81 +37,138 @@ endfunction
 % El método RK4 se encuentra definido en RK4.m
 
 
+function z0 = z0_ini(M)
+    %Inicializo el vector z0
+    L = 4; %Longitud del intervalo espacial
+    Delta_x = L/(M+1);
 
+    z0 = zeros(2*M + 2,1);
+    for ii = 1:(M + 2)
+        z0(ii) = u0_CI((ii-1)*Delta_x);
+    endfor
 
-%Resuelvo el inciso a
-inciso = "a";
-t_ini = 0;
-t_max = 8;
-
-%Discretización
-M = 5;
-Delta_x = 1/(M+1);
-N = 2*M;
-Delta_t = 1/N;
-
-
-
-%Creo el vector solución de tamaño 2N + 2
-z = zeros(2*M + 2,1)
-%Defino coeficientes para la resolución numérica
-a = c(0,inciso)/(2*Delta_x);
-b = c(4,inciso)/(2*Delta_x);
-d = 1/Delta_x^2;
-
-%Defino la matriz sparse gamma de tamaño (2M + 2) x (2M + 2)
-size_ = 2*M + 2;
-
-#1er cuadrante
-gamma_1_1 = sparse([1],[1],-3*a, size_,size_,0);
-gamma_1_2 = sparse([1],[2],4*a, size_,size_,0);
-gamma_1_3 = sparse([1],[3],-a, size_,size_,0);
-gamma_1_4 = sparse([M+2],[M],-b, size_,size_,0);
-gamma_1_5 = sparse([M+2],[M+1],4*b, size_,size_,0);
-gamma_1_6 = sparse([M+2],[M+2],-3*b, size_,size_,0);
-%Sumo
-gamma_1 = gamma_1_1 + gamma_1_2 + gamma_1_3 + gamma_1_4 + gamma_1_5 + gamma_1_6;
-
-#2do cuadrante
-gamma_2 = sparse([2:M+1],[1+ (M+2):M + (M+2)], ones(1,M), size_,size_,0)
-
-#3er cuadrante
-gamma_3 = sparse([1],[1],0,size_,size_,0); %Creo un sparse de ceros
-for ii = 1:M
-    cii = c(ii*Delta_x, inciso);
-    gamma_3_1 = sparse([ii + (M+2)],[ii], d*cii^2, size_,size_, 0);
-    gamma_3_2 = sparse([ii + (M+2)],[ii+1],-2*cii^2*d, size_, size_, 0);
-    gamma_3_3 = sparse([ii + (M+2)],[ii+1],d*cii^2, size_, size_, 0);
-    gamma_3 = gamma_3 + gamma_3_1 + gamma_3_2 + gamma_3_3;
-endfor
-gamma_3
-
-#4to cuadrante: son nulos
-
-gamma_matriz = gamma_1 + gamma_2 + gamma_3;
-#VERIFICAR QUE ESTÉ BIEN DESCRIPTA
-
-% #Nodos internos:
-% P_S1 = sparse([2:Nn-1], [2:Nn-1], (10/12)*ones(1,Nn-2), N, Nn, 0);
-% P_S2 = sparse([2:Nn-1], [1:Nn-2], (1/12)*ones(1,Nn-2), Nn, Nn, 0);
-% P_S3 = sparse([2:Nn-1], [3:Nn],(1/12)*ones(1,Nn-2), Nn, Nn, 0);
-
-% #Nodos de frontera:
-% P_F1 = sparse([1], [1], (1), Nn, Nn, 0);
-% P_F2 = sparse([Nn], [Nn], (1), Nn, Nn, 0);
-
-% A2 = P_S1 + P_S2 + P_S3 + P_F1 + P_F2;
-
-
-
-%A partir de la matriz gamma defino la función f(z) tal que dz/dt = f(z)
-%Esta está definida como f(z) = gamma * z
-function f(z)
 
 endfunction
 
-%Aplico el método RK4 y ploteo la solución u en cada paso de tiempo
 
 
 
-% Grafico c(x)
+
+%Calculo u(x,t) para inciso
+calculo = false;
+
+
+
+if calculo == true
+
+    inciso = "d";
+    t_ini = 0;
+    t_max = 8;
+
+    %Discretización
+    M = 2000;
+    N = 4*M;
+    L = 4; %Longitud del intervalo espacial
+    plotear = true;
+    intervalo_plot = 0.0001;
+
+    z_matriz = solucion(inciso, t_ini, t_max, M, N, L, plotear, intervalo_plot);
+
+
+endif
+
+%Resulta que la condición en c'(0) no afecta que la onda pueda salir del dominio sin reflejarse! Raro
+
+%Cuán bien está definido el límite dado por el nro de onda modificado?
+%Para ello, propongo un conjunto de valores de N y busco M tal que la solución diverja mediante el método de bisección?
+%El límite dependerá de c(x)?
+
+% Dado Delta_x = L/(M+1), busco que Delta_t = (t_max-t_min)/(N) varié en (0.1, 2)*Delta_x
+% Entonces, para dado M = L/Delta_x - 1, busco N = (t_max-t_min)/Delta_t tal que Delta_t varíe entre (0.1, 2)*Delta_x. Para cada Delta_t me dijo si la solución diverge
+
+umbral = 2;
+function diverge = diverge(z, umbral)
+    %Me fijo si para dado z la función diverge
+    %Defino como "divergencia" aquella situación en la que u(x,t) supera cierto valor umbral
+    for ii=1:(length(z)/2 + 1) %Así lo que está dentro me da M+2
+        if abs(z(ii)) > umbral
+            diverge = true;
+            return
+        endif
+    endfor
+    %Si no diverge, asigno false
+    diverge = false;
+
+endfunction
+
+incisos_array = ["a", "b", "c", "d"];
+
+%Defino el intervalo de variación de Delta_x y Delta_t
+size_ = 200;
+Delta_x_array = linspace(1/size_,1,size_-1);
+Delta_t_array = 2*Delta_x_array;
+
+for kk=1:4
+    inciso = incisos_array(kk)
+
+    t_ini = 0;
+    t_max = 8;
+    L = 4; %Longitud del intervalo espacial
+
+
+    %Creo el vector de booleanos que dirá para dado N y M si diverge o no
+    m_test = length(Delta_x_array);
+    n_test = m_test; %Nro de test para dado M. Quiero que quede una matriz cuadrada
+
+    divergencia = zeros(m_test,n_test);
+    M_array = round(L./Delta_x_array - 1);
+    N_array = round((t_max-t_ini)./Delta_t_array);
+
+    % Delta_x_array = L./(M_array+1);
+    % Delta_t_array = 2*Delta_x_array;
+
+    contador = 0;
+    for jj = 1:m_test
+        for ii = 1:n_test
+            contador = contador + 1;
+            porcentaje = (contador)/(m_test*n_test)*100
+            
+            M = M_array(jj);
+            N = N_array(ii); % round((t_max-t_ini)/Delta_t);
+            %Calculo Delta_x
+            Delta_x = Delta_x_array(jj);
+            %Defino el intervalo en el que variará Delta_t
+            Delta_t = Delta_t_array(ii);
+            %Para cada Delta_t calculo N
+            divergencia(jj,ii) = busco_divergencia(inciso, t_ini, t_max, M, N, L, umbral);
+
+        endfor
+    endfor
+
+    %Guardo los datos
+    datos = [Delta_x_array.', Delta_t_array.'];
+    archivo = strcat("graficos/datos/divergencia_MyN_",incisos_array(kk),".csv");
+    csvwrite(archivo, datos);
+
+    datos = [divergencia];
+    archivo = strcat("graficos/datos/divergencia_matrizbool_",incisos_array(kk),".csv");
+    csvwrite(archivo, datos);
+endfor
+
+
+#Guardo los valores máximos de c(x) para todos los incisos
+L = 4;
+x_array = linspace(0,L,10000);
+cmax_array = zeros(length(incisos_array),1);
+for ii = 1:length(incisos_array)
+    inciso = incisos_array(ii);
+    c_array = zeros(length(x_array),1);
+    for jj  = 1: length(x_array)
+        c_array(jj) = c(x_array(jj), inciso);
+    endfor
+    cmax_array(ii) = max(c_array);
+endfor
+
+%Guardo datos
+datos = cmax_array
+csvwrite("graficos/datos/divergencia_cmax.csv", datos);
