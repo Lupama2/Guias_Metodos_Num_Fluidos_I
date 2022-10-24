@@ -1,0 +1,335 @@
+\documentclass[aps,prb,twocolumn,superscriptaddress,floatfix,longbibliography,10pt]{revtex4-2}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{wrapfig} 
+\usepackage[export]{adjustbox}
+
+\usepackage{amsmath,amssymb} % math symbols
+\usepackage{bm} % bold math font
+\usepackage{graphicx} % for figures
+\usepackage{comment} % allows block comments
+\usepackage{textcomp} % This package is just to give the text quote '
+%\usepackage{ulem} % allows strikeout text, e.g. \sout{text}
+
+\usepackage[spanish]{babel}
+% By dafault, spanish changes to a comma as decimal separator; to change to a dot, you can use \decimalpoint:
+\decimalpoint
+
+\usepackage{enumitem}
+\setlist{noitemsep,leftmargin=*,topsep=0pt,parsep=0pt}
+
+\usepackage{xcolor} % \textcolor{red}{text} will be red for notes
+\definecolor{lightgray}{gray}{0.6}
+\definecolor{medgray}{gray}{0.4}
+
+%Para las tablas
+\usepackage{multirow}
+
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+urlcolor= blue,
+citecolor=blue,
+linkcolor= blue,
+bookmarks=true,
+bookmarksopen=false,
+}
+
+% Code to add paragraph numbers and titles
+\newif\ifptitle
+\newif\ifpnumber
+\newcounter{para}
+\newcommand\ptitle[1]{\par\refstepcounter{para}
+{\ifpnumber{\noindent\textcolor{lightgray}{\textbf{\thepara}}\indent}\fi}
+{\ifptitle{\textbf{[{#1}]}}\fi}}
+% \ptitletrue  % comment this line to hide paragraph titles
+% \pnumbertrue  % comment this line to hide paragraph numbers
+
+% minimum font size for figures
+\newcommand{\minfont}{6}
+
+% Uncomment this line if you prefer your vectors to appear as bold letters.
+% By default they will appear with arrows over them.
+% \renewcommand{\vec}[1]{\bm{#1}}
+
+%Cambiar Cuadros por Tablas y lista de...
+%\renewcommand{\listtablename}{Índice de tablas}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\date}{Fecha}
+
+%Para importar imágenes desde una carpeta:
+\graphicspath{ {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_3/ejercicio_6/Programa/graficos} {C:/Users/lupam/OneDrive/Escritorio/GitHub/Metodos_Num_Fluidos_I/Guias/Guia_3/ejercicio_6/Informe/Figures}}
+
+
+\usepackage[bottom]{footmisc} %para que las notas al pie aparezcan en la misma página
+
+\begin{comment}
+
+%Comandos de interés:
+
+* Para ordenar el documento:
+\section{Introducción}
+\section{\label{sec:Formatting}Formatting} %label para luego hacer referencia a esa sección
+
+\ptitle{Start writing while you experiment} %pone nombre y título al documento dependiendo de si en el header están los comandos \ptitletrue y \pnumbertrue
+
+* Ecuaciones:
+\begin{equation}
+a^2+b^2=c^2 \,.
+\label{eqn:Pythagoras}
+\end{equation}
+
+* Conjunto de ecuaciones:
+\begin{eqnarray}
+\label{eqn:diagonal}
+\nonumber d & = & \sqrt{a^2 + b^2 + c^2} \\
+& = & \sqrt{3^2+4^2+12^2} = 13
+\end{eqnarray}
+
+* Para hacer items / enumerar:
+\begin{enumerate}
+  \item
+\end{enumerate}
+
+\begin{itemize}
+  \item
+\end{itemize}
+
+* Figuras:
+\begin{figure}[h]
+    \includegraphics[clip=true,width=\columnwidth]{pixel-compare}
+    \caption{}
+     \label{fig:pixels}
+\end{figure}
+
+* Conjunto de figuras:
+(no recuerdo)
+
+
+* Para hacer referencias a fórmulas, tablas, secciones, ... dentro del documento:
+\ref{tab:spacing}
+
+* Para citar
+Elementos de .bib
+\cite{WhitesidesAdvMat2004}
+url
+\url{http://www.mendeley.com/}\\
+
+* Agradecimientos:
+\begin{acknowledgments}
+We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fig:pixels}.
+\end{acknowledgments}
+
+* Apéndice:
+\appendix
+\section{\label{app:Mendeley}Mendeley}
+
+* Bibliografía:
+\bibliography{Hoffman-example-paper}
+
+\end{comment}
+
+
+
+\begin{document}
+
+% Allows to rewrite the same title in the supplement
+\newcommand{\mytitle}{Laboratorio 3 - \textcolor{red}{??}}
+
+\title{\mytitle}
+
+\author{Pablo Chehade \\
+    \small \textit{pablo.chehade@ib.edu.ar} \\
+    \small \textit{Métodos Numéricos en Fluidos I, Instituto Balseiro, CNEA-UNCuyo, Bariloche, Argentina, 2022} \\}
+
+
+\begin{abstract}
+
+Se resolvió numéricamente la ecuación de onda escalar, homogénea y unidimensional con velocidad dependiente de la posición. En concreto, se empleó el método Runge-Kutta 4 para la evolución temporal y diferencias finitas de orden 2 para la espacial. Se analizó la evolución temporal de una condición inicial para distintas funciones de velocidad. Se estudió la estabilidad de la solución y se determinó la relación entre la velocidad y las discretizaciones espaciales y temporales, de modo de asegurar estabilidad. Esto se realizó mediante el análisis del número de onda modificado y se verificó numéricamente para distintas funciones de velocidad.
+
+\end{abstract}
+
+\maketitle
+
+\section{Introducción}
+
+La ecuación de ondas es importante en física. Modela muchos fenómenos
+
+
+En este trabajo se estudió la ecuación de onda escalar, homogénea y unidimensional
+\begin{equation}
+  \frac{\partial^2 u}{\partial t^2} = c^2(x)\frac{\partial^2 u}{\partial x^2} \,, t \geq 0, \,  0 < x < 4,
+  \label{eq:ecuacion_ondas}
+\end{equation}
+
+
+con condiciones iniciales
+\begin{equation}
+
+  \left\{\begin{matrix}
+    u(x,0) = u_0(x) = e^{-200 (x-0.25)^2} \\
+    u_t(x,0) = 0
+   \end{matrix}\right.
+
+ 
+  \label{eq:condiciones_iniciales}
+\end{equation}
+
+y condiciones de contorno
+\textcolor{red}{Condiciones de contorno con $u$ en lugar de $u(1)$}
+\begin{equation}
+  \left \{\begin{matrix}
+    \left . \frac{\partial u}{\partial t} \right |_{x=0} = c(0) \left . \frac{\partial u}{\partial x} \right |_{x=0} ,\\
+    \left . \frac{\partial u}{\partial t} \right |_{x=4} = - c(4) \left . \frac{\partial u}{\partial x} \right |_{x=4},
+   \end{matrix}\right .
+  \label{eq:condiciones_contorno}
+\end{equation}
+
+donde $c(x)$ es la velocidad del sonido en el medio.
+
+\section{Métodos Numéricos}
+
+La ecuación de onda \ref{eq:ecuacion_ondas} de segundo orden en el tiempo se puede transformar en un sistema de ecuaciones de primer orden en el tiempo mediante el cambio de variables $u_a = u$, $u_b = \partial u /\partial t$
+\[
+  \left \{ \begin{matrix}
+     \frac{\partial u_a}{\partial t} = u_b   \\
+     \frac{\partial u_b}{\partial t} = c^2(x) \frac{\partial^2 u_a}{\partial x^2}
+  \end{matrix} \right .
+  \]
+junto a las condiciones iniciales
+\[ \left \{ \begin{matrix}
+     u_a(x,0) = u_0(x) \\
+     u_b(x,0) = 0
+  \end{matrix} \right .
+\]  
+y a las condiciones de borde
+\[
+  \left \{ \begin{matrix}
+     \left . \frac{\partial u_a}{\partial t} \right |_{x=0} = c(0) \left . \frac{\partial u_a}{\partial x} \right |_{x=0} ,\\
+     \left . \frac{\partial u_a}{\partial t} \right |_{x=4} = - c(4) \left . \frac{\partial u_a}{\partial x} \right |_{x=4},
+  \end{matrix} \right .
+\]
+
+
+
+Para resolver numéricamente el sistema de ecuaciones junto a las condiciones iniciales \ref{eq:condiciones_iniciales} y a las condiciones de contorno \ref{eq:condiciones_contorno}, se necesita discretizar el dominio y proponer métodos numéricos para la parte espacial y temporal, asegurando la estabilidad de la solución.
+
+En cuanto a la discretización del dominio,
+\[x_j = \Delta x * j, \, j = 1,\dots,M, \, \Delta x = 1/(M+1) \]
+\[t_n = \Delta t * n, \, n = 0,1,\dots,N, \, \Delta t = 1/N \]
+
+En cuanto a los métodos numéricos, en cuanto a la parte espacial, se empleó DC2 (explicar ece)
+DC2 para los nodos internos
+\[\frac{\partial^2 u_j}{\partial x^2} = \frac{u_{j+1} - 2 u_j + u_{j-1}}{\Delta x^2} + O(\Delta x^2)  \]
+DF adelantada orden 2 \textcolor{red}{Referencia al Moin}
+particularizado para $j = 0$
+\[\left . \frac{\partial u}{\partial x} \right |_0 = \frac{-3 u_0 + 4 u_{1} - u_{2}}{2 \Delta x} + O(\Delta x^2) \]
+DF atrasada de orden 2 en $xj = N + 1$ \textcolor{red}{referencia a wikipedia}
+\[\left . \frac{\partial u}{\partial x} \right |_{N+1} = \frac{3 u_{N+1} - 4 u_N + u_{N-1}}{2 \Delta x} + O(\Delta x^2) \]
+El sistema de ecuaciones junto a las condiciones de borde se convierten en el sistema semidiscretizado \textcolor{red}{Corroborar la expresión}
+\[
+  \left \{ \begin{matrix}
+   \frac{\partial u_{a j}}{\partial t} = u_{b j} \\
+   \frac{\partial u_{b j}}{\partial t} = \frac{c_j^2}{\Delta x^2} (u_{a j+1} - 2 u_{a j} + u_{a j-1}) \\
+   \frac{\partial u_{a 0}}{\partial t} = \frac{c(0)}{2 \Delta x} (-3 u_{a 0} + 4 u_{a 1} - u_{a 2}) \\
+   \frac{\partial u_{a N+1}}{\partial t} = \frac{c(4)}{2 \Delta x} (-3u_{a N+1} + 4 u_{a N} - u_{a N-1}) 
+  \end{matrix} \right .  
+\]
+donde $c_j = c(x_j)$. Este sistema se puede escribir de la forma 
+\[ \]
+definiendo el vector $\vec{z}$ tal que $\vec{z}^T = (u_{a 0}, u_{a 1}, \dots, u_{a N}, u_{a N+1}, u_{b 1}, u_{b 2}, \dots, u_{b N+1})$ y la matriz $\gamma$
+
+De este modo, para nodos internos se tienen dos ecuaciones diferenciales con dos incógnitas ($u_a$ y $u_b$). Mientras que para los nodos de borde se tiene una ecuación diferencial con una incógnita ($u_a$)
+
+
+En cuanto a la temporal,
+
+
+En cuanto a la estabilidad de la solución
+Análisis del n
+
+
+
+Resumen de lo que se hará
+
+
+\section{Resultados y discusión}
+
+\textcolor{red}{Inestabilidad por el paso de tiempo porque las oscilaciones espúreas son acotadas ¿Por qué no obtengo oscilaciones espúreas? Hay oscilaciones espúreas en el caso de pe>2 si hubiera difusión. PERO NO HAY DIFUSIÓN. Aparecerían si la grilla es grande y la solución es empinada. Usar un $N = 100$.}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{solucion_a_y_c.pdf}
+  \caption{Distintos instantes de la evolución de la solución para distintas funciones de velocidad. $u_a(x,t)$ corresponde a la velocidad constante $c_a(x) = 1$, mientras que $u_b(x,t)$ corresponde a la velocidad constante $c_b(x) = 1.5$. El \textcolor{red}{numerito indica el índice n. Agregar Deltax y deltat}}. 
+   \label{fig:solucion_a_y_c}
+\end{figure}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{solucion_a_divergente.pdf}
+  \caption{}
+   \label{fig:solucion_a_divergente}
+\end{figure}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{solucion_b.pdf}
+  \caption{}
+   \label{fig:solucion_b}
+\end{figure}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{solucion_d.pdf}
+  \caption{}
+   \label{fig:solucion_d}
+\end{figure}
+
+
+\onecolumngrid
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{divergencia_a.pdf}
+      \caption{\label{fig:divergencia_a}}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{divergencia_b.pdf}
+      \caption{\label{fig:divergencia_b}}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{divergencia_c.pdf}
+      \caption{\label{fig:divergencia_c}}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{divergencia_d.pdf}
+      \caption{\label{fig:divergencia_d}}
+  \end{subfigure}
+     \caption{\textcolor{blue}{Divergencias}.}
+     \label{fig:simple_error_vs_h}
+\end{figure}
+
+\twocolumngrid
+
+% \hfill
+
+\section{Conclusión}
+
+
+
+\bibliography{Chehade_guia3.bib}
+
+\end{document}
+
+
+
+
+

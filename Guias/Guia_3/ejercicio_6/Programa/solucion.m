@@ -10,8 +10,8 @@ function [t_array, z_matriz] = solucion(inciso, t_ini, t_max, M, N, L, plotear, 
     %intervalo_plot: intervalo de tiempo entre cada plot
 
     %Discretización
-    Delta_x = L/(M+1);
-    Delta_t = (t_max - t_ini)/N;
+    Delta_x = L/(M+1)
+    Delta_t = (t_max - t_ini)/N
 
     %Creo el vector solución de tamaño 2N + 2
     z = zeros(2*M + 2,1);
@@ -85,7 +85,8 @@ function [t_array, z_matriz] = solucion(inciso, t_ini, t_max, M, N, L, plotear, 
         endif
 
         t = t + Delta_t; 
+        jj; #Imprimo el valor de jj
         z = RK4(z, t, Delta_t, @f_vec, gamma_);
-        z_matriz(1,:) = z.'; 
+        z_matriz(jj,:) = z.';
     endfor
 endfunction
