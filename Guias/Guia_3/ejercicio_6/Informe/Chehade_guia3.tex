@@ -138,7 +138,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 \begin{document}
 
 % Allows to rewrite the same title in the supplement
-\newcommand{\mytitle}{Laboratorio 3 - \textcolor{red}{??}}
+\newcommand{\mytitle}{Laboratorio 3 - Solución numérica de ecuación en derivadas parciales y análisis de estabilidad}
 
 \title{\mytitle}
 
@@ -219,19 +219,19 @@ y a las condiciones de borde
 
 Para resolver numéricamente el sistema, es necesario discretizar el dominio y proponer métodos numéricos para la parte espacial y temporal, buscando asegurando la estabilidad de la solución. En cuanto a la discretización del dominio, la variable espacial se discretizó en puntos equiespaciados $x_j = \Delta x  j$ donde $j = 1,\dots,M$ y $\Delta x = 1/(M+1)$. Por otro lado, la variable temporal también se discretizó en puntos equiespaciados $t_n = \Delta t n$ con $n = 0,1,\dots,N$ y $\Delta t = 1/N$.
 
-En cuanto al método numérico para la variable espacial, se empleó diferencias centradas de orden dos para los nodos internos
+En cuanto al método numérico para la variable espacial, se empleó diferencias centradas de orden dos para los nodos internos \cite{Moin}
 \[\frac{\partial^2 u_j}{\partial x^2} = \frac{u_{j+1} - 2 u_j + u_{j-1}}{\Delta x^2} + O(\Delta x^2),  \]
-diferencias finitas adelantada orden 2 para el nodo del borde izquierdo ($j = 0$) \textcolor{red}{Referencia al Moin}
+diferencias finitas adelantada orden 2 para el nodo del borde izquierdo ($j = 0$) \cite{Moin}
 \[\left . \frac{\partial u}{\partial x} \right |_0 = \frac{-3 u_0 + 4 u_{1} - u_{2}}{2 \Delta x} + O(\Delta x^2) \]
-y diferencias finitas atrasada de orden 2 para el nodo del borde derecho ($j = N + 1$) \textcolor{red}{referencia a wikipedia}
+y diferencias finitas atrasada de orden 2 para el nodo del borde derecho ($j = N + 1$) \cite{diferencias_finitas_adelantadas}
 \[\left . \frac{\partial u}{\partial x} \right |_{N+1} = \frac{3 u_{N+1} - 4 u_N + u_{N-1}}{2 \Delta x} + O(\Delta x^2) \]
-En base a estas aproximaciones, el sistema de ecuaciones junto a las condiciones de borde se convierten en el sistema semidiscretizado \textcolor{red}{Corroborar la expresión}
+En base a estas aproximaciones, el sistema de ecuaciones junto a las condiciones de borde se convierten en el sistema semidiscretizado
 \begin{equation}
   \left \{ \begin{matrix}
    \frac{\partial u_{a j}}{\partial t} = u_{b j} \\
    \frac{\partial u_{b j}}{\partial t} = \frac{c_j^2}{\Delta x^2} (u_{a j+1} - 2 u_{a j} + u_{a j-1}) \\
-   \frac{\partial u_{a 0}}{\partial t} = \frac{c(0)}{2 \Delta x} (-3 u_{a 0} + 4 u_{a 1} - u_{a 2}) \\
-   \frac{\partial u_{a N+1}}{\partial t} = \frac{c(4)}{2 \Delta x} (-3u_{a N+1} + 4 u_{a N} - u_{a N-1}) 
+   \frac{\partial u_{a 0}}{\partial t} = \frac{c_0}{2 \Delta x} (-3 u_{a 0} + 4 u_{a 1} - u_{a 2}) \\
+   \frac{\partial u_{a N+1}}{\partial t} = \frac{c_{N+1}}{2 \Delta x} (-3u_{a N+1} + 4 u_{a N} - u_{a N-1}) 
   \end{matrix} \right .
   \label{eq:sistema_semi_discretizado}
 \end{equation}
@@ -304,7 +304,7 @@ donde $\lambda$ es la matriz
   0 & 1 \\
   2 \frac{c_j^2}{\Delta x^2}(\cos{(k \Delta x)} - 1) & 0 \\
   \end{pmatrix}\]
-con autovalores $\chi_{\pm} = \pm \sqrt{2 \frac{c_j^2}{\Delta x^2}(\cos{(k \Delta x)} - 1)}$ reales puros. Considerando que se emplea el método RK4 es necesario pedir, en base a un análisis de estabilidad de la ecuación modelo $y' = \eta y$, la relación
+con autovalores $\chi_{\pm} = \pm \sqrt{2 \frac{c_j^2}{\Delta x^2}(\cos{(k \Delta x)} - 1)}$ reales puros. Considerando que se emplea el método RK4 es necesario pedir, en base a un análisis de estabilidad de la ecuación modelo $y' = \eta y$ \cite{Moin}, la relación
 \[\Delta t \leq \frac{2.8}{ |\chi_{\pm}| }\]
 considerando el "peor caso", es decir, el mayor autovalor posible. Esto corresponde a $c_j = c_{max}$ máximo valor posible y $k$ tal que $\cos{(k \Delta x)} = -1$. De este modo, se obtiene la relación
 \begin{equation}
@@ -321,12 +321,12 @@ En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{solucion_a_y_c.pdf}
-  \caption{Distintos instantes de la evolución de la solución para distintas funciones de velocidad. $u_a(x,t)$ corresponde a $c_a(x) = 1$ con $\Delta x \sim 2.6*10^{-4}$ y $\Delta t \sim 1.9*10^{-4}$, mientras que $u_b(x,t)$ corresponde a $c_b(x) = 1.5$ con $\Delta x \sim 2.6*10^{-3}$ y $\Delta t \sim 6.3*10^{-4}$. El índice superior de cada instante corresponde al índice $n$ del método numérico de evolución temporal.}.
+  \caption{Distintos instantes de la evolución de la solución para distintas funciones de velocidad. $u_a(x,t)$ corresponde a $c_a(x) = 1$ con $\Delta x \sim 2.6*10^{-4}$ y $\Delta t \sim 1.9*10^{-4}$, mientras que $u_b(x,t)$ corresponde a $c_b(x) = 1.5$ con $\Delta x \sim 2.6*10^{-3}$ y $\Delta t \sim 6.3*10^{-4}$. El índice superior de cada instante corresponde al índice $n$ del método numérico de evolución temporal.}
    \label{fig:solucion_a_y_c}
 \end{figure}
 
 \begin{itemize}
-  \item En primer lugar se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} para $c_a(x) = 1$ y $c_b(x) = 1.5$, obteniendo las soluciones $u_a(x,t)$ y $u_b(x,t)$, respectivamente. Nótese que se tratan de las soluciones numéricas de la ecuación original \ref{eq:ecuacion_ondas}, no a las variables semi-discretizadas del sistema \ref{eq:sistema_semi_discretizado}.
+  \item En primer lugar se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} para $c_a(x) = 1$ y $c_b(x) = 1.5$, obteniendo las soluciones $u_a(x,t)$ y $u_b(x,t)$, respectivamente. Nótese que se tratan de las soluciones numéricas de la ecuación original \ref{eq:ecuacion_ondas}, no a las variables semi-discretizadas del sistema \ref{eq:sistema_semi_discretizado}. En cuanto a la discretización, para el primer caso se empleó 
   \item \textcolor{red}{valores de $\Delta x$ y $\Delta t$}
   \item La solución a distintos tiempos se grafica en la figura \ref{fig:solucion_a_y_c}.
   \item Centrándose en el comportamiento de $u_a(x,t)$, inicialmente la condición inicial se divide en dos ondas, cada una moviéndose en direcciones opuestas. Luego, la onda que se mueve hacia la izquierda comienza a acerarse al borde del dominio espacial, para luego escapar del mismo progresivamente. Durante este proceso la onda no se refleja desde el borde debido a las condiciones de borde de onda saliente utilizadas. Mientras tanto, la otra onda continúa su movimiento hacia la derecha.
@@ -335,7 +335,7 @@ En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{solucion_a_divergente.pdf}
-  \caption{Distintos instantes de la evolución de la solución $u_a(x,t)$ para $c_a(x) = 1$ con $\Delta x \sim 2.6*10^{-3}$ y $\Delta t \sim 6.3*10^{-4}$. El índice superior de cada instante corresponde al índice $n$ del método numérico de evolución temporal.}
+  \caption{Distintos instantes de la evolución de la solución $u_a(x,t)$ para $c_a(x) = 1$ con $\Delta x \sim 2.6*10^{-3}$ y $\Delta t \sim 6.3*10^{-4}$. El índice superior de cada instante corresponde al índice $n$ del método numérico de evolución temporal.}.
    \label{fig:solucion_a_divergente}
 \end{figure}
 
@@ -408,7 +408,7 @@ En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_
       \includegraphics[width=\textwidth]{divergencia_d.pdf}
       \caption{\label{fig:divergencia_d}}
   \end{subfigure}
-     \caption{Evaluación de estabilidad para distintas discretizaciones espaciales y temporales y una variedad de velocidades del medio. En color \textcolor{blue}{azul} (zona superior) se grafican la discretización $\{\Delta x, \Delta t \}$ tal que la solución diverge. En \textcolor{red}{rojo} (zona inferior), la discretización tal que la solución no diverge. La línea punteada corresponde a la igualdad $\Delta t = 1.4 \Delta x / c_{max}$. \ref{fig:divergencia_a} corresponde a $c_a(x) = 1$ con $c_{max,a} = 1$, \ref{eq:condicion_estabilidad} a $c_b(x) = 1.5$ con $c_{max,b} = 1.5$, \ref{fig:divergencia_b} a $c_c(x) = 1.25 -0.25 \tanh{[40(0.75-x)]}$ con $c_{max,a} = 1.5$ y \ref{fig:divergencia_d} a $c_d(x) = 1.5 - \exp{[-300(x-1.75)^2]}$ con $c_{max,a} = 1.5$.
+     \caption{Evaluación de estabilidad para distintas discretizaciones espaciales y temporales y una variedad de velocidades del medio. En color \textcolor{blue}{azul} (zona superior) se grafican la discretización $\{\Delta x, \Delta t \}$ tal que la solución diverge. En \textcolor{red}{rojo} (zona inferior), la discretización tal que la solución no diverge. La línea punteada corresponde a la igualdad $\Delta t = 1.4 \Delta x / c_{max}$. \ref{fig:divergencia_a} corresponde a $c_a(x) = 1$ con $c_{max,a} = 1$, \ref{eq:condicion_estabilidad} a $c_b(x) = 1.5$ con $c_{max,b} = 1.5$, \ref{fig:divergencia_b} a $c_c(x) = 1.25 -0.25 \tanh{[40(0.75-x)]}$ con $c_{max,a} = 1.5$ y \ref{fig:divergencia_d} a $c_d(x) = 1.5 - \exp{[-300(x-1.75)^2]}$ con $c_{max,a} = 1.5$.}
      \label{fig:divergencias}
 \end{figure}
 
