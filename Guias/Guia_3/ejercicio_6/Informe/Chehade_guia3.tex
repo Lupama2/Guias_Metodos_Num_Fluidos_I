@@ -149,7 +149,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \begin{abstract}
 
-Se resolvió numéricamente la ecuación de onda escalar, homogénea y unidimensional con velocidad dependiente de la posición. En concreto, se empleó el método Runge-Kutta 4 para la evolución temporal y diferencias finitas de orden 2 para la espacial. Se analizó la evolución temporal de una condición inicial para distintas funciones de velocidad. Se estudió la estabilidad de la solución y se determinó la relación entre la velocidad y las discretizaciones espaciales y temporales, de modo de asegurar estabilidad. Esto se realizó mediante el análisis del número de onda modificado y se verificó numéricamente para distintas funciones de velocidad.
+Se resolvió numéricamente la ecuación de onda escalar, homogénea y unidimensional con velocidad dependiente de la posición. Se empleó el método Runge-Kutta 4 para la evolución temporal y diferencias finitas de orden 2 para la espacial. Se analizó la evolución temporal de una condición inicial para distintas funciones de velocidad. Se estudió la estabilidad de la solución y se determinó la relación entre la velocidad y las discretizaciones espaciales y temporales necesaria para asegurar estabilidad. Esto se realizó mediante el análisis del número de onda modificado y se verificó numéricamente para distintas funciones de velocidad.
 
 \end{abstract}
 
@@ -172,7 +172,7 @@ con condiciones iniciales
    \end{matrix}\right.
   \label{eq:condiciones_iniciales}
 \end{equation}
-y condiciones de contorno
+y condiciones de contorno de onda saliente
 \begin{equation}
   \left \{\begin{matrix}
     \left . \frac{\partial u}{\partial t} \right |_{x=0} = c(0) \left . \frac{\partial u}{\partial x} \right |_{x=0} ,\\
@@ -181,14 +181,16 @@ y condiciones de contorno
   \label{eq:condiciones_contorno}
 \end{equation}
 para una variedad de velocidades del sonido $c(x)$ en el medio
-\[ \left\{\begin{matrix}
+\begin{equation}
+\left\{\begin{matrix}
  c_a(x) = 1, \\
  c_b(x) = 1.5, \\
  c_c(x) = 1.25 -0.25 \tanh{[40(0.75-x)]}, \\
  c_d(x) = 1.5 - \exp{[-300(x-1.75)^2]}.
  \end{matrix}\right.
-\]
-Una particularidad de la ecuación es la ausencia de término difusivo, por lo que una onda en un medio homogéneo se transmite sin modificar su amplitud.
+ \label{eq:variedad_velocidades}
+\end{equation}
+Una particularidad de la ecuación es la ausencia de un término difusivo, por lo que una onda en un medio homogéneo se transmite sin modificar su amplitud.
 
 % La ecuación de onda es de gran importancia en ciencias físicas debido a que describe la propagación de una gran diversidad de ondas. Con ella es posible modelar ondas sonoras, ondas de luz, ondas en medios fluidos, entre otras. Aunque no solo permite simular la propagación en un medio homogéneo, sino también la reflexión y transmisión al cambiar de medio, lo cual suele representarse como un cambio en la velocidad de propagación.
 
@@ -217,14 +219,14 @@ y a las condiciones de borde
   \end{matrix} \right .
 \]
 
-Para resolver numéricamente el sistema, es necesario discretizar el dominio y proponer métodos numéricos para la parte espacial y temporal, buscando asegurando la estabilidad de la solución. En cuanto a la discretización del dominio, la variable espacial se discretizó en puntos equiespaciados $x_j = \Delta x  j$ donde $j = 1,\dots,M$ y $\Delta x = 1/(M+1)$. Por otro lado, la variable temporal también se discretizó en puntos equiespaciados $t_n = \Delta t n$ con $n = 0,1,\dots,N$ y $\Delta t = 1/N$.
+Para resolver numéricamente el sistema, es necesario discretizar el dominio y proponer métodos numéricos para la parte espacial y temporal, buscando asegurar la estabilidad de la solución. En cuanto a la discretización del dominio, la variable espacial se discretizó en puntos equiespaciados $x_j = j \Delta x$ donde $j = 1,\dots,M$ y $\Delta x = 4/(M+1)$. Por otro lado, la variable temporal también se discretizó en puntos equiespaciados $t_n = n \Delta t $ con $n = 0,1,\dots,N$ y $\Delta t = t_{max}/N$. Aquí $t_{max}$ es el tiempo máximo de evolución temporal. En este trabajo se optó por $t_{max} = 8$ debido a que se observó que a partir de ese momento la dinámica de la solución no es de interés.
 
-En cuanto al método numérico para la variable espacial, se empleó diferencias centradas de orden dos para los nodos internos \cite{Moin}
+En cuanto al método numérico, para la variable espacial se empleó diferencias centradas de orden dos para los nodos internos \cite{Moin}
 \[\frac{\partial^2 u_j}{\partial x^2} = \frac{u_{j+1} - 2 u_j + u_{j-1}}{\Delta x^2} + O(\Delta x^2),  \]
 diferencias finitas adelantada orden 2 para el nodo del borde izquierdo ($j = 0$) \cite{Moin}
 \[\left . \frac{\partial u}{\partial x} \right |_0 = \frac{-3 u_0 + 4 u_{1} - u_{2}}{2 \Delta x} + O(\Delta x^2) \]
 y diferencias finitas atrasada de orden 2 para el nodo del borde derecho ($j = N + 1$) \cite{diferencias_finitas_adelantadas}
-\[\left . \frac{\partial u}{\partial x} \right |_{N+1} = \frac{3 u_{N+1} - 4 u_N + u_{N-1}}{2 \Delta x} + O(\Delta x^2) \]
+\[\left . \frac{\partial u}{\partial x} \right |_{N+1} = \frac{3 u_{N+1} - 4 u_N + u_{N-1}}{2 \Delta x} + O(\Delta x^2). \]
 En base a estas aproximaciones, el sistema de ecuaciones junto a las condiciones de borde se convierten en el sistema semidiscretizado
 \begin{equation}
   \left \{ \begin{matrix}
@@ -235,8 +237,6 @@ En base a estas aproximaciones, el sistema de ecuaciones junto a las condiciones
   \end{matrix} \right .
   \label{eq:sistema_semi_discretizado}
 \end{equation}
-
-
 donde $c_j = c(x_j)$. De este modo, para nodos internos se tienen dos ecuaciones diferenciales con dos incógnitas ($u_a$ y $u_b$). Mientras que para los nodos de borde se tiene una ecuación diferencial con una incógnita ($u_a$). Este sistema se puede escribir de la forma
 \[\frac{d \vec{z}}{dt} = \gamma \vec{z} = \vec{f}(\vec{z},t)\]
 definiendo el vector $\vec{z}$ tal que $\vec{z}^T = (u_{a 0}, u_{a 1}, \dots, u_{a N}, u_{a N+1}, u_{b 1}, u_{b 2}, \dots, u_{b N+1})$ y la matriz de dimensión $(2N+2) \times (2N+2)$
@@ -268,7 +268,7 @@ tal que
 \[ D =  0_{N \times N}, \]
 donde $I_{N \times N}$ es la matriz identidad de tamaño $N \times N$ y $0_{N \times N}$ es la matriz nula de tamaño $N \times N$. 
 
-En cuanto a la variable temporal se empleó el método Runge-Kutta de orden 4
+En cuanto a la variable temporal se empleó el método Runge-Kutta de orden 4 \cite{Moin}
 \begin{equation}
   \vec{z}_{n+1} = \vec{z}_n + \frac{1}{6} \vec{k}_1 + \frac{1}{3} (\vec{k}_2 + \vec{k}_3) + \frac{1}{6} \vec{k}_4 + O_{local}(h^5)
   \label{eq:Runge_Kutta_4}
@@ -283,7 +283,7 @@ donde
   \end{matrix}\right.
 \]
 
-Como se mencionó anteriormente, debido a la combinación de métodos realizados pueden aparecer nuevos problemas de convergencia. En particular, puede cambiar la estabilidad de la solución dependiendo de los valores de $\Delta x$ y $\Delta t$ elegidos. Para esto es útil realiar el análisis con número de onda modificado, el cual se basa en proponer soluciones del tipo
+Como se mencionó anteriormente, debido a la combinación de métodos numéricos pueden aparecer nuevos problemas de convergencia. En particular, puede cambiar la estabilidad de la solución dependiendo de los valores de $\Delta x$ y $\Delta t$ elegidos. Para esto es útil realizar el análisis con número de onda modificado, el cual se basa en proponer soluciones del tipo
 \[\left\{\begin{matrix}
   u_{a j} = v_a(t)e^{i k x_j}\\
   u_{b j} = v_b(t)e^{i k x_j} 
@@ -304,9 +304,9 @@ donde $\lambda$ es la matriz
   0 & 1 \\
   2 \frac{c_j^2}{\Delta x^2}(\cos{(k \Delta x)} - 1) & 0 \\
   \end{pmatrix}\]
-con autovalores $\chi_{\pm} = \pm \sqrt{2 \frac{c_j^2}{\Delta x^2}(\cos{(k \Delta x)} - 1)}$ reales puros. Considerando que se emplea el método RK4 es necesario pedir, en base a un análisis de estabilidad de la ecuación modelo $y' = \eta y$ \cite{Moin}, la relación
+con autovalores $\chi_{\pm} = \pm \sqrt{2 \frac{c_j^2}{\Delta x^2}(\cos{(k \Delta x)} - 1)}$ reales. Considerando que se emplea el método Runge-Kutta 4 es necesario pedir, en base a un análisis de estabilidad de la ecuación modelo lineal \cite{Moin}, la relación
 \[\Delta t \leq \frac{2.8}{ |\chi_{\pm}| }\]
-considerando el "peor caso", es decir, el mayor autovalor posible. Esto corresponde a $c_j = c_{max}$ máximo valor posible y $k$ tal que $\cos{(k \Delta x)} = -1$. De este modo, se obtiene la relación
+considerando el "peor caso", es decir, el mayor autovalor posible. Esto corresponde a $c_j = c_{max}$ máximo de $c(x)$ y $k$ tal que $\cos{(k \Delta x)} = -1$. De este modo, se obtiene la relación
 \begin{equation}
   \Delta t \leq 1.4 \frac{\Delta x}{c_{max}}
   \label{eq:condicion_estabilidad}
@@ -314,7 +314,7 @@ considerando el "peor caso", es decir, el mayor autovalor posible. Esto correspo
 para asegurar la estabilidad de la solución.
 
 
-En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} para una variedad de velocidades $c(x)$ y distintas discretizaciones $\Delta x$ y $\Delta t$. En cada caso se observó la evolución del sistema a distintos tiempos y se evaluó el cumplimiento de la condición de estabilidad.
+En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} para la variedad de velocidades $c(x)$ presentadas en \ref{eq:variedad_velocidades} y distintas discretizaciones $\Delta x$ y $\Delta t$. En cada caso se observó la evolución del sistema a distintos tiempos y se evaluó el cumplimiento de la condición de estabilidad \ref{eq:condicion_estabilidad}.
 
 \section{Resultados y discusión}
 
@@ -325,34 +325,13 @@ En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_
    \label{fig:solucion_a_y_c}
 \end{figure}
 
-\begin{itemize}
-  \item En primer lugar se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} para $c_a(x) = 1$ y $c_b(x) = 1.5$, obteniendo las soluciones $u_a(x,t)$ y $u_b(x,t)$, respectivamente. Nótese que se tratan de las soluciones numéricas de la ecuación original \ref{eq:ecuacion_ondas}, no a las variables semi-discretizadas del sistema \ref{eq:sistema_semi_discretizado}. En cuanto a la discretización, para el primer caso se empleó 
-  \item \textcolor{red}{valores de $\Delta x$ y $\Delta t$}
-  \item La solución a distintos tiempos se grafica en la figura \ref{fig:solucion_a_y_c}.
-  \item Centrándose en el comportamiento de $u_a(x,t)$, inicialmente la condición inicial se divide en dos ondas, cada una moviéndose en direcciones opuestas. Luego, la onda que se mueve hacia la izquierda comienza a acerarse al borde del dominio espacial, para luego escapar del mismo progresivamente. Durante este proceso la onda no se refleja desde el borde debido a las condiciones de borde de onda saliente utilizadas. Mientras tanto, la otra onda continúa su movimiento hacia la derecha.
-  \item El mismo proceso ocurre con la solución $u_b(x,t)$ con mayor velocidad.
-\end{itemize}
-
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{solucion_a_divergente.pdf}
   \caption{Distintos instantes de la evolución de la solución $u_a(x,t)$ para $c_a(x) = 1$ con $\Delta x \sim 2.6*10^{-3}$ y $\Delta t \sim 6.3*10^{-4}$. El índice superior de cada instante corresponde al índice $n$ del método numérico de evolución temporal.}.
    \label{fig:solucion_a_divergente}
 \end{figure}
 
-\begin{itemize}
-  \item En segundo lugar, se resolvió el sistema discretizado para $c_a(x) = 1$ bajo condiciones teóricas de inestabilidad. En base a la condición \ref{eq:condicion_estabilidad} y considerando que para este caso $c_{max} = 1$, se eligió $\Delta x = $ y $\Delta t = $ \textcolor{red}{qué valores de discretización?}
-  \item La solución $u_a(x,t)$ a distintos tiempos se grafica en la figura \ref{fig:solucion_a_divergente}.
-  \item Inicialmente se observa el comportamiento visto anteriormente en la figura \ref{fig:solucion_a_y_c}. Sin embargo, cuando la onda que se mueve hacia la izquierda llega al borde, la solución comienza a diverger, tomando valores mucho más grandes que los esperados.
-\end{itemize}
-
-% \textcolor{red}{Inestabilidad por el paso de tiempo porque las oscilaciones espúreas son acotadas ¿Por qué no obtengo oscilaciones espúreas? Hay oscilaciones espúreas en el caso de pe>2 si hubiera difusión. PERO NO HAY DIFUSIÓN. Aparecerían si la grilla es grande y la solución es empinada. Usar un $N = 100$.}
-
-\begin{itemize}
-  \item En tercer lugar, se resolvió el sistema discretizado para funciones de la velocidad no constantes. En particular, se utilizaron $c_c(x) = 1.25 -0.25 \tanh{[40(0.75-x)]}$ y $c_d(x) = 1.5 - \exp{[-300(x-1.75)^2]}$, bajo la discretización $\Delta x = $ y $\Delta t = $ \textcolor{red}{valores?}, obteniendo las soluciones $u_c(x,t)$ y $u_d(x,t)$, respectivamente.
-  \item Las soluciones se grafican en la figura \ref{fig:soluciones_b_y_d} junto a las funciones de velocidad.
-  \item La evolución de $u_c(x,t)$ se resume en que la onda que se mueve hacia la izquierda escapa del borde sin reflejarse, mientras que la onda que se mueve hacia la derecha se divide en una onda reflejada y otra transmitida al encontrarse con el cambio de velocidad.
-  \item Por otro lado, la solución $u_d(x,t)$ se comporta de manera similar a la anterior, con la diferencia de que la onda que se mueve hacia la izquierda se refleja y transmite múltiples veces al encontrarse con el cambio de velocidad.
-\end{itemize}
+En primer lugar se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} para $c_a(x) = 1$ y $c_b(x) = 1.5$, obteniendo las soluciones $u_a(x,t)$ y $u_b(x,t)$, respectivamente. Nótese que se tratan de las soluciones numéricas de la ecuación original \ref{eq:ecuacion_ondas}, no de las variables semi-discretizadas del sistema \ref{eq:sistema_semi_discretizado}. En cuanto a la discretización, para el primer caso se empleó $\Delta x \sim 2.6*10^{-4}$ y $\Delta t \sim 1.9*10^{-4}$, mientras que para el segundo, $\Delta x \sim 2.6*10^{-3}$ y $\Delta t \sim 6.3*10^{-4}$. La solución a distintos tiempos se grafica en la figura \ref{fig:solucion_a_y_c}. En cuanto al comportamiento de $u_a(x,t)$, inicialmente la condición inicial se divide en dos ondas, cada una moviéndose en direcciones opuestas. Luego, la onda que se mueve hacia la izquierda comienza a acerarse al borde del dominio espacial, para luego escapar del mismo progresivamente. Durante este proceso la onda no se refleja desde el borde debido a las condiciones de borde de onda saliente utilizadas \ref{eq:condiciones_contorno}. Mientras tanto, la otra onda continúa su movimiento hacia la derecha sin observarse cambio en su amplitud. En cuanto al comportamiento de $u_b(x,t)$ se observa el mismo proceso pero con mayor velocidad.
 
 
 \begin{figure}
@@ -371,14 +350,14 @@ En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_
     \label{fig:soluciones_b_y_d}
 \end{figure}
 
+En segundo lugar, se resolvió el sistema discretizado para $c_a(x) = 1$ bajo condiciones teóricas de inestabilidad. En base a la condición \ref{eq:condicion_estabilidad} y considerando que para este caso $c_{max} = 1$, se eligió $\Delta x \sim 2.6*10^{-3}$ y $\Delta t \sim 6.3*10^{-4}$. La solución $u_a(x,t)$ a distintos tiempos se grafica en la figura \ref{fig:solucion_a_divergente}. Inicialmente se observa el comportamiento visto en la figura \ref{fig:solucion_a_y_c}. Sin embargo, cuando la onda que se mueve hacia la izquierda llega al borde, la solución comienza a diverger, tomando valores mucho más grandes que los esperados.
 
 
+% \textcolor{red}{Inestabilidad por el paso de tiempo porque las oscilaciones espúreas son acotadas ¿Por qué no obtengo oscilaciones espúreas? Hay oscilaciones espúreas en el caso de pe>2 si hubiera difusión. PERO NO HAY DIFUSIÓN. Aparecerían si la grilla es grande y la solución es empinada. Usar un $N = 100$.}
 
-\begin{itemize}
-  \item En último lugar, se evaluó la validez de la condición de estabilidad teórica \ref{eq:condicion_estabilidad} para las distintas funciones $c(x)$. Para esto, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} empleando distintos pares de discretizaciones $\{ \Delta x, \Delta t \}$ y se observó si la solución divergía. En base al comportamiento visto en \ref{fig:solucion_a_divergente} se definió una solución como divegente si en algún punto de la evolución la solución superaba un umbral arbritrario, por ejemplo $u(x,t) > 2$.
-  \item En la figura \ref{fig:divergencias} se resumen los ensayos realizados. En todos los casos se identifica una zona de estabilidad y otra de inestabilidad, separadas por una línea aproximadamente recta con pendiente $1/c_{max}$, correspondiente a la igualdad de la condición de estabilidad teórica.
-  \item Visualmente se identifican desviaciones de la estabilidad para los mayores valores de $\Delta x$ y $\Delta t$, aunque esto podría deberse a errores propios en ambos métodos de discretización.
-\end{itemize}
+En tercer lugar, se resolvió el sistema discretizado para funciones de la velocidad no constantes. En particular, se utilizaron $c_c(x) = 1.25 -0.25 \tanh{[40(0.75-x)]}$ y $c_d(x) = 1.5 - \exp{[-300(x-1.75)^2]}$, bajo la discretización $\Delta x \sim 2.6*10^{-3}$ y  $\Delta t \sim 6.3*10^{-4}$, obteniendo las soluciones $u_c(x,t)$ y $u_d(x,t)$, respectivamente. Estas se grafican para distintos instantes de tiempo en la figura \ref{fig:soluciones_b_y_d} junto a las funciones de velocidad. La evolución de $u_c(x,t)$ se resume en que la onda que se mueve hacia la izquierda escapa del borde sin reflejarse, mientras que la onda que se mueve hacia la derecha se divide en una onda reflejada y otra transmitida al encontrarse con el cambio de velocidad. Por otro lado, la solución $u_d(x,t)$ se comporta de manera similar a la anterior, con la diferencia de que la onda que se mueve hacia la derecha se refleja y transmite múltiples veces al encontrarse con el cambio de velocidad.
+
+En último lugar, se evaluó la validez de la condición de estabilidad teórica \ref{eq:condicion_estabilidad} para las distintas funciones $c(x)$. Para esto, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_4} empleando distintos pares de discretizaciones $\{ \Delta x, \Delta t \}$ y se observó si la solución divergía. En base al comportamiento visto en \ref{fig:solucion_a_divergente} se definió una solución como divegente si en algún punto de la evolución la solución superaba un umbral arbritrario, por ejemplo $u(x,t) > 2$, que no corresponde a un valor esperado. En la figura \ref{fig:divergencias} se resumen los ensayos realizados. En todos los casos se identifica una zona de estabilidad y otra de inestabilidad, separadas por una línea aproximadamente recta con pendiente $1/c_{max}$, correspondiente a la igualdad de la condición de estabilidad teórica. Visualmente se identifican desviaciones de la estabilidad para los mayores valores de $\Delta x$ y $\Delta t$, aunque esto podría deberse a errores propios en ambos métodos de discretización. Sin embargo, para valores de discretizaciones pequeños la condición de estabilidad vale para todas las funciones de velocidad empleadas.
 
 
 \onecolumngrid
@@ -414,11 +393,38 @@ En base a lo anterior, se resolvió el sistema discretizado \ref{eq:Runge_Kutta_
 
 \twocolumngrid
 
-% \hfill
+\hfill
+
+\hfill
+
+\newpage
 
 \section{Conclusión}
 
+Se resolvió numéricamente la ecuación de onda escalar, homogénea y unidimensional
+\[
+  \frac{\partial^2 u}{\partial t^2} = c^2(x)\frac{\partial^2 u}{\partial x^2} \,, t \geq 0, \,  0 < x < 4,
+\]
+con condiciones iniciales
+\[
+  \left\{\begin{matrix}
+    u(x,0) = u_0(x) = e^{-200 (x-0.25)^2} \\
+    u_t(x,0) = 0
+   \end{matrix}\right.
+\]
+y condiciones de contorno de onda saliente
+\[
+  \left \{\begin{matrix}
+    \left . \frac{\partial u}{\partial t} \right |_{x=0} = c(0) \left . \frac{\partial u}{\partial x} \right |_{x=0} ,\\
+    \left . \frac{\partial u}{\partial t} \right |_{x=4} = - c(4) \left . \frac{\partial u}{\partial x} \right |_{x=4},
+   \end{matrix}\right .
+\]
+para una variedad de velocidades del sonido $c(x)$ en el medio. Se empleó el método Runge-Kutta 4 para la evolución temporal y diferencias finitas de orden 2 para la espacial. Se analizó la evolución temporal de una condición inicial para distintas funciones de velocidad. Se observó el cumplimiento de la condición de borde saliente al no producirse reflexiones en los bordes. También se observaron fenómenos de reflexión y transmisión frente a un cambio de velocidad en el medio.
 
+
+Además, se estudió la estabilidad de la solución mediante el análisis con número de onda modificado, determinando la siguiente relación entre la velocidad máxima y las discretizaciones espaciales $\Delta x$ y temporales $\Delta t$ necesaria para asegurar estabilidad
+\[\Delta t \leq 1.4 \frac{\Delta x}{c_{max}}.\]
+También se estudió numéricamente esta relación para una variedad de funciones de velocidad, verificando su validez para valores de $\Delta x$ y $\Delta t$ relativamente pequeños.
 
 \bibliography{Chehade_guia3.bib}
 
