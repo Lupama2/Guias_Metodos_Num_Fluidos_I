@@ -194,6 +194,7 @@ presion=zeros(n1,n1); # presion en forma matricial
 #
 #
 for k=1:Ndeltat   # Este es el loop de tiempo!!!
+k
 #
 #
 #---------------------------------------------
@@ -1251,17 +1252,6 @@ masa(k)=masa(k)-uvel(i-1,j)-vvel(i,j-1);
 derivadatuvel(k)=norm(uvel-u0)/dt;
 derivadatvvel(k)=norm(vvel-v0)/dt;
 
-#-------------------------------------------------------
-# Evalúo si se llegó al estado estacionario
-#-------------------------------------------------------
-if condicion_limite_temporal(derivadatuvel(k), derivadatvvel(k))
-  strcat("Se llego al estado estacionario con Ndeltat =  ", num2str(k))
-  break;
-endif
-
-if k == Ndeltat - 1
-  strcat("Se llego al nro maximo de pasos de tiempo Ndeltat =  ", num2str(k))
-endif
 
 #---------- variacion temporal = ver evaluacion temporal de alguna variable
 uvel1(k)=uvel(i1,j1);
@@ -1273,6 +1263,18 @@ tiempo =tiempo +dt;
 #---------------------------------------------
 #--------- imprimo en archivo variables para controlar simulacion
 fprintf(fid, "%e %e %e %e\n", tiempo, masa(k),derivadatuvel(k),derivadatvvel(k));
+
+#-------------------------------------------------------
+# Evalúo si se llegó al estado estacionario
+#-------------------------------------------------------
+if condicion_limite_temporal(derivadatuvel(k), derivadatvvel(k))
+  strcat("Se llego al estado estacionario con Ndeltat =  ", num2str(k))
+  break;
+endif
+
+if k == Ndeltat - 1
+  strcat("Se llego al nro maximo de pasos de tiempo Ndeltat =  ", num2str(k))
+endif
 
 #---------------------------------------------
 #---------------------------------------------

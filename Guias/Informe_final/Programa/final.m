@@ -99,8 +99,8 @@ function comparacion_Ghuia(Re_array, U0_top, n1_array, dt, tol_estacionario, Nde
     b_ucentral = zeros(length(n1_array), length(Re_array));
     b_vcentral = zeros(length(n1_array), length(Re_array));
 
-    for ii = 1:3
-        for jj=1:3
+    for ii = 1:length(n1_array)
+        for jj=1:length(Re_array)
             n1 = n1_array(ii)
             Re = Re_array(jj)
 
@@ -110,7 +110,7 @@ function comparacion_Ghuia(Re_array, U0_top, n1_array, dt, tol_estacionario, Nde
 
             Chehade_NSdc2(Re, @U0_top_cte, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
 
-            #Abro el archivo de velocidad central y extraigo los valores de U en y = 0.5 y de V en x = 0.5
+            #Abro el archivo de velocidad central y extraigo los valores de U en y = 0.5 y de V en 
             data = importdata(archivo_velocidades_centrales);
             posicion_centro = (length(data(:,1))+1)/2;
             % data(posicion_centro,1)
@@ -130,7 +130,7 @@ endfunction
 
 #Inciso b
 
-calcular = true;
+calcular = false;
 
 if calcular == true
     #Parámetros que puedo llegar a modificar
@@ -155,16 +155,16 @@ endif
 #Inciso c
 #Hago lo mismo que el b pero con distinto esquema para el término advectivo.
 #AÚN NO PROGRAMÉ EL QUICK así que ejecuto dos veces con el UP1
-calcular = true;
+calcular = false;
 if calcular == true
     termino_advectivo_array = ["UP1, UP1"];
 
     #Parámetros que puedo llegar a modificar
-    dt = 0.5;
-    Ndeltat=80; #numero de pasos de tiempo
+    dt = 0.001;
+    Ndeltat=2000; #numero de pasos de tiempo
 
-    n1_array = [21,41,81];
-    Re_array = [100,1000,5000];
+    n1_array = [21];#[21,41,81];
+    Re_array = [1000];#[100,1000,5000];
 
     #Parámetros que seguro no modifique
     nsimpler = 1;
@@ -184,6 +184,79 @@ endif
 
 #Inciso d
 #FALTA DEFINIR CUÁL ES EL MEJOR ESQUEMA
-Re_array = [1,1000]
-n1_sol = 80
+calcular = true;
 
+if calcular == true
+
+    #Defino el mejor esquema advectivo
+    termino_advectivo_mejor_esquema = "DC2";
+
+    #Defino parámetros
+    Re_array = [1,1000];
+    n1_array = [10,20,40,60,80];
+    dt = 0.5;
+    Ndeltat=3; #numero máximo de pasos de tiempo
+
+    #Parámetros que seguro no modifique
+    nsimpler = 1;
+    metodo_temporal = "EI";
+    tol_estacionario = 1e-6;
+
+    #Recorro ambos Re y para cada uno de ellos voy calculando los errores
+    for ii = 1:length(Re_array)
+        Re = Re_array(ii)
+
+        #Defino los vectores en los que guardaré los errores
+        error_uparticular = zeros(1,length(n1_array));
+        error_vparticular = zeros(1,length(n1_array));
+
+        #Defino los valores solución
+        n1_sol = 80-2;
+        % Los valores particulares u(0.5, 0.2) y v(0.5,0.2) los voy a guardar en las variables
+        % c_usol_particular
+        % c_vsol_particular
+
+        #Defino los nombres de los archivos
+        archivo_velocidades_centrales = "graficos/datos/velocentral_basura.txt";
+        archivo_evolucion_variables = "graficos/datos/evolucion_basura.txt";
+        archivo_parametros = "graficos/datos/parametros_basura.txt";
+
+        #Hago la cuenta
+        Chehade_NSdc2(Re, @U0_top_cte, n1_sol, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo_mejor_esquema, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
+
+        #Extraigo el valor de u(0.5, 0.2) y v(0.5,0.2) de la solución
+
+        #Abro el archivo de velocidad central
+        data = importdata(archivo_velocidades_centrales)
+        posicion_0_2 = (length(data(:,1))+2)/5
+        data(posicion_0_2,1)
+        c_usol_particular = data(posicion_0_2, 2);
+        c_vsol_particular = data(posicion_0_2, 3);
+        pause(100)
+        #Recorro los distintos n1
+        for jj=1:length(n1_array)
+            n1 = n1_array(jj)
+            #Hago la cuenta
+            Chehade_NSdc2(Re, @U0_top_cte, n1, dt, tol_estacionario, Ndeltat, nsimpler, "DC2", metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
+
+            #Extraigo el valor de u(0.5, 0.2) y v(0.5,0.2) de la aproximación
+            data = importdata(archivo_velocidades_centrales)
+            c_uaprox_particular = data(posicion_0_2, 2);
+            c_uaprox_particular = data(posicion_0_2, 3);
+
+            #Calculo el error
+            error_uparticular(jj) = abs(c_usol_particular - c_uaprox_particular);
+            error_vparticular(jj) = abs(c_vsol_particular - c_vaprox_particular);
+        endfor
+
+        #Guardo los errores
+        archivo_error_uparticular = strcat("graficos/datos/d_error_uparticular_Re",num2str(Re),".csv");
+        archivo_error_vparticular = strcat("graficos/datos/d_error_vparticular_Re",num2str(Re),".csv");
+        csvwrite(archivo_error_uparticular, error_uparticular);
+        csvwrite(archivo_error_vparticular, error_vparticular);
+    
+    endfor
+        
+endif
+
+#Inciso e
