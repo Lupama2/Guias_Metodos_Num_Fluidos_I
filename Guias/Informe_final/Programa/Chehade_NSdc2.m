@@ -11,7 +11,7 @@
 #---------------------------------------------
 % clear
 
-function Chehade_NSdc2(Re,n1, dt, nsimpler,termino_advectivo, U0_top, metodo_temporal)
+function Chehade_NSdc2(Re, U0_top, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
 #Re: numero de Re basado en Utop L / nu
 #n1: Numero de volumenes por direccion.
 #dt: delta tiempo adimensional t*U/L
@@ -19,6 +19,11 @@ function Chehade_NSdc2(Re,n1, dt, nsimpler,termino_advectivo, U0_top, metodo_tem
 #termino_advectivo: esquema para el termino advectivo. Posibilidades: "UP1", "DC2" o "QUI" haciendo referencia a "QUICK".
 #U0_top: función velocidad U0(x) en el borde superior 
 #metodo_temporal : "EI" (Euler Implícito) o "CN" (Crank-Nicolson). Técnicamente si no se usa "CN" se está usando "EI". En ningún lado metí un if con "EI". 
+#tol_estacionario. Condición de estado estacionario (agregar una función que elija Ndeltat de modo de correr el código hasta que se llegue a una determinada condición)
+#N_deltat. Nro máximo de pasos de tiempo. Condición adicional por las dudas. Estaría bueno imprimir en la terminal qué condición se cumplió para terminar la simulación
+#archivo_evolucion_variables. Nombre del archivo donde se guarda la evolución de las variables.
+#archivo_velocidades_centrales. Nombre del archivo donde se guarda la evolución de las velocidades en los puntos centrales.
+#archivo_parametros. Nombre del archivo donde se guardan algunos parámetros
 
 #---------------------------------------------
 #Datos del problema
@@ -47,7 +52,21 @@ Utop4 = 0.0; #velocidad left normalizada = 1
 
 % n1 = 20; #Numero de volumenes por direccion. DEFINIDO COMO INPUT.
 % dt=0.5; #delta tiempo adimensional t*U/L. DEFINIDO COMO INPUT
-Ndeltat=80; #numero de pasos de tiempo
+% Ndeltat=80; #numero de pasos de tiempo
+
+#---------------------------------------------
+#Condición límite para detener la evolución temporal
+#---------------------------------------------
+function criterio = condicion_limite_temporal(derivadatuvel_k, derivadatvvel_k)
+  % Evalúa si se llegó o no al estado estacionario empleando como criterio que las derivadas de las velocidades en el tiempo sean menores a una tolerancia
+  % derivadatuvel(k)=norm(uvel-u0)/dt;
+  % derivadatvvel(k)=norm(vvel-v0)/dt;
+  if derivadatuvel_k < tol_estacionario && derivadatvvel_k < tol_estacionario
+    criterio = true;
+  else
+    criterio = false;
+  endif
+endfunction
 
 #---------------------------------------------
 #Auxiliares
@@ -72,7 +91,7 @@ j1=2;
 
 #---------------------------------------------
 #--------- abro archivo de evolucion de variables
-fid = fopen("evolucion.txt", "w")
+fid = fopen(archivo_evolucion_variables, "w");
 
 #---------------------------------------------
 #Reservar Vectores para solucion y definimos condicion inicial = todo quieto
@@ -1232,6 +1251,18 @@ masa(k)=masa(k)-uvel(i-1,j)-vvel(i,j-1);
 derivadatuvel(k)=norm(uvel-u0)/dt;
 derivadatvvel(k)=norm(vvel-v0)/dt;
 
+#-------------------------------------------------------
+# Evalúo si se llegó al estado estacionario
+#-------------------------------------------------------
+if condicion_limite_temporal(derivadatuvel(k), derivadatvvel(k))
+  strcat("Se llego al estado estacionario con Ndeltat =  ", num2str(k))
+  break;
+endif
+
+if k == Ndeltat - 1
+  strcat("Se llego al nro maximo de pasos de tiempo Ndeltat =  ", num2str(k))
+endif
+
 #---------- variacion temporal = ver evaluacion temporal de alguna variable
 uvel1(k)=uvel(i1,j1);
 vvel1(k)=vvel(i1,j1);
@@ -1241,7 +1272,7 @@ tiempo =tiempo +dt;
 
 #---------------------------------------------
 #--------- imprimo en archivo variables para controlar simulacion
-fprintf(fid, "%e %e %e %e\n", tiempo, masa(k),derivadatuvel(k),derivadatvvel(k))
+fprintf(fid, "%e %e %e %e\n", tiempo, masa(k),derivadatuvel(k),derivadatvvel(k));
 
 #---------------------------------------------
 #---------------------------------------------
@@ -1256,15 +1287,26 @@ endfor
 #---------------------------------------------
 
 t2=time();
-"Tiempo de Calculo en segundos para"
-Ndeltat
-"iteraciones"
-t2-t1
+"Tiempo de Calculo en segundos para";
+Ndeltat;
+"iteraciones";
+t2-t1;
 
 #---------------------------------------------
 #--------- cierro archivo
-fclose(fid)
+fclose(fid);
 
+
+#---------------------------------------------
+#
+# Archivo de parámetros
+#
+#---------------------------------------------
+#abro archivo
+fid = fopen(archivo_parametros, "w");
+fprintf(fid,"%e %e %e\n", n1, Ndeltat, t2-t1);
+#cierro archivo
+fclose(fid);
 #---------------------------------------------
 #
 #              REALIZACION DE GRAFICOS
@@ -1274,13 +1316,13 @@ fclose(fid)
 #---------------------------------------------
 #--------- abro archivo para imprimir velocidades en el centro - Nota: por conservacion masa la integral de cada una de estas debe ser = 0
 #---------  Ideal si
-fid = fopen("velocentral.txt", "w")
+fid = fopen(archivo_velocidades_centrales, "w");
 xtot=dx/2;
 for i=1:n1
   fprintf(fid, "%e %e %e\n", xtot, (uvel(int8(n1/2),i)+uvel(int8((n1-1)/2),i))/2,(vvel(i,int8(n1/2))+vvel(i,int8((n1-1)/2)))/2);
   xtot=xtot+dx;
 endfor
-fclose(fid)
+fclose(fid);
 
 #---------- verificacion simulacion
 % plot(masa); pause(3);
