@@ -11,13 +11,14 @@
 #---------------------------------------------
 % clear
 
-function Chehade_NSdc2(Re,n1, dt, nsimpler,termino_advectivo, U0_top)
+function Chehade_NSdc2(Re,n1, dt, nsimpler,termino_advectivo, U0_top, metodo_temporal)
 #Re: numero de Re basado en Utop L / nu
 #n1: Numero de volumenes por direccion.
 #dt: delta tiempo adimensional t*U/L
 #nsimpler: nro de iteraciones internas en SIMPLER
 #termino_advectivo: esquema para el termino advectivo. Posibilidades: "UP1", "DC2" o "QUI" haciendo referencia a "QUICK".
 #U0_top: función velocidad U0(x) en el borde superior 
+#metodo_temporal : "EI" (Euler Implícito) o "CN" (Crank-Nicolson). Técnicamente si no se usa "CN" se está usando "EI". En ningún lado metí un if con "EI". 
 
 #---------------------------------------------
 #Datos del problema
@@ -106,6 +107,7 @@ usources = zeros(n1-1,n1); # fuente en la cara sur
 MMx = zeros(n2-n1,n2-n1); # matriz momento x
 bux = zeros(n2-n1,1); # lado derecho MMx * u = bux
 
+
 # ------------------------------------------
 # Variables para la ecuacion de momento en y
 # ------------------------------------------
@@ -134,6 +136,22 @@ vsources = zeros(n1,n1); # fuente en la cara sur
 # Matriz momento en x 
 MMy = zeros(n2-n1,n2-n1); # matriz momento y
 buy = zeros(n2-n1,1); # lado derecho MMy * v = buy
+
+# ------------------------------------------
+#Inicializo las matrices nulas b_CNu y b_CNv para aplicar el método de Crank-Nicolson en función de la recomendación de la cátedra en el pdf del TP_final. También divido por la mitad el paso temporal en caso de ser CN
+# ------------------------------------------
+if metodo_temporal == "CN"
+  b_CNu_matriz = zeros(n1-1,n1); #matriz actual (n1,n1)
+  b_CNu_vector =zeros(n2-n1,1); # misma matriz en forma vectorial (n2)
+  b_CNu0_matriz = zeros(n1-1,n1); #matriz del paso anterior (n1,n1)
+  b_CNv_matriz = zeros(n1,n1-1); # matriz actual (n1,n1)
+  b_CNv_vector =zeros(n2-n1,1); # misma matriz en forma vectorial (n2)
+  b_CNv0_matriz = zeros(n1,n1-1); # matriz del paso anterior (n1,n1)
+
+  dt = dt/2;
+endif
+
+
 
 # ------------------------------------------
 # Variables para la presion
@@ -616,6 +634,11 @@ for i=1:n1-1
   su(i,j)=0; # Definido como cero
   au(i,j)=dx2/dt+2*re1-eu(i,j)-wu(i,j)-nu(i,j)-su(i,j); # Tension de corte en la pared con primer orden
   bu(i,j)=2*Utop3*re1+dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)-usources(i,j+1);
+  #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
+  if metodo_temporal == "CN"
+    bu(i,j) = bu(i,j) + b_CNu_matriz(i,j);
+  endif
+
   for j=2:n1-1
     eu(i,j)=dx*uwest(i+1,j)*(1-ufw(i+1,j))-re1;
     wu(i,j)=-dx*uwest(i,j)*ufw(i,j)-re1;
@@ -623,7 +646,12 @@ for i=1:n1-1
     su(i,j)=-dx*usouth(i,j)*ufs(i,j)-re1;
     au(i,j)=dx2/dt-eu(i,j)-wu(i,j)-nu(i,j)-su(i,j);
     bu(i,j)=dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)+usources(i,j)-usources(i,j+1);
+    #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
+    if metodo_temporal == "CN"
+      bu(i,j) = bu(i,j) + b_CNu_matriz(i,j);
+    endif
   endfor
+
   j=n1;
   eu(i,j)=dx*uwest(i+1,j)*(1-ufw(i+1,j))-re1;
   wu(i,j)=-dx*uwest(i,j)*ufw(i,j)-re1;
@@ -631,6 +659,11 @@ for i=1:n1-1
   su(i,j)=-dx*usouth(i,j)*ufs(i,j)-re1;
   au(i,j)=dx2/dt+2*re1-eu(i,j)-wu(i,j)-nu(i,j)-su(i,j); # Tension de corte en la pared con primer orden
   bu(i,j)=2*Utop1(i,j)*re1+dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)+usources(i,j);
+  #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
+  if metodo_temporal == "CN"
+    bu(i,j) = bu(i,j) + b_CNu_matriz(i,j);
+  endif
+
 endfor
 
 #---------------------------------------------
@@ -645,7 +678,13 @@ for j=1:n1-1
   sv(i,j)=-dx*vsouth(i,j)*vfs(i,j)-re1;
   av(i,j)=dx2/dt+2*re1-ev(i,j)-wv(i,j)-nv(i,j)-sv(i,j); # Tension de corte en la pared con primer orden
   bv(i,j)=2*Utop4*re1+dx2/dt*v0(i,j)-vsourcew(i+1,j)+vsources(i,j)-vsources(i,j+1);
+  #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
+  if metodo_temporal == "CN"
+    bv(i,j) = bv(i,j) + b_CNv_matriz(i,j);
+  endif
+
 endfor
+
 for i=2:n1-1
   for j=1:n1-1
     ev(i,j)=dx*vwest(i+1,j)*(1-vfw(i+1,j))-re1;
@@ -654,6 +693,11 @@ for i=2:n1-1
     sv(i,j)=-dx*vsouth(i,j)*vfs(i,j)-re1;
     av(i,j)=dx2/dt-ev(i,j)-wv(i,j)-nv(i,j)-sv(i,j);
     bv(i,j)=dx2/dt*v0(i,j)+vsourcew(i,j)-vsourcew(i+1,j)+vsources(i,j)-vsources(i,j+1);
+    #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
+    if metodo_temporal == "CN"
+      bv(i,j) = bv(i,j) + b_CNv_matriz(i,j);
+    endif
+
   endfor
 endfor
 i=n1;
@@ -664,6 +708,11 @@ for j=1:n1-1
   sv(i,j)=-dx*vsouth(i,j)*vfs(i,j)-re1;
   av(i,j)=dx2/dt+2*re1-ev(i,j)-wv(i,j)-nv(i,j)-sv(i,j); # Tension de corte en la pared con primer orden
   bv(i,j)=2*Utop2*re1+dx2/dt*v0(i,j)+vsourcew(i,j)+vsources(i,j)-vsources(i,j+1);
+  #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
+  if metodo_temporal == "CN"
+    bv(i,j) = bv(i,j) + b_CNv_matriz(i,j);
+  endif
+
 endfor
 
 #---------------------------------------------
@@ -1122,6 +1171,24 @@ endfor       #termina iteracion simpler, indice lsimpler
 #
 # -------------------------------------------------------------------
 
+
+# -------------------------------------------------------------------
+#
+#
+#Al final del loop, actualizo la matriz b_CN siempre y cuando quiera aplicar CN y no EI. Para EI tengo que dejarla nula
+#Asumo que los objetos con la info. de interés son uvel, u0, vvel y v0
+#
+# -------------------------------------------------------------------
+if metodo_temporal == "CN"
+  % b_CNu_matriz = zeros(n1-1,n1); #matriz actual (n1,n1)
+  % b_CNu_vector =zeros(n2-n1,1); # misma matriz en forma vectorial (n2)
+  % b_CNu0_matriz = zeros(n1-1,n1); #matriz del paso anterior (n1,n1)
+  % b_CNv_matriz = zeros(n1,n1-1); # matriz actual (n1,n1)
+  % b_CNv_vector =zeros(n2-n1,1); # misma matriz en forma vectorial (n2)
+  % b_CNv0_matriz = zeros(n1,n1-1); # matriz del paso anterior (n1,n1)
+  b_CNu_matriz =  - b_CNu0_matriz + (uvel - u0)/dt;
+  b_CNv_matriz =  - b_CNv0_matriz + (vvel - v0)/dt;
+endif
 
 # -------------------------------------------------------------------
 #
