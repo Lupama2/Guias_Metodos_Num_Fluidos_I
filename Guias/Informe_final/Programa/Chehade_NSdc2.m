@@ -61,6 +61,7 @@ function criterio = condicion_limite_temporal(derivadatuvel_k, derivadatvvel_k)
   % Evalúa si se llegó o no al estado estacionario empleando como criterio que las derivadas de las velocidades en el tiempo sean menores a una tolerancia
   % derivadatuvel(k)=norm(uvel-u0)/dt;
   % derivadatvvel(k)=norm(vvel-v0)/dt;
+  derivadatuvel_k/tol_estacionario
   if derivadatuvel_k < tol_estacionario && derivadatvvel_k < tol_estacionario
     criterio = true;
   else
@@ -194,7 +195,7 @@ presion=zeros(n1,n1); # presion en forma matricial
 #
 #
 for k=1:Ndeltat   # Este es el loop de tiempo!!!
-
+k
 #
 #
 #---------------------------------------------

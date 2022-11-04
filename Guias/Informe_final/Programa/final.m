@@ -144,7 +144,7 @@ calcular = false;
 
 if calcular == true
     #Parámetros que puedo llegar a modificar
-    dt = 0.05;
+    dt = 0.2;
     Ndeltat=80000; #numero de pasos de tiempo
 
     n1_array = [21,41,81];
@@ -161,19 +161,34 @@ if calcular == true
     comparacion_Ghuia(Re_array, @U0_top_cte, n1_array, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_ucentral, archivo_vcentral)
 endif
 
+% Test en inciso b para determinar dt: el objetivo es calcular dt tal que el programa converja para Re alto y n1 alto. Si esto ocurre, creo que va a converger para cualquier otro Re y n1.
+% * Para dt = 0.5 llegó a 1.7185e5 en k = 71
+% * Para dt = 1 llegó a 2.3871e4 en k = 71
+% * Para dt = 2 llegó a 8169 en k = 71
+% * Para dt = 4 llegó a 2.1021e+24 en k = 71 (DIVERGE)
+% Resulta que el caso anterior diverge para n1 = 81 y Re = 100.
+% A partir de ahora trabajo este último caso en particular
+% * Para dt = 1 diverge
+% * Para dt = 0.2 llega a 1.7650e+05 en k = 35. Al parecer converge
+% Testeo que todos los casos con n1 alto converjan:
+% * n1 = 81, Re = 1000 llega a 6.1018e+05 en k = 72
+% * n1 = 81, Re = 5000 llega a 2.4054e+06 en k = 14
+% Al parecer converge en todos los casos para esas condiciones.
+
+
 #Inciso c
 #Hago lo mismo que el b pero con distinto esquema para el término advectivo.
 #AÚN NO PROGRAMÉ EL QUICK así que ejecuto dos veces con el UP1
 calcular = false;
 if calcular == true
-    termino_advectivo_array = ["UP1, UP1"];
+    termino_advectivo_array = ["UP1"];# ["UP1, UP1"];
 
     #Parámetros que puedo llegar a modificar
     dt = 0.001;
-    Ndeltat=2000; #numero de pasos de tiempo
+    Ndeltat=100#80000; #numero de pasos de tiempo
 
-    n1_array = [21];#[21,41,81];
-    Re_array = [1000];#[100,1000,5000];
+    n1_array = [81];#[21,41,81];
+    Re_array = [1000,5000];#[100,1000,5000];
 
     #Parámetros que seguro no modifique
     nsimpler = 1;
@@ -193,7 +208,7 @@ endif
 
 #Inciso d
 #FALTA DEFINIR CUÁL ES EL MEJOR ESQUEMA y VER CÓMO CLAVAR UN VALOR EN T = 0.2 PARA NO TENER QUE HACER INTERPOLACIÓN
-calcular = true;
+calcular = false;
 
 if calcular == true
 
@@ -204,7 +219,7 @@ if calcular == true
     Re_array = [1,1000];
     n1_array = [10,20,40,60,80];
     dt = 0.5;
-    Ndeltat=3; #numero máximo de pasos de tiempo
+    Ndeltat=1; #numero máximo de pasos de tiempo
 
     #Parámetros que seguro no modifique
     nsimpler = 1;
@@ -220,7 +235,7 @@ if calcular == true
         error_vparticular = zeros(1,length(n1_array));
 
         #Defino los valores solución
-        n1_sol = 80-2;
+        n1_sol = 10-1;
         % Los valores particulares u(0.5, 0.2) y v(0.5,0.2) los voy a guardar en las variables
         % c_usol_particular
         % c_vsol_particular
@@ -269,3 +284,76 @@ if calcular == true
 endif
 
 #Inciso e
+
+
+
+function ucentral = u_central_estacionario(Re, n1, dt, termino_advectivo, Ndeltat)
+    #Esta función evoluciona el sistema hasta el estado estacionario y devuelve el valor de u en el centro en el estado estacionario
+    nsimpler = 1;
+    metodo_temporal = "EI";
+    tol_estacionario = 1e-6;
+    archivo_velocidades_centrales = "graficos/datos/velocentral_basura.txt";
+    archivo_evolucion_variables = "graficos/datos/evolucion_basura.txt";
+    archivo_parametros = "graficos/datos/parametros_basura.txt";
+
+    Chehade_NSdc2(Re, @U0_top_cte, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
+
+
+    #Abro el archivo de velocidad central y extraigo los valores de U en y = 0.5 y de V en 
+    data = importdata(archivo_velocidades_centrales);
+    posicion_centro = (length(data(:,1))+1)/2;
+    ucentral = data(posicion_centro, 2);
+
+endfunction 
+
+
+
+#Ndeltat ya está minimizado porque cuando se cumple la tolerancia la ejecución se corta
+#Entonces solo tenemos que buscar n1...
+
+function n1 = n1_minimo(n1_guess, e_tol, u_central_guia, Re, dt, termino_advectivo, Ndeltat)
+
+    % Planteo un n1_guess. Sí o sí tengo que empezar de un valor para el que la solución ya converja.
+
+    % Me fijo si bajo esa condición se logra un error menor a la tolerancia
+    ucentral = u_central_estacionario(Re, n1_guess, dt, termino_advectivo, Ndeltat)
+    error_e = abs((ucentral - u_central_guia)/u_central_guia)
+    if (error_e  < e_tol)
+        "Disminuyo n1_guess"
+        n1_guess = n1_guess - 2
+        n1 = n1_minimo(n1_guess, e_tol, u_central_guia, Re, dt, termino_advectivo, Ndeltat);
+    else
+        % Caso negativo: aumento en 2 n1_guess y ya tengo el n1
+        n1 = n1_guess + 2
+    endif
+
+
+endfunction
+
+
+Ndeltat=8000; #numero de pasos de tiempo MÁXIMOS
+e_tol = 0.05; #tolerancia en el inciso e
+
+Re_array = [100,1000];
+% dt = 0.1; #Con este valor converge para DC2 y Re = 100
+dt = 0.001; #Con este valor converge para DC2 y Re = 1000
+
+
+u_central_guia_array = [-0.20581,-0.06080];
+termino_advectivo_array = ["DC2", "UP1"];
+
+n1_guess = 41
+
+j = 1; #termino_advectivo
+i = 2; #Re
+
+Re = Re_array(i);
+u_central_guia = u_central_guia_array(i);
+termino_advectivo = termino_advectivo_array(j);
+n1 = n1_minimo(n1_guess, e_tol, u_central_guia, Re, dt, termino_advectivo, Ndeltat)
+strcat("El valor mínimo de n1 para Re = ", num2str(Re), " y termino advectivo ", termino_advectivo, " es ", num2str(n1))
+
+
+#Inciso f: análogo al anterior pero variando dt y lsimpler
+
+#Inciso g: cambiar condición de contorno
