@@ -85,7 +85,8 @@
 % *Están bien los resultados que encontré?
 % *Puedo usar números impares para n1 de modo de no tener que interpolar el valor en 0.5?
 % *En el inciso c me diverge usando UP1, puede ser que lo haya implementado mal? O será el valor de Deltat?
-
+% Está bien el algoritmo que apliqué en el inciso e?
+% Tengo que ir cambiando dt?
 
 #En algún momento tengo que sumar su efecto en la ecuación diferencial.
 
@@ -205,6 +206,16 @@ if calcular == true
 
     endfor
 endif
+
+% Hago lo mismo para UP1 y QUICK.
+
+% Test en inciso c UP1 para determinar dt: el objetivo es calcular dt tal que el programa converja para Re alto y n1 alto. Si esto ocurre, creo que va a converger para cualquier otro Re y n1.
+% * Para dt = 0.1, n1 = 81, Re = 100 converge pero Re = 1000 no
+% * Para dt = 0.05 ocurre lo mismo
+% * Para dt = 0.01 ocurre lo mismo (inicialmente parece converger pero luego diverge)
+% * Para dt = 0.01 ocurre lo mismo (inicialmente parece converger pero luego diverge)
+% * Para dt = 0.001 converge al parecer. Aunque para correr esto debería dejar la compu toda la noche creo.
+
 
 #Inciso d
 #FALTA DEFINIR CUÁL ES EL MEJOR ESQUEMA y VER CÓMO CLAVAR UN VALOR EN T = 0.2 PARA NO TENER QUE HACER INTERPOLACIÓN
