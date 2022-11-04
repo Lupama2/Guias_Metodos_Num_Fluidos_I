@@ -79,6 +79,15 @@
 % Pero no siempre aparece el mismo valor. El código no es determinista?
 % 6. Euler implícito solo se usa en la integral 1, no?
 % 7. No entiendo cómo aplicar CN a partir de EI. Por qué tengo que usar la mitad del paso de tiempo?
+% * La cuenta para CN la puse cuando terminó la iteración simples, está bien?
+% *La matriz b de CN solo afecta a las matrices bu y bv en el PASO 1 SIMPLER, no?
+% *El valor de ans (14.796 o 42.115) da distinto si conecto o no la notebook a lacorriente. Es el tiempo que le toma al programa hacer la cuenta
+% *Están bien los resultados que encontré?
+% *Puedo usar números impares para n1 de modo de no tener que interpolar el valor en 0.5?
+% *En el inciso c me diverge usando UP1, puede ser que lo haya implementado mal? O será el valor de Deltat?
+
+
+#En algún momento tengo que sumar su efecto en la ecuación diferencial.
 
 1; #Esto está puesto para que octave no interprete que este es un archivo de funciones
 
@@ -130,12 +139,13 @@ endfunction
 
 #Inciso b
 
+#MANTENER EN FALSE, YA HICE UNA CORRIDA LARGA QUE TARDÓ HORAS
 calcular = false;
 
 if calcular == true
     #Parámetros que puedo llegar a modificar
-    dt = 0.5;
-    Ndeltat=800; #numero de pasos de tiempo
+    dt = 0.05;
+    Ndeltat=80000; #numero de pasos de tiempo
 
     n1_array = [21,41,81];
     Re_array = [100,1000,5000];
@@ -147,7 +157,6 @@ if calcular == true
     termino_advectivo = "DC2";
     metodo_temporal = "EI";
     tol_estacionario = 1e-6;
-
 
     comparacion_Ghuia(Re_array, @U0_top_cte, n1_array, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_ucentral, archivo_vcentral)
 endif
@@ -183,7 +192,7 @@ if calcular == true
 endif
 
 #Inciso d
-#FALTA DEFINIR CUÁL ES EL MEJOR ESQUEMA
+#FALTA DEFINIR CUÁL ES EL MEJOR ESQUEMA y VER CÓMO CLAVAR UN VALOR EN T = 0.2 PARA NO TENER QUE HACER INTERPOLACIÓN
 calcular = true;
 
 if calcular == true

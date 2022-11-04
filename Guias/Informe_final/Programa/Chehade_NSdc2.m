@@ -194,7 +194,7 @@ presion=zeros(n1,n1); # presion en forma matricial
 #
 #
 for k=1:Ndeltat   # Este es el loop de tiempo!!!
-k
+
 #
 #
 #---------------------------------------------
