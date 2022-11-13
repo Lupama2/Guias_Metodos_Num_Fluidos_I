@@ -17,7 +17,7 @@ function Chehade_NSdc2(Re, U0_top, n1, dt, tol_estacionario, Ndeltat, nsimpler, 
 #dt: delta tiempo adimensional t*U/L
 #nsimpler: nro de iteraciones internas en SIMPLER
 #termino_advectivo: esquema para el termino advectivo. Posibilidades: "UP1", "DC2" o "QUI" haciendo referencia a "QUICK".
-#U0_top: función velocidad U0(x) en el borde superior 
+#U0_top: función velocidad U0(t) en el borde superior 
 #metodo_temporal : "EI" (Euler Implícito) o "CN" (Crank-Nicolson). Técnicamente si no se usa "CN" se está usando "EI". En ningún lado metí un if con "EI". 
 #tol_estacionario. Condición de estado estacionario (agregar una función que elija Ndeltat de modo de correr el código hasta que se llegue a una determinada condición)
 #N_deltat. Nro máximo de pasos de tiempo. Condición adicional por las dudas. Estaría bueno imprimir en la terminal qué condición se cumplió para terminar la simulación
@@ -32,13 +32,12 @@ function Chehade_NSdc2(Re, U0_top, n1, dt, tol_estacionario, Ndeltat, nsimpler, 
 % Re = 100.0; #X numero de Re basado en Utop L / nu. DEFINIDO COMO INPUT
 L = 1.0; #Dimension de la cabidad cuadrada adimensionalisada
 
-function Utop1 = Utop1(i,j)
+function Utop1 = Utop1(k)
   #velocidad top normalizada = 1
-  #i: me muevo horizontalmente
-  #j: me muevo verticalmente (su valor no importa)
-  dx = L / n1;
-  x = i*dx;
-  Utop1= U0_top(x);
+  #k: índice de la iteración
+  #Ndeltat: número de pasos de tiempo
+  t = k*dt;
+  Utop1= U0_top(t);
 endfunction
 
 % Utop1 = 1.0;
@@ -196,6 +195,9 @@ presion=zeros(n1,n1); # presion en forma matricial
 #
 for k=1:Ndeltat   # Este es el loop de tiempo!!!
 k #Para imprimir
+n1;
+Re;
+dt;
 #
 #
 #---------------------------------------------
@@ -714,7 +716,7 @@ for i=1:n1-1
   nu(i,j)=0; # Definido como cero
   su(i,j)=-dx*usouth(i,j)*ufs(i,j)-re1;
   au(i,j)=dx2/dt+2*re1-eu(i,j)-wu(i,j)-nu(i,j)-su(i,j); # Tension de corte en la pared con primer orden
-  bu(i,j)=2*Utop1(i,j)*re1+dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)+usources(i,j);
+  bu(i,j)=2*Utop1(k)*re1+dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)+usources(i,j);
   #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
   if metodo_temporal == "CN"
     bu(i,j) = bu(i,j) + b_CNu_matriz(i,j);
@@ -1242,8 +1244,9 @@ if metodo_temporal == "CN"
   % b_CNv_matriz = zeros(n1,n1-1); # matriz actual (n1,n1)
   % b_CNv_vector =zeros(n2-n1,1); # misma matriz en forma vectorial (n2)
   % b_CNv0_matriz = zeros(n1,n1-1); # matriz del paso anterior (n1,n1)
-  b_CNu_matriz =  - b_CNu0_matriz + (uvel - u0)/dt;
-  b_CNv_matriz =  - b_CNv0_matriz + (vvel - v0)/dt;
+  b_CNu_matriz =  - b_CNu0_matriz + (uvel - u0)/dt*dx2;
+  b_CNv_matriz =  - b_CNv0_matriz + (vvel - v0)/dt*dx2;
+  #2*Utop2*re1 + dx2/dt*v0(i,j) +vsourcew(i,j)+vsources(i,j)-vsources(i,j+1);
 endif
 
 # -------------------------------------------------------------------
