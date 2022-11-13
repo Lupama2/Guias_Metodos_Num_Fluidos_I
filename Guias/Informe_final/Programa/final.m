@@ -79,8 +79,20 @@ endfunction
 % Verifico si el resultado depende de deltat para el caso particular Re=1000, n1 = 21. Para distintos valores de deltat, calculo u_central y v_central y los guardo en un archivo. Consideraciones
 % * Uso Ndeltat lo suficientemente grande como para que converja con cualquier dt
 
-calcular = false;
-tol_estacionario = 1e-5;
+
+
+
+
+
+
+Dejé corriendo el inciso b
+No logro hacer que converga con UP1
+Hice corridas cortas de a y b para ver que haya convergencia para todos los casos
+
+
+
+calcular = true;
+tol_estacionario = 1e-3;
 
 
 if calcular == true
@@ -495,13 +507,13 @@ endfunction
 
 #Testeo:
 
-Ndeltat=8000;
+% Ndeltat=8000;
 
-Re_array = 1000;
+% Re_array = 1000;
 
-dt = 0.001; #Con este valor converge para DC2 y Re = 1000
+% dt = 0.001; #Con este valor converge para DC2 y Re = 1000
 
-u_central_estacionario(Re, n1, dt, termino_advectivo, Ndeltat)
+% u_central_estacionario(Re, n1, dt, termino_advectivo, Ndeltat)
 
 
 % function n1 = n1_minimo(n1_guess, e_tol, u_central_guia, Re, dt, termino_advectivo, Ndeltat)
@@ -524,27 +536,27 @@ u_central_estacionario(Re, n1, dt, termino_advectivo, Ndeltat)
 % endfunction
 
 
-Ndeltat=8000; #numero de pasos de tiempo MÁXIMOS
-e_tol = 0.05; #tolerancia en el inciso e
+% Ndeltat=8000; #numero de pasos de tiempo MÁXIMOS
+% e_tol = 0.05; #tolerancia en el inciso e
 
-Re_array = [100,1000];
-% dt = 0.1; #Con este valor converge para DC2 y Re = 100
-dt = 0.001; #Con este valor converge para DC2 y Re = 1000
+% Re_array = [100,1000];
+% % dt = 0.1; #Con este valor converge para DC2 y Re = 100
+% dt = 0.001; #Con este valor converge para DC2 y Re = 1000
 
 
-u_central_guia_array = [-0.20581,-0.06080];
-termino_advectivo_array = ["DC2", "UP1"];
+% u_central_guia_array = [-0.20581,-0.06080];
+% termino_advectivo_array = ["DC2", "UP1"];
 
-n1_guess = 41
+% n1_guess = 41
 
-j = 1; #termino_advectivo
-i = 2; #Re
+% j = 1; #termino_advectivo
+% i = 2; #Re
 
-Re = Re_array(i);
-u_central_guia = u_central_guia_array(i);
-termino_advectivo = termino_advectivo_array(j);
-n1 = n1_minimo(n1_guess, e_tol, u_central_guia, Re, dt, termino_advectivo, Ndeltat)
-strcat("El valor mínimo de n1 para Re = ", num2str(Re), " y termino advectivo ", termino_advectivo, " es ", num2str(n1))
+% Re = Re_array(i);
+% u_central_guia = u_central_guia_array(i);
+% termino_advectivo = termino_advectivo_array(j);
+% n1 = n1_minimo(n1_guess, e_tol, u_central_guia, Re, dt, termino_advectivo, Ndeltat)
+% strcat("El valor mínimo de n1 para Re = ", num2str(Re), " y termino advectivo ", termino_advectivo, " es ", num2str(n1))
 
 
 #Inciso f: análogo al anterior pero variando dt y lsimpler
