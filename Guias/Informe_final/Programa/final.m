@@ -9,13 +9,13 @@
 % n1 = 20;
 % dt = 0.5;
 % nsimpler = 1;
-% termino_advectivo = "DC2";
+% termino_advectivo = "D";
 % metodo_temporal = "EI";
 % tol_estacionario = 1e-6;
 % Ndeltat=80; #numero de pasos de tiempo
-% archivo_velocidades_centrales = "graficos/datos/velocentral.txt";
-% archivo_evolucion_variables = "graficos/datos/evolucion.txt";
-% archivo_parametros = "graficos/datos/parametros.txt";
+% archivo_velocidades_centrales = "graficos/datos/velocentral.csv";
+% archivo_evolucion_variables = "graficos/datos/evolucion.csv";
+% archivo_parametros = "graficos/datos/parametros.csv";
 
 % function U0_top = U0_top(x)
 %     U0_top = 1.0;
@@ -87,8 +87,7 @@ if calcular == true
     Re = 1000
     n1 = 21
 
-    dt_array = [0.01,0.02,0.05,0.1,0.2,0.5,1,2, 5, 10, 20];
-
+    dt_array = [0.005, 0.01,0.02,0.05,0.1,0.2,0.5,1,2, 5, 10, 20];
     for ii=1:length(dt_array)
         dt = dt_array(ii)
 
@@ -96,12 +95,12 @@ if calcular == true
 
         
         nsimpler = 1;
-        termino_advectivo = "DC2"
-        metodo_temporal = "EI";
+        termino_advectivo = "D"
+        metodo_temporal = "E";
 
-        archivo_velocidades_centrales = "graficos/datos/velocentral_basura_a.txt";
-        archivo_evolucion_variables = "graficos/datos/evolucion_basura_a.txt";
-        archivo_parametros = "graficos/datos/parametros_basura_a.txt";
+        archivo_velocidades_centrales = "graficos/datos/velocentral_basura_a.csv";
+        archivo_evolucion_variables = "graficos/datos/evolucion_basura_a.csv";
+        archivo_parametros = "graficos/datos/parametros_basura_a.csv";
 
         Chehade_NSdc2(Re, @U0_top_cte, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
 
@@ -116,7 +115,7 @@ if calcular == true
     endfor
 
     #Exporto los datos
-    archivo_velcentral = "graficos/datos/a_velcentral.txt";
+    archivo_velcentral = "graficos/datos/a_velcentral.csv";
     datos = [dt_array.', a_ucentral.', a_vcentral.'];
     csvwrite(archivo_velcentral, datos);
 endif
@@ -181,12 +180,12 @@ endfunction
 
 % #Calculo:
 % nsimpler = 1;
-% termino_advectivo = "DC2"
-% metodo_temporal = "EI";
+% termino_advectivo = "D"
+% metodo_temporal = "E";
 
-% archivo_velocidades_centrales = "graficos/datos/velocentral_basura.txt";
-% archivo_evolucion_variables = "graficos/datos/evolucion_basura.txt";
-% archivo_parametros = "graficos/datos/parametros_basura.txt";
+% archivo_velocidades_centrales = "graficos/datos/velocentral_basura.csv";
+% archivo_evolucion_variables = "graficos/datos/evolucion_basura.csv";
+% archivo_parametros = "graficos/datos/parametros_basura.csv";
 
 % va_a_converger(Re, @U0_top_cte, n1, dt_guess, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
 
@@ -222,9 +221,9 @@ endfunction
 % termino_advectivo = "DC2";
 % metodo_temporal = "EI";
 
-% archivo_velocidades_centrales = "graficos/datos/velocentral_basura.txt";
-% archivo_evolucion_variables = "graficos/datos/evolucion_basura.txt";
-% archivo_parametros = "graficos/datos/parametros_basura.txt";
+% archivo_velocidades_centrales = "graficos/datos/velocentral_basura.csv";
+% archivo_evolucion_variables = "graficos/datos/evolucion_basura.csv";
+% archivo_parametros = "graficos/datos/parametros_basura.csv";
 
 % busco_best_dt(0,Re, @U0_top_cte, n1, dt_guess, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
 
@@ -262,9 +261,9 @@ function comparacion_Ghuia(Re_array, U0_top, n1_array, tol_estacionario, Ndeltat
             n1 = n1_array(ii)
             Re = Re_array(jj)
 
-            archivo_velocidades_centrales = strcat("graficos/datos/velocentral_basura", inciso, ".txt");
-            archivo_evolucion_variables = strcat("graficos/datos/evolucion_basura", inciso, ".txt");
-            archivo_parametros = strcat("graficos/datos/parametros_basura", inciso, ".txt");
+            archivo_velocidades_centrales = strcat("graficos/datos/velocentral_basura", inciso, ".csv");
+            archivo_evolucion_variables = strcat("graficos/datos/evolucion_basura", inciso, ".csv");
+            archivo_parametros = strcat("graficos/datos/parametros_basura", inciso, ".csv");
 
             if buscar == true
             #Busco el mejor dt:
@@ -308,8 +307,8 @@ if calcular == true
 
     #Parámetros que seguro no modifique
     nsimpler = 1;
-    termino_advectivo = "DC2";
-    metodo_temporal = "EI";
+    termino_advectivo = "D";
+    metodo_temporal = "E";
     
     dt_guess = 0.005;
     Ndeltat_max = 10;
@@ -333,37 +332,40 @@ endif
 % Al parecer converge en todos los casos para esas condiciones.
 
 
+
+
 #Inciso c
 #Hago lo mismo que el b pero con distinto esquema para el término advectivo.
 #AÚN NO PROGRAMÉ EL QUICK así que ejecuto dos veces con el UP1
 calcular = false;
-tol_estacionario = 1e-5;
+tol_estacionario = 1e-3;
 
 if calcular == true
-    termino_advectivo_array = ["UP1","QUI"];# ["UP1, UP1"];
+    inciso = "c"
+    termino_advectivo_array = ["U","Q"];# ["UP1, UP1"];
 
     #Parámetros que puedo llegar a modificar
     % dt = 2; #Dentro de comparacion_Guia se busca el mejor dt posible
     Ndeltat= 80000; #80000; #numero de pasos de tiempo
 
-    n1_array = [21];#[21,41,81];
-    Re_array = [1000];#[100,1000,5000];
+    n1_array = [21,41,81];
+    Re_array = [100,1000,5000];
 
     #Parámetros que seguro no modifique
     nsimpler = 1;
-    metodo_temporal = "EI";
+    metodo_temporal = "E";
 
-    dt_guess = 0.01;
-    Ndeltat_max = 45;
-    buscar = false;
+    dt_guess = 0.005;
+    Ndeltat_max = 10;
+    buscar = true;
 
-    for kk = length(termino_advectivo_array)
+    for kk = 1:length(termino_advectivo_array)
 
         termino_advectivo = termino_advectivo_array(kk);
-        archivo_ucentral = strcat("graficos/datos/c_ucentral_",termino_advectivo_array(kk),".csv");
-        archivo_vcentral = strcat("graficos/datos/c_vcentral_",termino_advectivo_array(kk),".csv");
+        archivo_ucentral = strcat("graficos/datos/c_ucentral_",termino_advectivo,".csv");
+        archivo_vcentral = strcat("graficos/datos/c_vcentral_",termino_advectivo,".csv");
 
-        comparacion_Ghuia(Re_array, @U0_top_cte, n1_array, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_ucentral, archivo_vcentral, dt_guess, Ndeltat_max, buscar)
+        comparacion_Ghuia(Re_array, @U0_top_cte, n1_array, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_ucentral, archivo_vcentral, dt_guess, Ndeltat_max, buscar, inciso)
 
     endfor
 endif
@@ -383,66 +385,86 @@ endif
 
 #Inciso d
 #FALTA DEFINIR CUÁL ES EL MEJOR ESQUEMA y VER CÓMO CLAVAR UN VALOR EN T = 0.2 PARA NO TENER QUE HACER INTERPOLACIÓN
-calcular = false;
-tol_estacionario = 1e-5;
+calcular = true;
+tol_estacionario = 1e-3;
 
 if calcular == true
 
     #Defino el mejor esquema advectivo
-    termino_advectivo_mejor_esquema = "DC2";
+    termino_advectivo_mejor_esquema = "Q";
 
     #Defino parámetros
     Re_array = [1,1000];
     n1_array = [10,20,40,60,80];
-    dt = 0.5;
-    Ndeltat=1; #numero máximo de pasos de tiempo
+
+    Ndeltat=80000; #numero máximo de pasos de tiempo
 
     #Parámetros que seguro no modifique
     nsimpler = 1;
-    metodo_temporal = "EI";
+    metodo_temporal = "E";
     
+    buscar = true;
+    dt_guess = 0.005;
+    Ndeltat_max = 10;
 
     #Recorro ambos Re y para cada uno de ellos voy calculando los errores
     for ii = 1:length(Re_array)
         Re = Re_array(ii)
+
 
         #Defino los vectores en los que guardaré los errores
         error_uparticular = zeros(1,length(n1_array));
         error_vparticular = zeros(1,length(n1_array));
 
         #Defino los valores solución
-        n1_sol = 10-1;
+        n1_sol = 20;
         % Los valores particulares u(0.5, 0.2) y v(0.5,0.2) los voy a guardar en las variables
         % c_usol_particular
         % c_vsol_particular
 
         #Defino los nombres de los archivos
-        archivo_velocidades_centrales = "graficos/datos/velocentral_basura.txt";
-        archivo_evolucion_variables = "graficos/datos/evolucion_basura.txt";
-        archivo_parametros = "graficos/datos/parametros_basura.txt";
+        archivo_velocidades_centrales = "graficos/datos/velocentral_basura_d.csv";
+        archivo_evolucion_variables = "graficos/datos/evolucion_basura_d.csv";
+        archivo_parametros = "graficos/datos/parametros_basura_d.csv";
 
         #Hago la cuenta
+
+        #Busco el mejor dt:
+        if buscar == true
+            dt = busco_best_dt(0,Re, @U0_top_cte, n1_sol, dt_guess, tol_estacionario, Ndeltat_max, nsimpler, termino_advectivo_mejor_esquema, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
+        else
+            dt = dt_guess;
+        endif
+
         Chehade_NSdc2(Re, @U0_top_cte, n1_sol, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo_mejor_esquema, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
 
-        #Extraigo el valor de u(0.5, 0.2) y v(0.5,0.2) de la solución
+
+        #Calculo los valores u(0.5, 0.2) y v(0.5,0.2) interpolando los valores próximos
 
         #Abro el archivo de velocidad central
-        data = importdata(archivo_velocidades_centrales)
-        posicion_0_2 = (length(data(:,1))+2)/5
-        data(posicion_0_2,1)
-        c_usol_particular = data(posicion_0_2, 2);
-        c_vsol_particular = data(posicion_0_2, 3);
-        pause(100)
+        data = importdata(archivo_velocidades_centrales);
+      
+        c_usol_particular = (data((n1_sol/5),2) + data((n1_sol/5) + 1,2) )/2;
+        c_vsol_particular = (data((n1_sol/5),3) + data((n1_sol/5) + 1,3) )/2;
+
+
+        
         #Recorro los distintos n1
         for jj=1:length(n1_array)
             n1 = n1_array(jj)
             #Hago la cuenta
-            Chehade_NSdc2(Re, @U0_top_cte, n1, dt, tol_estacionario, Ndeltat, nsimpler, "DC2", metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
+            if buscar == true
+                dt = busco_best_dt(0,Re, @U0_top_cte, n1, dt_guess, tol_estacionario, Ndeltat_max, nsimpler, 'U', metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
+            else
+                dt = dt_guess;
+            endif
+
+            Chehade_NSdc2(Re, @U0_top_cte, n1, dt, tol_estacionario, Ndeltat, nsimpler, "U", metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros);
 
             #Extraigo el valor de u(0.5, 0.2) y v(0.5,0.2) de la aproximación
-            data = importdata(archivo_velocidades_centrales)
-            c_uaprox_particular = data(posicion_0_2, 2);
-            c_uaprox_particular = data(posicion_0_2, 3);
+            data = importdata(archivo_velocidades_centrales);
+            c_uaprox_particular = (data((n1_sol/5),2) + data((n1_sol/5) + 1,2) )/2;
+            c_vaprox_particular = (data((n1_sol/5),3) + data((n1_sol/5) + 1,3) )/2;
 
             #Calculo el error
             error_uparticular(jj) = abs(c_usol_particular - c_uaprox_particular);
@@ -489,15 +511,15 @@ endfunction
 % Re = 1000;
 % n1 = 21
 % dt = 0.05; #0.001 Con este valor converge para DC2 y Re = 1000
-% termino_advectivo = "DC2";
+% termino_advectivo = "D";
 % tol_estacionario = 1e-3;
 
 % nsimpler = 1;
 % metodo_temporal = "EI";
 
-% archivo_velocidades_centrales = "graficos/datos/velocentral_basura_e.txt";
-% archivo_evolucion_variables = "graficos/datos/evolucion_basura_e.txt";
-% archivo_parametros = "graficos/datos/parametros_basura_e.txt";
+% archivo_velocidades_centrales = "graficos/datos/velocentral_basura_e.csv";
+% archivo_evolucion_variables = "graficos/datos/evolucion_basura_e.csv";
+% archivo_parametros = "graficos/datos/parametros_basura_e.csv";
 
 % u_central_estacionario(Re, @U0_top_cte, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
 
@@ -532,7 +554,7 @@ endfunction
 #TEST:
 
 % Re = 1000;
-% termino_advectivo = "DC2";
+% termino_advectivo = "D";
 % tol_estacionario = 1e-3;
 % u_central_guia = -0.06080;
 
@@ -543,9 +565,9 @@ endfunction
 
 % nsimpler = 1;
 % metodo_temporal = "EI";
-% archivo_velocidades_centrales = "graficos/datos/velocentral_basura_e.txt";
-% archivo_evolucion_variables = "graficos/datos/evolucion_basura_e.txt";
-% archivo_parametros = "graficos/datos/parametros_basura_e.txt";
+% archivo_velocidades_centrales = "graficos/datos/velocentral_basura_e.csv";
+% archivo_evolucion_variables = "graficos/datos/evolucion_basura_e.csv";
+% archivo_parametros = "graficos/datos/parametros_basura_e.csv";
 
 % n1 = n1_minimo(Re, @U0_top_cte, n1_guess, dt_guess, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros, e_tol, u_central_guia)
 
@@ -554,7 +576,7 @@ calcular = false;
 if calcular == true
     "Inciso e"
     Re_array = [100,1000];
-    termino_advectivo_array = ["DC2", "UP1"];
+    termino_advectivo_array = ["D", "U"];
     tol_estacionario = 1e-3;
     u_central_guia_array = [-0.20581,-0.06080];
 
@@ -564,10 +586,10 @@ if calcular == true
     Ndeltat=8000;
 
     nsimpler = 1;
-    metodo_temporal = "EI";
-    archivo_velocidades_centrales = "graficos/datos/velocentral_basura_e.txt";
-    archivo_evolucion_variables = "graficos/datos/evolucion_basura_e.txt";
-    archivo_parametros = "graficos/datos/parametros_basura_e.txt";
+    metodo_temporal = "E";
+    archivo_velocidades_centrales = "graficos/datos/velocentral_basura_e.csv";
+    archivo_evolucion_variables = "graficos/datos/evolucion_basura_e.csv";
+    archivo_parametros = "graficos/datos/parametros_basura_e.csv";
 
     for i=1:length(Re_array)
         Re = Re_array(i)
@@ -579,6 +601,10 @@ if calcular == true
     endfor
 
 endif
+
+
+
+
 
 
 
@@ -594,8 +620,8 @@ if calcular == true
 
     Re = [1000];
     n1 = [31];
-    termino_advectivo = "DC2";
-    metodo_temporal = "EI";
+    termino_advectivo = "D";
+    metodo_temporal = "E";
 
     buscar = true;
     dt_guess = 0.005;
@@ -615,7 +641,7 @@ if calcular == true
 
         #Me interesa guardar el tiempo de ejecución de cada caso
         #Abro el archivo de parámetros y extraigo el costo
-        archivo_parametros = strcat("graficos/datos/parametros_basura", inciso, ".txt");
+        archivo_parametros = strcat("graficos/datos/parametros_basura", inciso, ".csv");
         data = importdata(archivo_parametros);
         costo = data(3);
 
@@ -631,7 +657,7 @@ endif
 
 
 #Inciso g: cambiar condición de contorno
-calcular = true;
+calcular = false;
 
 if calcular == true
     inciso = "g"
@@ -642,7 +668,7 @@ if calcular == true
     endfunction
 
     #Testeo
-    termino_advectivo = "DC2";
+    termino_advectivo = "D";
     n1 = 31;
     Re = 1000;
     dt = 0.4;
@@ -650,8 +676,9 @@ if calcular == true
     Ndeltat = round(tmax/dt);
     % nsimpler_array = [1]
     nsimpler_array = [1,3];
-    % metodo_temporal_array = ["EI"]
-    metodo_temporal_array = ["EI", "CN"];
+    % metodo_temporal_array = ["E"]
+    metodo_temporal_array = ['E'; 'C'];
+
 
 
     for i=1:length(nsimpler_array)
@@ -660,9 +687,9 @@ if calcular == true
             nsimpler = nsimpler_array(i)
             metodo_temporal = metodo_temporal_array(j)
 
-            archivo_velocidades_centrales = strcat("graficos/datos/velocentral_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".txt");
-            archivo_evolucion_variables = strcat("graficos/datos/evolucion_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".txt");
-            archivo_parametros = strcat("graficos/datos/parametros_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".txt");
+            archivo_velocidades_centrales = strcat("graficos/datos/velocentral_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
+            archivo_evolucion_variables = strcat("graficos/datos/evolucion_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
+            archivo_parametros = strcat("graficos/datos/parametros_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
 
             #Evoluciono
             Chehade_NSdc2(Re, @U0_top_cos, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)

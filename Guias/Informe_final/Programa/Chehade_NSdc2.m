@@ -159,7 +159,7 @@ buy = zeros(n2-n1,1); # lado derecho MMy * v = buy
 # ------------------------------------------
 #Inicializo las matrices nulas b_CNu y b_CNv para aplicar el método de Crank-Nicolson en función de la recomendación de la cátedra en el pdf del TP_final. También divido por la mitad el paso temporal en caso de ser CN
 # ------------------------------------------
-if metodo_temporal == "CN"
+if metodo_temporal == "C"
   b_CNu_matriz = zeros(n1-1,n1); #matriz actual (n1,n1)
   b_CNu_vector =zeros(n2-n1,1); # misma matriz en forma vectorial (n2)
   b_CNu0_matriz = zeros(n1-1,n1); #matriz del paso anterior (n1,n1)
@@ -287,7 +287,7 @@ endfor
 # Calculo de los factores de upwind basados en la velocidad calculada en las caras
 #---------------------------------------------
 #La siguiente cuenta es para usar el esquema UP1 para el término advectivo. Como DC2 se escribe como UP1 + fuente, es necesario correrlo tmb si queremos aplicar DC2. Lo mismo ocurre para QUICK que tmb se escribe como UP1 + fuente
-if termino_advectivo == "UP1" || termino_advectivo == "DC2"  || termino_advectivo == "QUICK"
+if termino_advectivo == "U" || termino_advectivo == "D"  || termino_advectivo == "Q"
   #   PARA VOLUMENES U
   for i=1:n1-1
     j=1;
@@ -371,7 +371,7 @@ endif
 # Calculo de las fuentes diferidas debido al upwind para DC2
 #---------------------------------------------
 #La siguiente cuenta corresponde a la fuente en el esquema DC2 diferido usando UPWIND
-if termino_advectivo == "DC2"
+if termino_advectivo == "D"
   #   PARA VOLUMENES U
   i=1;
   j=1;
@@ -493,8 +493,8 @@ endif
 #---------------------------------------------
 # Calculo con QUICK
 #---------------------------------------------
-if termino_advectivo == "QUI"
-  error("Aun no implemente QUICK para termino advectivo")
+if termino_advectivo == "Q"
+  % error("Aun no implemente QUICK para termino advectivo")
   #   PARA VOLUMENES U
   #Esquina inferior izquierda:
   i=1;
@@ -693,7 +693,7 @@ for i=1:n1-1
   au(i,j)=dx2/dt+2*re1-eu(i,j)-wu(i,j)-nu(i,j)-su(i,j); # Tension de corte en la pared con primer orden
   bu(i,j)=2*Utop3*re1+dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)-usources(i,j+1);
   #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
-  if metodo_temporal == "CN"
+  if metodo_temporal == "C"
     bu(i,j) = bu(i,j) + b_CNu_matriz(i,j);
   endif
 
@@ -705,7 +705,7 @@ for i=1:n1-1
     au(i,j)=dx2/dt-eu(i,j)-wu(i,j)-nu(i,j)-su(i,j);
     bu(i,j)=dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)+usources(i,j)-usources(i,j+1);
     #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
-    if metodo_temporal == "CN"
+    if metodo_temporal == "C"
       bu(i,j) = bu(i,j) + b_CNu_matriz(i,j);
     endif
   endfor
@@ -718,7 +718,7 @@ for i=1:n1-1
   au(i,j)=dx2/dt+2*re1-eu(i,j)-wu(i,j)-nu(i,j)-su(i,j); # Tension de corte en la pared con primer orden
   bu(i,j)=2*Utop1(k)*re1+dx2/dt*u0(i,j)+usourcew(i,j)-usourcew(i+1,j)+usources(i,j);
   #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
-  if metodo_temporal == "CN"
+  if metodo_temporal == "C"
     bu(i,j) = bu(i,j) + b_CNu_matriz(i,j);
   endif
 
@@ -737,7 +737,7 @@ for j=1:n1-1
   av(i,j)=dx2/dt+2*re1-ev(i,j)-wv(i,j)-nv(i,j)-sv(i,j); # Tension de corte en la pared con primer orden
   bv(i,j)=2*Utop4*re1+dx2/dt*v0(i,j)-vsourcew(i+1,j)+vsources(i,j)-vsources(i,j+1);
   #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
-  if metodo_temporal == "CN"
+  if metodo_temporal == "C"
     bv(i,j) = bv(i,j) + b_CNv_matriz(i,j);
   endif
 
@@ -752,7 +752,7 @@ for i=2:n1-1
     av(i,j)=dx2/dt-ev(i,j)-wv(i,j)-nv(i,j)-sv(i,j);
     bv(i,j)=dx2/dt*v0(i,j)+vsourcew(i,j)-vsourcew(i+1,j)+vsources(i,j)-vsources(i,j+1);
     #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
-    if metodo_temporal == "CN"
+    if metodo_temporal == "C"
       bv(i,j) = bv(i,j) + b_CNv_matriz(i,j);
     endif
 
@@ -767,7 +767,7 @@ for j=1:n1-1
   av(i,j)=dx2/dt+2*re1-ev(i,j)-wv(i,j)-nv(i,j)-sv(i,j); # Tension de corte en la pared con primer orden
   bv(i,j)=2*Utop2*re1+dx2/dt*v0(i,j)+vsourcew(i,j)+vsources(i,j)-vsources(i,j+1);
   #Si estoy en CN, agrego el término b de la propuesta de la catedra en el pdf TP_Final
-  if metodo_temporal == "CN"
+  if metodo_temporal == "C"
     bv(i,j) = bv(i,j) + b_CNv_matriz(i,j);
   endif
 
@@ -1237,7 +1237,7 @@ endfor       #termina iteracion simpler, indice lsimpler
 #Asumo que los objetos con la info. de interés son uvel, u0, vvel y v0
 #
 # -------------------------------------------------------------------
-if metodo_temporal == "CN"
+if metodo_temporal == "C"
   % b_CNu_matriz = zeros(n1-1,n1); #matriz actual (n1,n1)
   % b_CNu_vector =zeros(n2-n1,1); # misma matriz en forma vectorial (n2)
   % b_CNu0_matriz = zeros(n1-1,n1); #matriz del paso anterior (n1,n1)
