@@ -74,18 +74,25 @@ No está bueno. Pero está bien. Para algunos casos puede no tener sentido
 
 * ¿Qué puedo hacer para acelerar la convergencia? Dejé el b y c corriendo toda la noche y no terminaron aún. Comentar cómo estimo el dt.
 * u ya está en la posición vertical 0.5 y cuando extraigo los valores, el correspondiente a 0.5 es u(0.5,0.5)? (Al revés con v?)
+Sí. Esto vale siempre que el n1 sea PAR
+Para n1 impar NO QUEDA u() en x = 0.5
+
 * d. No sé en qué zona calcular el error. No me queda lineal
 
 Creo que en el inciso e no estoy guardando u(0.5,0.5), sino en otra posición. Además, no lo estoy guardando para todo tiempo
 
 Dejé corriendo varios incisos con una tolerancia de e-3
 
+
+Estuvimos corriendo el código en una clase de consulta. María y yo no obtenemos los mismos resultados que Federico Teruel. Se ve que el problema de la lentitud del programa está en un problema con el código de la cátedra (o con Octave). Federico va a revisar el código y luego nos avisa.
+
+
 Terminó el a
 
+Para Re = 100, n1 = 80, dt = 0.5 NO CONVERGE. No estoy en el caso del profesor "Para Re=100 empecé a subir deltat y vi que para deltat=0.5 llego a un criterio de derivada de aprox. 10^-5 en 100 iteraciones o aprox. 4 minutos"
 
+d. Con R1 = 1 el término advectivo tiene poca importancia. Para Re alto van a valores distinos a altos n1. 
 
-
-
-No siempre
+Hay que tener cuidado la comparación entre métodos numéricos. Si comparo DC2 a distintos n1 con DC2 a n1 = 80, no debería sorprenderme que a n1 = 80 tengo un error cero y cerca tengo una convergencia bastante rápida.
 
 
