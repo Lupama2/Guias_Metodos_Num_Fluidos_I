@@ -53,7 +53,7 @@ j1=2;
 
 #---------------------------------------------
 #--------- abro archivo de evolucion de variables
-fid = fopen("evolucion.txt", "w")
+fid = fopen("evolucion_new.txt", "w")
 
 #---------------------------------------------
 #Reservar Vectores para solucion y definimos condicion inicial = todo quieto
@@ -1034,7 +1034,7 @@ fclose(fid)
 #---------------------------------------------
 #--------- abro archivo para imprimir velocidades en el centro - Nota: por conservacion masa la integral de cada una de estas debe ser = 0
 #---------  Ideal si
-fid = fopen("velocentral.txt", "w")
+fid = fopen("velocentral_new.txt", "w")
 xtot=dx/2;
 for i=1:n1
   fprintf(fid, "%e %e %e\n", xtot, (uvel(int8(n1/2),i)+uvel(int8((n1-1)/2),i))/2,(vvel(i,int8(n1/2))+vvel(i,int8((n1-1)/2)))/2);

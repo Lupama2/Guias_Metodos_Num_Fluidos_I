@@ -59,7 +59,33 @@
 #No sé a qué hace referencia el siguiente comentario
 #En algún momento tengo que sumar su efecto en la ecuación diferencial.
 
-
-
 Tuve que eliminar el clear del inicio del código. No sé en qué afectará
 Terminar de programar QUICK
+
+
+DUDAS:
+
+
+Dejé corriendo el inciso b 
+
+* El e me toma mucho tiempo porque tengo que evolucionar hasta el estado final para evaluar el error. Hay otra forma de estimarlo?
+* Está mal poner una tolerancia de 1e-3 en lugar de 1e-6 para que corra más rápido?
+No está bueno. Pero está bien. Para algunos casos puede no tener sentido
+
+* ¿Qué puedo hacer para acelerar la convergencia? Dejé el b y c corriendo toda la noche y no terminaron aún. Comentar cómo estimo el dt.
+* u ya está en la posición vertical 0.5 y cuando extraigo los valores, el correspondiente a 0.5 es u(0.5,0.5)? (Al revés con v?)
+* d. No sé en qué zona calcular el error. No me queda lineal
+
+Creo que en el inciso e no estoy guardando u(0.5,0.5), sino en otra posición. Además, no lo estoy guardando para todo tiempo
+
+Dejé corriendo varios incisos con una tolerancia de e-3
+
+Terminó el a
+
+
+
+
+
+No siempre
+
+

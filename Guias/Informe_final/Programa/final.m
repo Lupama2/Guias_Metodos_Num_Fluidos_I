@@ -4,24 +4,26 @@
 % 
 
 
-% %Testeo la función
-% Re = 100.0;
-% n1 = 20;
-% dt = 0.5;
-% nsimpler = 1;
-% termino_advectivo = "D";
-% metodo_temporal = "EI";
-% tol_estacionario = 1e-6;
-% Ndeltat=80; #numero de pasos de tiempo
-% archivo_velocidades_centrales = "graficos/datos/velocentral.csv";
-% archivo_evolucion_variables = "graficos/datos/evolucion.csv";
-% archivo_parametros = "graficos/datos/parametros.csv";
+%Testeo la función
+Re = 5000.0;
+n1 = 80;
+dt = 0.5;
+nsimpler = 1;
+termino_advectivo = "D";
+metodo_temporal = "EI";
+tol_estacionario = 1e-6;
+Ndeltat=100; #numero de pasos de tiempo
+archivo_velocidades_centrales = "graficos/datos/velocentral.csv";
+archivo_evolucion_variables = "graficos/datos/evolucion.csv";
+archivo_parametros = "graficos/datos/parametros.csv";
 
-% function U0_top = U0_top(x)
-%     U0_top = 1.0;
-% endfunction
+function U0_top = U0_top(x)
+    U0_top = 1.0;
+endfunction
 
-% Chehade_NSdc2(Re, @U0_top, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
+Chehade_NSdc2(Re, @U0_top, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
+
+
 
 
 #Resultado típico:
@@ -86,8 +88,14 @@ tol_estacionario = 1e-3;
 if calcular == true
     Re = 1000
     n1 = 21
-
+    % dt_array = [1, 2]
     dt_array = [0.005, 0.01,0.02,0.05,0.1,0.2,0.5,1,2, 5, 10, 20];
+
+    #Abro el archivo en el que voy a guardar los datos
+    archivo_velcentral = "graficos/datos/a_velcentral.csv";
+    fid = fopen(archivo_velcentral, "w");
+
+
     for ii=1:length(dt_array)
         dt = dt_array(ii)
 
@@ -112,12 +120,18 @@ if calcular == true
         a_ucentral(ii) = data(posicion_centro, 2);
         a_vcentral(ii) = data(posicion_centro, 3);
 
+        #Guardo el dato
+        fprintf(fid, "%e %e %e\n", dt, a_ucentral(ii),a_vcentral(ii));
+
     endfor
 
+    #Cierro el archivo
+    fclose(fid);
+
     #Exporto los datos
-    archivo_velcentral = "graficos/datos/a_velcentral.csv";
-    datos = [dt_array.', a_ucentral.', a_vcentral.'];
-    csvwrite(archivo_velcentral, datos);
+    
+    % datos = [dt_array.', a_ucentral.', a_vcentral.'];
+    % csvwrite(archivo_velcentral, datos);
 endif
 
 
@@ -300,8 +314,11 @@ if calcular == true
     #Parámetros que puedo llegar a modificar
     Ndeltat= 80000; #80000; #numero de pasos de tiempo
 
-    n1_array = [21,41,81];
-    Re_array = [100,1000,5000];
+
+    n1_array = [81];
+    Re_array = [5000];
+    % n1_array = [21,41,81];
+    % Re_array = [100,1000,5000];
     archivo_ucentral = "graficos/datos/b_ucentral.csv";
     archivo_vcentral = "graficos/datos/b_vcentral.csv";
 
@@ -385,7 +402,7 @@ endif
 
 #Inciso d
 #FALTA DEFINIR CUÁL ES EL MEJOR ESQUEMA y VER CÓMO CLAVAR UN VALOR EN T = 0.2 PARA NO TENER QUE HACER INTERPOLACIÓN
-calcular = true;
+calcular = false;
 tol_estacionario = 1e-3;
 
 if calcular == true
