@@ -88,12 +88,13 @@ endfunction
 % * Uso Ndeltat lo suficientemente grande como para que converja con cualquier dt
 
 calcular = false;
-tol_estacionario = 1e-3;
+tol_estacionario = 1e-5;
 
 
 if calcular == true
+    "Inciso a"
     Re = 1000
-    n1 = 21
+    n1 = 20
     % dt_array = [1, 2]
     dt_array = [0.005, 0.01,0.02,0.05,0.1,0.2,0.5,1,2, 5, 10, 20];
 
@@ -121,10 +122,11 @@ if calcular == true
         #Abro el archivo de velocidades y extraigo los valores en el centro
 
         data = importdata(archivo_velocidades_centrales);
-        posicion_centro = (length(data(:,1))+1)/2;
+        posicion_centro_izq = (length(data(:,1)))/2
+        posicion_centro_der = (length(data(:,1)))/2 + 1
         % data(posicion_centro,1)
-        a_ucentral(ii) = data(posicion_centro, 2);
-        a_vcentral(ii) = data(posicion_centro, 3);
+        a_ucentral(ii) = (data(posicion_centro_izq, 2) + data(posicion_centro_der, 2))/2;
+        a_vcentral(ii) = (data(posicion_centro_izq, 3) + data(posicion_centro_der, 3))/2;
 
         #Guardo el dato
         fprintf(fid, "%e %e %e\n", dt, a_ucentral(ii),a_vcentral(ii));
@@ -314,8 +316,7 @@ function comparacion_Ghuia(Re_array, U0_top, n1_array, tol_estacionario, Ndeltat
             % data(posicion_centro,1)
             b_ucentral(ii,jj) = (data(posicion_centro_izq, 2) + data(posicion_centro_der, 2))/2;
             b_vcentral(ii,jj) = (data(posicion_centro_izq, 3) + data(posicion_centro_der, 3))/2;
-        endfor
-
+        
         % fid_u = fopen(archivo_ucentral, "w");
         % fid_v = fopen(archivo_vcentral, "w");
         
@@ -325,6 +326,8 @@ function comparacion_Ghuia(Re_array, U0_top, n1_array, tol_estacionario, Ndeltat
         #Guardo ambas matrices en un .csv. Lo pongo adentro del for para que valla guardando después de cada Re
         csvwrite(archivo_ucentral, b_ucentral);
         csvwrite(archivo_vcentral, b_vcentral);
+        
+        endfor
     endfor
 
 
@@ -380,7 +383,7 @@ endif
 #Inciso c
 #Hago lo mismo que el b pero con distinto esquema para el término advectivo.
 #AÚN NO PROGRAMÉ EL QUICK así que ejecuto dos veces con el UP1
-calcular = false;
+calcular = true;
 tol_estacionario = 1e-5;
 
 if calcular == true
@@ -427,7 +430,7 @@ endif
 
 
 #Inciso d
-calcular = true;
+calcular = false;
 tol_estacionario = 1e-5;
 
 if calcular == true
@@ -506,8 +509,8 @@ if calcular == true
 
             #Extraigo el valor de u(0.5, 0.2) y v(0.5,0.2) de la aproximación
             data = importdata(archivo_velocidades_centrales);
-            c_uaprox_particular = (data((n1_sol/5),2) + data((n1_sol/5) + 1,2) )/2;
-            c_vaprox_particular = (data((n1_sol/5),3) + data((n1_sol/5) + 1,3) )/2;
+            c_uaprox_particular = (data((n1/5),2) + data((n1/5) + 1,2) )/2;
+            c_vaprox_particular = (data((n1/5),3) + data((n1/5) + 1,3) )/2;
 
             #Calculo el error
             error_uparticular(jj) = abs(c_usol_particular - c_uaprox_particular);
@@ -538,8 +541,15 @@ function ucentral = u_central_estacionario(Re, U0_top, n1, dt, tol_estacionario,
 
     #Abro el archivo de velocidad central y extraigo los valores de U en y = 0.5 y de V en 
     data = importdata(archivo_velocidades_centrales);
-    posicion_centro = (length(data(:,1))+1)/2;
-    ucentral = data(posicion_centro, 2);
+
+
+
+    % data(posicion_centro,1)
+
+    posicion_centro_izq = (length(data(:,1)))/2
+    posicion_centro_der = (length(data(:,1)))/2 + 1
+
+    ucentral = (data(posicion_centro_izq, 2) + data(posicion_centro_der, 2))/2;
 
 endfunction 
 
@@ -620,11 +630,11 @@ if calcular == true
     "Inciso e"
     Re_array = [100,1000];
     termino_advectivo_array = ["D", "U"];
-    tol_estacionario = 1e-3;
+    tol_estacionario = 1e-5;
     u_central_guia_array = [-0.20581,-0.06080];
 
     e_tol = 0.05;
-    n1_guess = 31
+    n1_guess = 30
     dt_guess = 0.05; #0.001 Con este valor converge para DC2 y Re = 1000
     Ndeltat=8000;
 
@@ -657,12 +667,12 @@ calcular = false;
 if calcular == true
     inciso = "f"
     
-    tol_estacionario = 1e-3;
+    tol_estacionario = 1e-5;
     nsimpler_array = [1,2,3];
 
 
     Re = [1000];
-    n1 = [31];
+    n1 = [30];
     termino_advectivo = "D";
     metodo_temporal = "E";
 
@@ -704,7 +714,7 @@ calcular = false;
 
 if calcular == true
     inciso = "g"
-    tol_estacionario = 1e-3; #Esta condición no se debería alcanzar. Se debería detener el programa por haber llegado a Nmax.
+    tol_estacionario = 1e-5; #Esta condición no se debería alcanzar. Se debería detener el programa por haber llegado a Nmax.
 
     function U0_top = U0_top_cos(t)
         U0_top = cos(t);

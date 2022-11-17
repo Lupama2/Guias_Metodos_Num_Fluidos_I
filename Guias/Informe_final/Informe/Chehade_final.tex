@@ -158,6 +158,65 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \section{Resultados y discusión}
 
+\subsection{Estado estacionario}
+
+Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$ y distintos dt.
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{a_vel_vs_dt.pdf}
+  \caption{}
+   \label{fig:a_vel_vs_dt}
+\end{figure}
+
+Se calculó para cada caso la desviación estándar de la velocidad normalizada por el valor promedio
+
+\subsection{Elección de dt}
+
+\subsection{Término advectivo}
+
+Se implementó para el término advectivo los esquemas DC2, UP1 y QUICK. Se resolvió el problema para $Re = 100, 1000 \, \mathrm{y} \, 5000$ y para $n1 = 20, 40 \, \mathrm{y} \, 80$. Se calculó para cada caso el error relativo respecto a los resultados de Guia.
+$tol_estacionario = 1e-5$
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{termino_adv_DC2.pdf}
+      \caption{}
+      \label{fig:termino_adv_DC2}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{termino_adv_UP1.pdf}
+      \caption{}
+      \label{fig:termino_adv_UP1}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{termino_adv_QUICK.pdf}
+      \caption{}
+      \label{fig:termino_adv_QUICK}
+  \end{subfigure}
+     \caption{Termino advectivo}
+     \label{fig:termino_advectivo}
+\end{figure}
+
+\textcolor{blue}{Tabla con resultados}
+
+\textcolor{red}{Duda: es necesario reportar el dt en cada caso?}
+
+\subsection{Orden de convergencia espacial de UP1}
+
+Se calculó $u(0.5)$ y $v(0.5)$ para $Re = 1$ y $Re = 1000$ con $n1 = 80$ y esquema QUICK. Se consideró este valor como la solución exacta. Luego, se calcularon las mismas velocidades para distintos n1 y se calculó el error respecto a la solución numérica considerada como la exacta
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{error_UP1_n1_vs_Re.pdf}
+  \caption{}
+   \label{fig:error_UP1_n1_vs_Re}
+\end{figure}
+
 
 \section{Conclusión}
 
