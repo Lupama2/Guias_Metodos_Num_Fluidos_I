@@ -96,3 +96,62 @@ d. Con R1 = 1 el término advectivo tiene poca importancia. Para Re alto van a v
 Hay que tener cuidado la comparación entre métodos numéricos. Si comparo DC2 a distintos n1 con DC2 a n1 = 80, no debería sorprenderme que a n1 = 80 tengo un error cero y cerca tengo una convergencia bastante rápida.
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cambié el rate de cambio en best_dt de 2 a 1.2. El mejor dt es
+best_dt =0.1331. Con ese dt llega a 1.121e5 en 100 pasos de tiempo.
+
+Cambié el criterio de va_a_converger. Ahora la pendiente se calcula en escala log para el eje vertical. Obtengo que el mejor dt es 5.1034. Con ese dt llega a 41.455 en 100 pasos de tiempo
+
+El problema es que puede llegar a tomarle mucho tiempo encontrar el mejor dt si arranco de un dt demasiado chico.
+
+Cambié el criterio de va_a_converger. Ahora calcula la pendiente ignorando el primer dato. Obtengo que el mejor dt es 0.1917. Con ese dt llega a 4.5e4. en 100 pasos de tiempo. Me quedo con el ajuste de todos los datos, a pesar de que pueda llegar a ser problemático.
+
+Testeé un caso con n1 alto y le toma mucho tiempo hacer la búsqueda del mejor dt. Cambié el rate a 2 y llegué a 5.12 como mejor dt.
+
+
+Corro el inciso b para n1 = 81 y Re = 5000. Mido cuánto tiempo le toma usando el mecanismo de búsqueda nuev
+o y el anterior.
+
+Con el nuevo (rate 2 y escala log en el eje vertical para el ajuste lineal) le toma . considerando también el tiempo necesario para encontrar tal dt
+
+Con el viejo (rate 2 y escala normal para el ajuste lineal) le toma .
+
+
+
+
+Cuando pruebo el caso n1 = 80, Re = 5000 no obtengo el mismo dt que el profesor, sino uno menor. Voy a analizar este caso en particular. Evoluciono 20 pasos de tiempo con distintos dt y grafico cada uno de ellos en Origin
+dt = 0.005
+dt = 0.02
+dt = 0.04
+
+En base a los gráficos podría cambiar la condición de va_a_converger
+Cuando encuentre un punto con derivada menor va a calcular la difere
+
+Lo dejé buscando el best_dt para el caso de n1 = 80 y Re 5000. La única diferencia es que puse un Ndeltat_max = 20
+
