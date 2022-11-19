@@ -106,7 +106,31 @@ a^2+b^2=c^2 \,.
 \end{figure}
 
 * Conjunto de figuras:
-(no recuerdo)
+\begin{figure}
+     \centering
+     \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{graph1}
+         \caption{$y=x$}
+         \label{fig:y equals x}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{graph2}
+         \caption{$y=3sinx$}
+         \label{fig:three sin x}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{graph3}
+         \caption{$y=5/x$}
+         \label{fig:five over x}
+     \end{subfigure}
+        \caption{Three simple graphs}
+        \label{fig:three graphs}
+\end{figure}
 
 
 * Para hacer referencias a fórmulas, tablas, secciones, ... dentro del documento:
@@ -178,43 +202,112 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \ptitle{Explicar el problema de la cavidad cuadrada hidrodinámica bidimensional}
 \begin{itemize}
-  \item 
+  \item Un problema muy estudiado desde el punto de vista numérico en mecánica de fluidos es el de la cavidad cuadrada hidrodinámica bidimensional, también conocida como Shear-drien cavity flow
+  \item Consiste en una cavidad cuadrada bidimensional de lado $L$ que contiene un fluido incompresible de viscocidad $\nu$. Las condiciones de borde son de no deslizamiento en todas las paredes excepto en la horizontal superior. Sea $\vec{V}(x,y) = (u(x,y), v(x,y))$ la velocidad en el punto $(x,y)$, las condiciones anteriores se traducen en $\vec{V}(x,0) = \vec{V}(0,y) = \vec{V}(L,y) = (0,0)$ y $\vec{V}(x,L) = (U_0,0)$
+  \item En la figura \ref{fig:esquema_cavidad_cuadrada} se muestra un esquema del problema
 \end{itemize}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{esquema_cavidad_cuadrada.png}
+  \caption{}
+   \label{fig:esquema_cavidad_cuadrada}
+\end{figure}
+
 
 \ptitle{Explicación de las ecuaciones involucradas}
 \begin{itemize}
-  \item 
-\end{itemize}
+  \item Las variables de interés son la presión y la velocidad vertical y horizontal
+  \item Se cuentan con tres ecuaciones diferenciales:
+  \item En primer lugar, las dos ecuaciones de conservación de momento en direcciones vertical y horizontal que, adimensionales, son
+  \[\frac{\partial u}{\partial t} + \frac{\partial (u u)}{\partial x} + \frac{\partial (u v)}{\partial y} = - \frac{\partial p}{\partial x} + \frac{1}{Re} \left ( \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} \right ) \]
+  \[\frac{\partial v}{\partial t} + \frac{\partial (u v)}{\partial x} + \frac{\partial (v v)}{\partial y} = - \frac{\partial p}{\partial y} + \frac{1}{Re} \left ( \frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2} \right ) \]
+  donde $Re = U_0L/\nu$
 
+  \item Nombrar cada término (temporal, advectivo, de presión y difusivo)
+  \item En segundo lugar, la ecuación de conservación de masa que para fluido incompresible es
+  \[\bigtriangledown \bullet \vec{V} = \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0  \]
+
+  \item en base a esa ecuación se dice que el campo de velocidades tiene "divergencia libre"
+  \item Las soluciones dependen de Re
+\end{itemize}
 
 \section{Métodos Numéricos}
 
-\ptitle{Discretización}
+\ptitle{Resumen}
 \begin{itemize}
-  \item 
+  \item Para resolver el sistema de ecuaciones diferenciales es necesario discretizar el dominio y plantear esquemas numéricos para las ecuaciones. En cuanto al primero, es necesario diferenciar entre dominio espacial y temporal.
+  \item En cuanto al segundo, se emplearon volúmenes finitos con el objetivo de asegurar la conservación de masa \textcolor{red}{?} y distintos métodos espaciales y temporales para cada término.
 \end{itemize}
 
-\ptitle{Elección de dt}
+\ptitle{Discretización espacial}
 \begin{itemize}
-  \item 
+  \item El dominio espacial se discretiza ... 
+  \item Copiar lo que está en el pdf de la cátedra
+  \item \cite{Notas_materia}
 \end{itemize}
-No describir el algoritmo
 
 \ptitle{Grilla desplazada}
 \begin{itemize}
-  \item 
+  \item Copiar lo que está en el pdf de la cátedra
+\end{itemize}
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.25\textwidth}
+      \includegraphics[width=\textwidth]{grilla_diferida_u.png}
+      \caption{}
+      \label{fig:grilla_diferida_u}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.2\textwidth}
+      \includegraphics[width=\textwidth]{grilla_diferida_v}
+      \caption{}
+      \label{fig:grilla_diferida_v}
+  \end{subfigure}
+     \caption{Grillas diferidas. Figuras extraídas de \cite{Notas_materia}}
+     \label{fig:grillas_diferidas}
+\end{figure}
+
+
+\ptitle{Discretización temporal}
+\begin{itemize}
+  \item En cuando al dominio temporal, la variable temporal se discretizó en puntos equiespaciados $t_n = n \Delta t$ con $n = 0,1,\dots,N$ con $\Delta t = t_{max}/N$
 \end{itemize}
 
-\textcolor{red}{Es necesario explicar cómo discretizar las ecuaciones de momento? Sería copiar textual el desarrollo hecho en la penúltima clase. Le pregunté a Federico}
+
+\ptitle{Costo computacional y elección de dt}
+\begin{itemize}
+  \item Debido a la cantidad de variables involucradas y dependiendo del número de pasos de tiempo a realizar, el costo computacional puede ser alto.
+  \item Un modo de minimizarlo es eligiendo n1 lo suficientemente pequeño para que el error sea menor a una tolerancia determinada, aunque para esto es necesario conocer al menos la solución exacta, lo cual no siempre se tiene
+  \item Otra alternativa es elegir $N$ en base a un criterio de convergencia: si la solución tiende a un estacionario independiente del tiempo, entonces avanzamos la solución hasta que, por ejemplo, CONDICIÓN SOBRE DERIVADAS
+  \item Si solo es de interés la solución en el estado estacionario, otro modo de atacar el problema es eligiendo dt para que el problema converja rápido a pesar de tener un estado transitorio lejos de la solución exacta. Esto último se basa en la hipótesis de que la solución no depende del paso de tiempo
+  \item En este trabajo se estudiaron ambos métodos, eligiendo n1 de modo que el error sea menor a una tolerancia de 1e-5 y proponiendo un algoritmo para elegir dt de modo de minimizar el costo computacional.
+  \item No describir el algoritmo
+\end{itemize}
+
+
+
 
 \ptitle{Algoritmo simpler simplificadamente}
 \begin{itemize}
-  \item 
+  \item \cite{Patankar}
+  \item Es un algoritmo segregado o de paso fraccionado. Esto último en el sentido de que se calculan por separado $\vec{v}$ y $p$.
+  \item Permite calcular la velocidad con divergencia libre (cumple la conservación de masa) y la presión en cada paso de tiempo a partir de un guess, el cual suele ser la solución del paso anterior. \textcolor{red}{es así, no?}
+  \item Se propone que determinados términos de la ecuación se pueden estimar con el paso anterior. Se calcula la presión de modo de que el nuevo campo de velocidades tenga divergencia libre. Luego se calcula el campo de velocidades empleando esta nueva presión, obteniendo un campo que no necesariamente tiene divergencia libre. Posteriormente, se vuelve a calcular la presión de modo que el nuevo campo de velocidades tenga divergencia libre, empleando como guess el campo de velocidades calculado. Este proceso es un paso del algoritmo simpler.
+  \item En el link \url{https://www.cfd-online.com/Wiki/SIMPLER_algorithm_-_SIMPLE_-_Revised} se explica el procedimiento bien resumido y sin ecuaciones.
+  \item La exactitud de la solución depende del número de pasos internos realizados en el algoritmo, que pueden ser tantos como uno quiera aunque aumenta el costo computacional
 \end{itemize}
+
+
+
+\textcolor{red}{Es necesario explicar cómo discretizar las ecuaciones de momento? Sería copiar textual el desarrollo hecho en la penúltima clase. Le pregunté a Federico}
+\textcolor{red}{Plantear lo siguiente luego de que Federico me halla respondido}
 
 \ptitle{Esquemas numéricos posibles para cada término}
 \begin{itemize}
-  \item 
+  \item Para cada término de las ecuaciones de momento, se pueden plantear distintos esquemas numéricos. En este trabajo se estudiaron los siguientes:
+  \begin{itemize}
+    \item Para la parte temporal, se emplearon los esquemas de Euler implícito y de Crank-Nicolson.
+  \end{itemize}
 \end{itemize}
 
 \ptitle{Término advectivo. Explicar cada método numérico}
@@ -229,8 +322,20 @@ No describir el algoritmo
 
 
 
-
 \ptitle{Resumen de lo que se va a estudiar}
+\begin{itemize}
+  \item En primer lugar, se estudió la dependencia de la solución en el estado estacionario con respecto al paso temporal.
+  \item Se planteó un algoritmo para minimizar el costo computacional para encontrar el estado estacionario con un error menor al 5 \%
+  \item Se evaluó el efecto de los pasos internos del algoritmo simpler
+  \item En segundo lugar, se estudió el impacto en el estacionario del esquema espacial en el término advectivo empleando distintos números de Reynolds. En particular, se utilizaron diferencias centradas de orden 2, Up-wind de orden uno y el esquema QUICK de orden \textcolor{red}{?}
+  \item Además, se estudió el orden de convergencia espacial de Up-wind de primer orden en referencia al mejor esquema advectivo
+  \item Se estudió el efecto del método de evolución temporal, evaluando el estado transitorio de la solución mediante los métodos Euler Implícito y Crank-Nicholson
+\end{itemize}
+
+
+
+
+
 \begin{itemize}
   \item 
 \end{itemize}
