@@ -46,8 +46,8 @@ bookmarksopen=false,
 \newcommand\ptitle[1]{\par\refstepcounter{para}
 {\ifpnumber{\noindent\textcolor{lightgray}{\textbf{\thepara}}\indent}\fi}
 {\ifptitle{\textbf{[{#1}]}}\fi}}
-% \ptitletrue  % comment this line to hide paragraph titles
-% \pnumbertrue  % comment this line to hide paragraph numbers
+\ptitletrue  % comment this line to hide paragraph titles
+\pnumbertrue  % comment this line to hide paragraph numbers
 
 % minimum font size for figures
 \newcommand{\minfont}{6}
@@ -148,17 +148,97 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \begin{abstract}
 
+\begin{itemize}
+  \item Se estudiaron métodos numéricos espaciales y de evolución temporal para resolver el problema de la cavidad cuadrada hidrodinámica bidimensional.
+  \item Se tiene en cuenta la ecuación de momentos y la de conservación de masa. Este tiene un término advectivo, uno difusivo.
+  \item Se resolvió mediante el método de volumenes finitos y algoritmo simpler calculando presión y velocidades diferidas? con grilla desplazada.
+  \item En primer lugar, se estudió la dependencia de la solución en el estado estacionario con respecto al paso temporal.
+  \item Se planteó un algoritmo para minimizar el costo computacional para encontrar el estado estacionario con un error menor al 5 \%
+  \item Se evaluó el efecto de los pasos internos del algoritmo simpler
+  \item En segundo lugar, se estudió el impacto en el estacionario del esquema espacial en el término advectivo empleando distintos números de Reynolds. En particular, se utilizaron diferencias centradas de orden 2, Up-wind de orden uno y el esquema QUICK de orden \textcolor{red}{?}
+  \item Además, se estudió el orden de convergencia espacial de Up-wind de primer orden en referencia al mejor esquema advectivo
+  \item Se estudió el efecto del método de evolución temporal, evaluando el estado transitorio de la solución mediante los métodos Euler Implícito y Crank-Nicholson
+\end{itemize}
+
+
 \end{abstract}
 
 \maketitle
 
 \section{Introducción}
 
+\ptitle{¿Por qué es importante resolver problemas de fluidos numéricamente? Rtas en la primera clase}
+
+\begin{itemize}
+  \item Una gran parte de los problemas de mecánica de fluidos no son resolubles analíticamente
+  \item En algunos de los problemas es posible realizar experimentos. Sin embargo, estos traen aparejados un gran costo operativo y dificultades para realizar las mediciones \textcolor{red}{ref clase 1}
+  \item Una alternativa más rápida y de menor costo es resolver estos problemas numéricamente, con las dificultades que esto conlleva. Tal es el caso de los errores de aproximación numérica y el costo computacional, que puede ser aún así más barato que hacer el experimento
+  \item Aun así, en los últimos años la resolución numérica de ecuaciones es aceptada y está ganando preponderancia
+\end{itemize}
+
+\ptitle{Explicar el problema de la cavidad cuadrada hidrodinámica bidimensional}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\ptitle{Explicación de las ecuaciones involucradas}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+
 \section{Métodos Numéricos}
+
+\ptitle{Discretización}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\ptitle{Elección de dt}
+\begin{itemize}
+  \item 
+\end{itemize}
+No describir el algoritmo
+
+\ptitle{Grilla desplazada}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\textcolor{red}{Es necesario explicar cómo discretizar las ecuaciones de momento? Sería copiar textual el desarrollo hecho en la penúltima clase. Le pregunté a Federico}
+
+\ptitle{Algoritmo simpler simplificadamente}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\ptitle{Esquemas numéricos posibles para cada término}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\ptitle{Término advectivo. Explicar cada método numérico}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\ptitle{Término temporal. Explicar cada método numérico}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+
+
+
+\ptitle{Resumen de lo que se va a estudiar}
+\begin{itemize}
+  \item 
+\end{itemize}
 
 \section{Resultados y discusión}
 
-\subsection{Estado estacionario}
+
+\subsection{Dependencia del estado estacionario con el paso dt}
 
 Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$ y distintos dt.
 
@@ -171,6 +251,11 @@ Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$ y distintos dt.
 Se calculó para cada caso la desviación estándar de la velocidad normalizada por el valor promedio
 
 \subsection{Elección de dt}
+Describir el algoritmo
+
+\subsection{dt para distintos lsimpler}
+
+Estaría bueno dar para cada caso el máximo dt posible y el que me da mi algoritmo
 
 \subsection{Término advectivo}
 
@@ -216,6 +301,13 @@ Se calculó $u(0.5)$ y $v(0.5)$ para $Re = 1$ y $Re = 1000$ con $n1 = 80$ y esqu
   \caption{}
    \label{fig:error_UP1_n1_vs_Re}
 \end{figure}
+
+\suvsection{Esquema temporal con solución dependiente del tiempo}
+
+\textcolor{blue}{Evolución temporal con EI y CN.}
+
+
+
 
 
 \section{Conclusión}
