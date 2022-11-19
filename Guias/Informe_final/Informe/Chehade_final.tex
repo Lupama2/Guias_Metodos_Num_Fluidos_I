@@ -337,7 +337,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 
 \begin{itemize}
-  \item 
+  \item \textcolor{red}{En todos los casos se usó una tolerancia para el estado estacionario de 1e-5}
 \end{itemize}
 
 \section{Resultados y discusión}
@@ -345,7 +345,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \subsection{Dependencia del estado estacionario con el paso dt}
 
-Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$ y distintos dt.
+En primer lugar, se analizó la dependencia del estado estacionario en relación al paso de evolución temporal. Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$, $n_1 = 20$ y distintos $\Delta t$ entre $0.005$ y $20$. Como método numérico para el término advectivo se empleó diferencias centradas de orden 2 y como método temporal, Euler implícito. En la figura \ref{fig:a_vel_vs_dt} se grafican los resultados obtenidos respecto al valor correspondiente al menor $\Delta t$ en valor absoluto. Se observa una diferencia entre los valores obtenidos del orden 
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{a_vel_vs_dt.pdf}
