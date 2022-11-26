@@ -345,7 +345,11 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \subsection{Dependencia del estado estacionario con el paso dt}
 
-En primer lugar, se analizó la dependencia del estado estacionario en relación al paso de evolución temporal. Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$, $n_1 = 20$ y distintos $\Delta t$ entre $0.005$ y $20$. Como método numérico para el término advectivo se empleó diferencias centradas de orden 2 y como método temporal, Euler implícito. En la figura \ref{fig:a_vel_vs_dt} se grafican los resultados obtenidos respecto al valor correspondiente al menor $\Delta t$ en valor absoluto. Se observa una diferencia entre los valores obtenidos del orden 
+En primer lugar, se analizó la dependencia del estado estacionario con el paso de evolución temporal. Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$, $n_1 = 20$ y distintos $\Delta t$ entre $0.005$ y $20$. Se emplearon diferencias centradas de orden 2 para el término advectivo y Euler implícito para la evolución temporal. En la figura \ref{fig:a_vel_vs_dt} se grafican los resultados obtenidos respecto al valor correspondiente al menor $\Delta t$ en valor absoluto. Se observa una diferencia entre los valores obtenidos del orden de $1 \times 10^{-4}$, ligeramente superior a la tolerancia en el criterio de convergencia. Aunque si solo se consideraran $\Delta t$ menores a 1, se obtendría una diferencia menor a dicha tolerancia.
+
+Esto indica que el estado estacionario depende de $\Delta t$ con una variación menor a la tolerancia siempre que ocurra $\Delta t < 1$ \textcolor{red}{menor pero del orden}. Si bien esto sólo se da en el caso particular considerado, se tomará como normal general
+
+
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{a_vel_vs_dt.pdf}
@@ -353,37 +357,223 @@ En primer lugar, se analizó la dependencia del estado estacionario en relación
    \label{fig:a_vel_vs_dt}
 \end{figure}
 
-Se calculó para cada caso la desviación estándar de la velocidad normalizada por el valor promedio
+
 
 \subsection{Elección de dt}
-Describir el algoritmo
+
+\begin{itemize}
+  \item Como se mencionó en la sección anterior, debido a la cantidad de variables involucradas el costo computacional necesario para encontrar el estado estacionario es muy alto.
+  \item Además, el resultado anterior indica que el estado estacionario podría no depender del paso de tiempo $\Delta t$.
+  \item Por lo tanto, si solo es de interés el estado estacionario, se puede elegir $\Delta t$ de modo que el número de pasos necesarios sea el menor posible.
+  \item Esto no implica necesariamente que $\Delta t$ sea lo mayor posible.
+  \item En base a esto, se propone el siguiente algoritmo.
+\end{itemize}
+
+\ptitle{Algoritmo}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\ptitle{Para qué se usó el algoritmo anterior}
+\begin{itemize}
+  \item Este algoritmo no siempre va a encontrar el mejor $\Delta t$ posible, pero se espera que esté cerca del óptimo.
+  \item El algoritmo anterior fue empleado para hallar el estado estacionario en todo este trabajo salvo el caso particular $n_1 = 80$. Este es el caso más costoso y se buscará a mano el mejor $\Delta t$ para cada $Re$ específico.
+  \item Se usaron $\Delta t = 0.35$, $1.25$ y $2.0$ para $Re = 100$, $1000$ y $5000$, respecticamente
+\end{itemize}
 
 \subsection{dt para distintos lsimpler}
 
 Estaría bueno dar para cada caso el máximo dt posible y el que me da mi algoritmo
 
 \subsection{Término advectivo}
+\textcolor{red}{Los captions no están siendo autocontenidos. Hay que mencionar qué curva se encima sobre cuál}
 
-Se implementó para el término advectivo los esquemas DC2, UP1 y QUICK. Se resolvió el problema para $Re = 100, 1000 \, \mathrm{y} \, 5000$ y para $n1 = 20, 40 \, \mathrm{y} \, 80$. Se calculó para cada caso el error relativo respecto a los resultados de Guia.
+
+Se implementó para el término advectivo los esquemas DC2, UP1 y QUICK. Se calculó el estado estacionario para $Re = 100, 1000 \, \mathrm{y} \, 5000$, para $n1 = 20, 40 \, \mathrm{y} \, 80$ y para los tres esquemas mencionados
+
+Es de interés estudiar
+\begin{itemize}
+  \item La dependencia con el número de Reynolds
+  \item La dependencia con n1
+  \item La dependencia con el termino advectivo
+\end{itemize}
+
+\ptitle{Comparación DC2 vs n1 para distintos Re}
+En primer lugar, se estudió la dependencia del estado estacionario con la discretización espacial $n_1$ y el número de $Re$, empleando como término advectivo particular diferencias finitas de orden 2
+\begin{itemize}
+  \item En las figuras \ref{fig:velocidades_u_DC2_vs_Re} y \ref{fig:velocidades_v_DC2_vs_Re} se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ para distintos casos.
+  \item Para $Re = 100$ se observa en ambos casos que el resultado varía cualitativamente poco con el tamño de la discretización.
+  \item Por otro lado, para $Re = 1000$ la diferencia entre los resultados es más significativa, llegando en algunos sitios a superar la tolerancia de $1 \times 10^{-5}$ del criterio de convergencia.
+  \item Por último, el caso $Re = 5000$ es el más notable de todos. Ni siquiera la solución de mayor $n_1$ es cercana a la de referencia
+  \item Esto indica que a mayor número de $Re$ es necesario disminuir el tamaño de la discretización, es decir, aumentar $n_1$, para obtener una solución más precisa.
+  \item \textcolor{red}{Por qué pasa esto? Qué tiene de particular el caso de $Re$ alto?}
+\end{itemize}
+
+\ptitle{Comparación cualitativa entre métodos numéricos para distintos Re}
+En segundo lugar, se estudió la dependencia del estado estacionario con el número de $Re$ y el método numérico empleado para el término advectivo. En todos los casos se empleó $n_1 = 80$
+
+\begin{itemize}
+  \item En las figuras \ref{terminos_advs_u} y \ref{terminos_advs_u} se grafica
+  \item Cualitativamente, para $Re = 100$ no se observan grandes diferencias.
+  \item Para $Re = 1000$ es notable que el método UP1 no aproxima correctamente la solución, mientras que DC2 y QUICK sí lo hacen. Esto se puede justificar en los órdenes de aproximación de los métodos, siendo el primero de orden 1 y los segundos de orden 2 \textcolor{red}{QUICK es orden 2?}
+  \item Para $Re = 5000$ ninguno de los métodos aproxima correctamente la solución en la totalidad del dominio. En base a los resultados obtenidos al variar $n_1$, esto podría deberse al tamaño de la grilla espacial y no al método numérico.
+\end{itemize}
+
+\ptitle{Comparación numérica entre métodos numéricos para distintos $Re$.}
+Para cada variación posible de $n_1$, $Re$ y método para el término advectivo, se calculó el error relativo $e_{rel}$ respecto a la bibliografía \textcolor{red}{referencia} en el centro del dominio $x = 0.5$ e $y = 0.5$. Para calcular este error se suman cuadráticamente los errores en $u$ y $v$ y se normaliza con el valor de referencia, es decir,
+\[e_{rel} = \frac{\sqrt{(u_{exp} - u_{sol})^2 + (v_{exp} - v_{sol})^2}}{\sqrt{u_{sol}^2 + v_{sol}^2}}. \]
+
+Mencionar cómo se calcula $u(0.5,0.5)$ y que sólo tiene sentido calcularlo allí porque la aproximación es del mismo orden que los métodos. Calcularla en otro lado con un promedio ponderado es de mayor orden.
+
+\begin{itemize}
+  \item En la figura \ref{fig:termino_advectivo}. Esta permite hacer una discusión cualitativa
+  \item Cualitativamente los tres métodos muestran el mismo comportamiento
+  \item En primer lugar, independientemente del valor de $Re$, a mayor $n_1$, menor error. La excepción a este caso es el de $Re = 100$ y $n_1 = 80$, donde tanto en DC2 como en QUICK no se cumple la regla \textcolor{red}{por qué será?}
+  \item En segundo lugar, a mayor $Re$, el error tiende a aumentar. Esto se observó en los análisis anteriores: a mayor $Re$ es necesario aumentar $n_1$ para obtener una solución más precisa.
+  \item Para comparar los métodos numéricos entre sí, es necesario analizar cuantitativamente los errores.
+  \item Estos se presentan para $n_1 = 80$ CREO en la TABLA REF. Tengo que cambiar la tabla, tiene que decir los nros de Re en lugar de $e$
+  \item Se observa que el método DC2 presenta menor error.
+\end{itemize}
+
 $tol_estacionario = 1e-5$
+
+\begin{itemize}
+  \item En la figura \ref{velocidades_DC2_vs_Re}
+\end{itemize}
+
+
+\onecolumngrid
+
 
 \begin{figure}
   \centering
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{termino_adv_Db_u_100.pdf}
+      \caption{}
+      \label{fig:termino_adv_Db_u_100}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{termino_adv_Db_u_1000.pdf}
+      \caption{}
+      \label{fig:termino_adv_Db_u_1000}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{termino_adv_Db_u_5000.pdf}
+      \caption{}
+      \label{fig:termino_adv_Db_u_5000}
+  \end{subfigure}
+     \caption{Velocidad $u(0.5,y)$ en función de $y$ para distinto tamaño de la grilla espacial $n_1$ y número de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$.}
+     \label{fig:velocidades_u_DC2_vs_Re}
+\end{figure}
+
+\begin{figure}
+  \centering
+  
+  \begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{termino_adv_Db_v_100.pdf}
+    \caption{}
+    \label{fig:termino_adv_Db_v_100}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{termino_adv_Db_v_1000.pdf}
+    \caption{}
+    \label{fig:termino_adv_Db_v_1000}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{termino_adv_Db_v_5000.pdf}
+    \caption{}
+    \label{fig:termino_adv_Db_v_5000}
+\end{subfigure}
+     \caption{Velocidad $v(x,0.5)$ en función de $x$ para distintos tamaño de la grilla espacial $n_1$ y número de Reynolds $Re$: (d) $Re = 100$, (e) $Re = 1000$ y (f) $Re = 5000$.}
+     \label{fig:velocidades_v_DC2_vs_Re}
+\end{figure}
+
+
+
+
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{terminos_advs_u_100.pdf}
+      \caption{}
+      \label{fig:terminos_advs_u_100}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{terminos_advs_u_1000.pdf}
+      \caption{}
+      \label{fig:terminos_advs_u_1000}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{terminos_advs_u_5000.pdf}
+      \caption{}
+      \label{fig:terminos_advs_u_5000}
+  \end{subfigure}
+     \caption{Velocidad $u(0.5,y)$ en el estado estacionario en función de $y$ para distintas métodos numéricos del término advectivo y distintos números de $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$. En todos los casos se empleó una grilla espacial de tamaño $n_1 \times n_1$ con $n_1 = 80$}
+     \label{fig:terminos_advs_u}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{terminos_advs_v_100.pdf}
+    \caption{}
+    \label{fig:terminos_advs_v_100}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{terminos_advs_v_1000.pdf}
+    \caption{}
+    \label{fig:terminos_advs_v_1000}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{terminos_advs_v_5000.pdf}
+    \caption{}
+    \label{fig:terminos_advs_v_5000}
+  \end{subfigure}
+     \caption{}
+     \label{fig:terminos_advs_v}
+\end{figure}
+
+
+
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.32\textwidth}
       \centering
       \includegraphics[width=\textwidth]{termino_adv_DC2.pdf}
       \caption{}
       \label{fig:termino_adv_DC2}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
       \centering
       \includegraphics[width=\textwidth]{termino_adv_UP1.pdf}
       \caption{}
       \label{fig:termino_adv_UP1}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.32\textwidth}
       \centering
       \includegraphics[width=\textwidth]{termino_adv_QUICK.pdf}
       \caption{}
@@ -393,9 +583,41 @@ $tol_estacionario = 1e-5$
      \label{fig:termino_advectivo}
 \end{figure}
 
+
+
+\twocolumngrid
+
+
+
+
+\begin{table}[]
+  \begin{tabular}{l|ccc|}
+  \cline{2-4}
+                            & \multicolumn{3}{c|}{$e$}                                                    \\ \hline
+  \multicolumn{1}{|l|}{DC2} & \multicolumn{1}{c|}{$0.08541$} & \multicolumn{1}{c|}{$0.17567$} & $0.69045$ \\ \hline
+  \multicolumn{1}{|l|}{UP1} & \multicolumn{1}{c|}{$0.14813$} & \multicolumn{1}{c|}{$3.46833$} & $17.6402$ \\ \hline
+  \multicolumn{1}{|l|}{QUICK} & \multicolumn{1}{c|}{$0.08778$} & \multicolumn{1}{c|}{$0.30266$} & $4.09139$ \\ \hline
+  \end{tabular}
+  \end{table}
+
 \textcolor{blue}{Tabla con resultados}
 
-\textcolor{red}{Duda: es necesario reportar el dt en cada caso?}
+
+
+\textcolor{red}{Duda: es necesario reportar el dt en cada caso? No lo voy a hacer}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \subsection{Orden de convergencia espacial de UP1}
 
@@ -407,7 +629,12 @@ Se calculó $u(0.5)$ y $v(0.5)$ para $Re = 1$ y $Re = 1000$ con $n1 = 80$ y esqu
    \label{fig:error_UP1_n1_vs_Re}
 \end{figure}
 
-\suvsection{Esquema temporal con solución dependiente del tiempo}
+u: Orden de convergencia:  2.5279722490866563 +/- 0.25890392418605823
+v: Orden de convergencia:  2.88403428611868 +/- 0.4040887289633906
+
+
+\subsection{Esquema temporal con solución dependiente del tiempo}
+
 
 \textcolor{blue}{Evolución temporal con EI y CN.}
 

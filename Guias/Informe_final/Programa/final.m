@@ -294,9 +294,9 @@ function comparacion_Ghuia(Re_array, U0_top, n1_array, tol_estacionario, Ndeltat
             n1 = n1_array(ii)
             Re = Re_array(jj)
 
-            archivo_velocidades_centrales = strcat("graficos/datos/", inciso, "_",termino_advectivo, "_velocentral_basura.csv");
-            archivo_evolucion_variables = strcat("graficos/datos/", inciso,  "_",termino_advectivo,"_evolucion_basura.csv");
-            archivo_parametros = strcat("graficos/datos/", inciso, "_",termino_advectivo, "_parametros_basura.csv");
+            archivo_velocidades_centrales = strcat("graficos/datos/", inciso, "_",termino_advectivo, "_",num2str(n1), "_",num2str(Re), "_velocentral.csv");
+            archivo_evolucion_variables = strcat("graficos/datos/", inciso,  "_",termino_advectivo, "_",num2str(n1), "_",num2str(Re),"_evolucion.csv");
+            archivo_parametros = strcat("graficos/datos/", inciso, "_",termino_advectivo, "_",num2str(n1), "_",num2str(Re), "_parametros.csv");
 
             if buscar == true
             #Busco el mejor dt:
@@ -346,8 +346,8 @@ if calcular == true
 
     % n1_array = [80];
     % Re_array = [5000];
-    n1_array = [20, 40, 80];
-    Re_array = [100,1000,5000];
+    n1_array = [80];
+    Re_array = [5000];#,1000,5000];
     archivo_ucentral = "graficos/datos/b_ucentral.csv";
     archivo_vcentral = "graficos/datos/b_vcentral.csv";
 
@@ -356,9 +356,9 @@ if calcular == true
     termino_advectivo = "D";
     metodo_temporal = "E";
     
-    dt_guess = 0.005;
+    dt_guess = 2;#0.005;
     Ndeltat_max = 10;
-    buscar = true;
+    buscar = false;
 
     comparacion_Ghuia(Re_array, @U0_top_cte, n1_array, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_ucentral, archivo_vcentral, dt_guess, Ndeltat_max, buscar, inciso)
 endif
@@ -383,7 +383,7 @@ endif
 #Inciso c
 #Hago lo mismo que el b pero con distinto esquema para el término advectivo.
 #AÚN NO PROGRAMÉ EL QUICK así que ejecuto dos veces con el UP1
-calcular = true;
+calcular = false;
 tol_estacionario = 1e-5;
 
 if calcular == true
@@ -394,16 +394,16 @@ if calcular == true
     % dt = 2; #Dentro de comparacion_Guia se busca el mejor dt posible
     Ndeltat= 80000; #80000; #numero de pasos de tiempo
 
-    n1_array = [20,40,80];
-    Re_array = [100,1000,5000];
+    n1_array = [80];#,80];
+    Re_array = [100]#,1000,5000];
 
     #Parámetros que seguro no modifique
     nsimpler = 1;
     metodo_temporal = "E";
 
-    dt_guess = 0.005;
+    dt_guess = 0.35;
     Ndeltat_max = 10;
-    buscar = true;
+    buscar = false;
 
     for kk = 1:length(termino_advectivo_array)
 
