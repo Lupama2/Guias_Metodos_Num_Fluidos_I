@@ -215,8 +215,14 @@ Un problema muy estudiado desde el punto de vista numérico en mecánica de flui
 \ptitle{Explicación de las ecuaciones involucradas}
 
 El objetivo es determinar la presión $p(x,y,t)$ y las velocidades $u(x,y,t)$ y $v(x,y,t)$ para todo punto $(x,y)$ y tiempo $t$. Para esto se cuenta con tres ecuaciones diferenciales. En primer lugar, la ecuación de conservación de momento en las direcciones vertical y horizontal. Adimensionalmente, estas son
-\[\frac{\partial u}{\partial t} + \frac{\partial (u u)}{\partial x} + \frac{\partial (u v)}{\partial y} = - \frac{\partial p}{\partial x} + \frac{1}{Re} \left ( \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} \right ), \]
-\[\frac{\partial v}{\partial t} + \frac{\partial (u v)}{\partial x} + \frac{\partial (v v)}{\partial y} = - \frac{\partial p}{\partial y} + \frac{1}{Re} \left ( \frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2} \right ), \]
+\begin{equation}
+  \frac{\partial u}{\partial t} + \frac{\partial (u u)}{\partial x} + \frac{\partial (u v)}{\partial y} = - \frac{\partial p}{\partial x} + \frac{1}{Re} \left ( \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} \right ),
+  \label{eq:momento_x}
+\end{equation}
+\begin{equation}
+  \frac{\partial v}{\partial t} + \frac{\partial (u v)}{\partial x} + \frac{\partial (v v)}{\partial y} = - \frac{\partial p}{\partial y} + \frac{1}{Re} \left ( \frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2} \right ),
+  \label{eq:momento_y}
+\end{equation}
 donde $Re = U_0L/\nu$ es el número de Reynolds. En ambas ecuaciones, el primer término del lado izquierdo resume la dependencia temporal del problema, los términos siguientes corresponden al efecto advectivo, el primer término del lado derecho resume la dependencia con la presión y los siguientes, el efecto difusivo. En segundo lugar se cuenta con la ecuación de conservación de masa. Para un fluido incompresible esta es
 \[\bigtriangledown \bullet \vec{V} = \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0.  \]
 En base a esta ecuación se suele decir que el campo de velocidades tiene divergencia libre.
@@ -282,10 +288,45 @@ En este trabajo se estudiaron todos los métodos mencionados. En primer lugar, s
 
 \ptitle{Resumen}
 \begin{itemize}
-  \item Se construyó un esquema numérico del sistema de ecuaciones \textcolor{red}{REFs} empleando distintos métodos para cada término. \item Se estudió el efecto de elegir distintos métodos para la evolución temporal y para el término advectivo.
-  \item En particular, para la evolución temporal 
-  \item Una vez planteado el esquema numérico, se resolvió el sistema de ecuaciones mediante el algoritmo SIMPLER, el cual permite calcular la presión y la velocidad con divergencia libre.
+  \item Se construyó un esquema numérico del sistema de ecuaciones \textcolor{red}{REFs}.
+  \item Se empleó volúmenes finitos para asegurar la conservación de la masa.
+  \item Se emplearon distintos métodos numéricos y se analizó su efecto en la solución numérica
+  \item Para la evolución temporal se empleó Euler Implícito y Crank-Nicolson
+  \item En cuanto a la discretización espacial, para el término advectivo se empleó DC2, UP1 y QUICK. Para el de presión, \textcolor{red}{cuál?} y para el difusivo, DC2-
+  \item Una vez planteado el esquema numérico, se resolvió el sistema de ecuaciones mediante el algoritmo SIMPLER. A continuación se explica brevemente cada método numérico utilizado y las ventajas o desventajas que trae aparejado su utilización.
 \end{itemize}
+
+\ptitle{Volúmenes finitos}
+\begin{itemize}
+\item La implementación del esquema de volúmenes finitos se explica en detalle en \cite{Notas_materia}.
+\item Se integran las ecuaciones de momento \ref{eq:momento_x} y \ref{eq:momento_y} en el volumen de las grillas de $u$ y $v$, respecticamente, empleando la regla del rectángulo \textcolor{red}{ref Moin}. Esta aproximación es de orden mayor a $\Delta^2$, correspondiente al mayor orden de aproximación de los esquemas espaciales.Se llega a un sistema de ecuaciones donde
+\item El término temporal depende de $du_{ij}/dt$
+\item El término advectivo depende de $u$ evaluado en los cuatro laterales: ($u_{n,ij}$ norte, $y$). Idéntico para $v$
+\item El término de presión depende de $p_{ij}$
+\item El término difusivo depende de las derivadas espaciales de $u$ evaluadas en los laterales:
+\item La aplicación de determinado método numérico es aproximar esos valores
+\item una particularidad del término advectivo es que en su integral, por ejemplo
+\[ \]
+aparecen términos no lineales. Uno de ellos se calculará usando el del paso anterior para evitar la no linealidad.
+\end{itemize}
+
+
+
+\ptitle{Método de evolución temporal}
+El sistema de ecuaciones anterior se puede llevar mediante un cambio de variables a un sistema de ecuaciones del tipo
+\[ \]
+donde y vec
+El método de Euler Implícito se basa En
+
+El método de Crank-Nicholson
+
+COPIAR DEL INFORME 2
+
+\ptitle{Métodos para el término advectivo}
+\begin{itemize}
+  \item En base al desarrollo presentado en \cite{Notas_materia}, para discretizar el sistema de ecuaciones diferenciales, basta con especificar un método para aproximar $U_w$, $V_s$, \dots
+\end{itemize}
+
 
 
 \ptitle{Algoritmo simpler simplificadamente}
