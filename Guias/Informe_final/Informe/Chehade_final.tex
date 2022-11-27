@@ -175,12 +175,12 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 \begin{itemize}
   \item Se estudiaron métodos numéricos espaciales y de evolución temporal para resolver el problema de la cavidad cuadrada hidrodinámica bidimensional.
   \item Se tiene en cuenta la ecuación de momentos y la de conservación de masa. Este tiene un término advectivo, uno difusivo.
-  \item Se resolvió mediante el método de volumenes finitos y algoritmo simpler calculando presión y velocidades diferidas? con grilla desplazada.
+  \item Se resolvió mediante el método de volumenes finitos y algoritmo simpler calculando presión y velocidades con grilla desplazada.
   \item En primer lugar, se estudió la dependencia de la solución en el estado estacionario con respecto al paso temporal.
   \item Se planteó un algoritmo para minimizar el costo computacional para encontrar el estado estacionario con un error menor al 5 \%
-  \item Se evaluó el efecto de los pasos internos del algoritmo simpler
   \item En segundo lugar, se estudió el impacto en el estacionario del esquema espacial en el término advectivo empleando distintos números de Reynolds. En particular, se utilizaron diferencias centradas de orden 2, Up-wind de orden uno y el esquema QUICK de orden \textcolor{red}{?}
   \item Además, se estudió el orden de convergencia espacial de Up-wind de primer orden en referencia al mejor esquema advectivo
+  \item Se evaluó el efecto de los pasos internos del algoritmo simpler
   \item Se estudió el efecto del método de evolución temporal, evaluando el estado transitorio de la solución mediante los métodos Euler Implícito y Crank-Nicholson
 \end{itemize}
 
@@ -193,98 +193,93 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \ptitle{¿Por qué es importante resolver problemas de fluidos numéricamente? Rtas en la primera clase}
 
-\begin{itemize}
-  \item Una gran parte de los problemas de mecánica de fluidos no son resolubles analíticamente
-  \item En algunos de los problemas es posible realizar experimentos. Sin embargo, estos traen aparejados un gran costo operativo y dificultades para realizar las mediciones \textcolor{red}{ref clase 1}
-  \item Una alternativa más rápida y de menor costo es resolver estos problemas numéricamente, con las dificultades que esto conlleva. Tal es el caso de los errores de aproximación numérica y el costo computacional, que puede ser aún así más barato que hacer el experimento
-  \item Aun así, en los últimos años la resolución numérica de ecuaciones es aceptada y está ganando preponderancia
-\end{itemize}
+Gran parte de los problemas de mecánica de fluidos no son resolubles analíticamente. Algunos de ellos pueden ser estudiados experimentalmente, con el costo operativo y las dificultades para realizar las mediciones que esto conlleva \textcolor{red}{ref clase 1}. Una alternativa más rápida y de menor costo es resolverlos numéricamente. Si bien esto trae aparejado algunas dificultades, como los errores de aproximación numérica y el costo computacional, en los últimos años la resolución numérica de ecuaciones es aceptada y está ganando preponderancia.
 
 \ptitle{Explicar el problema de la cavidad cuadrada hidrodinámica bidimensional}
-\begin{itemize}
-  \item Un problema muy estudiado desde el punto de vista numérico en mecánica de fluidos es el de la cavidad cuadrada hidrodinámica bidimensional, también conocida como Shear-drien cavity flow
-  \item Consiste en una cavidad cuadrada bidimensional de lado $L$ que contiene un fluido incompresible de viscocidad $\nu$. Las condiciones de borde son de no deslizamiento en todas las paredes excepto en la horizontal superior. Sea $\vec{V}(x,y) = (u(x,y), v(x,y))$ la velocidad en el punto $(x,y)$, las condiciones anteriores se traducen en $\vec{V}(x,0) = \vec{V}(0,y) = \vec{V}(L,y) = (0,0)$ y $\vec{V}(x,L) = (U_0,0)$
-  \item En la figura \ref{fig:esquema_cavidad_cuadrada} se muestra un esquema del problema
+Un problema muy estudiado desde el punto de vista numérico en mecánica de fluidos es el de la cavidad cuadrada hidrodinámica bidimensional, también conocido como Shear-drien cavity flow. En la figura \ref{fig:esquema_cavidad_cuadrada} se muestra un esquema del mismo. Consiste en una cavidad cuadrada bidimensional de lado $L$ que contiene un fluido incompresible de viscocidad $\nu$. Las condiciones de borde son de no deslizamiento en todas las paredes excepto en la horizontal superior. Sea $\vec{V}(x,y,t) = (u(x,y,t), v(x,y,t))$ la velocidad en el punto $(x,y)$ a tiempo $t$, las condiciones anteriores se traducen en $\vec{V}(x,0) = \vec{V}(0,y) = \vec{V}(L,y) = (0,0)$ y $\vec{V}(x,L) = (U_0(t),0)$.
 \end{itemize}
 
 \begin{figure}[h]
-  \includegraphics[clip=true,width=\columnwidth]{esquema_cavidad_cuadrada.png}
-  \caption{}
+  \includegraphics[clip=true,width=0.7\columnwidth]{esquema_cavidad_cuadrada.png}
+  \caption{Esquema del problema de la cavidad cuadrada hidrodinámica bidimensional. Consiste en una cavidad cuadrada bidimensional de lado $L$ que contiene un fluido incompresible de viscocidad $\nu$. Las condiciones de borde son de no deslizamiento en todas las paredes excepto en la horizontal superior, con velocidad $U_0$. Esta figura fue extraída de \cite{Notas_materia}.}
    \label{fig:esquema_cavidad_cuadrada}
 \end{figure}
 
 
 \ptitle{Explicación de las ecuaciones involucradas}
-\begin{itemize}
-  \item Las variables de interés son la presión y la velocidad vertical y horizontal
-  \item Se cuentan con tres ecuaciones diferenciales:
-  \item En primer lugar, las dos ecuaciones de conservación de momento en direcciones vertical y horizontal que, adimensionales, son
-  \[\frac{\partial u}{\partial t} + \frac{\partial (u u)}{\partial x} + \frac{\partial (u v)}{\partial y} = - \frac{\partial p}{\partial x} + \frac{1}{Re} \left ( \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} \right ) \]
-  \[\frac{\partial v}{\partial t} + \frac{\partial (u v)}{\partial x} + \frac{\partial (v v)}{\partial y} = - \frac{\partial p}{\partial y} + \frac{1}{Re} \left ( \frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2} \right ) \]
-  donde $Re = U_0L/\nu$
 
-  \item Nombrar cada término (temporal, advectivo, de presión y difusivo)
-  \item En segundo lugar, la ecuación de conservación de masa que para fluido incompresible es
-  \[\bigtriangledown \bullet \vec{V} = \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0  \]
+El objetivo es determinar la presión $p(x,y,t)$ y las velocidades $u(x,y,t)$ y $v(x,y,t)$ para todo punto $(x,y)$ y tiempo $t$. Para esto se cuenta con tres ecuaciones diferenciales. En primer lugar, la ecuación de conservación de momento en las direcciones vertical y horizontal. Adimensionalmente, estas son
+\[\frac{\partial u}{\partial t} + \frac{\partial (u u)}{\partial x} + \frac{\partial (u v)}{\partial y} = - \frac{\partial p}{\partial x} + \frac{1}{Re} \left ( \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} \right ), \]
+\[\frac{\partial v}{\partial t} + \frac{\partial (u v)}{\partial x} + \frac{\partial (v v)}{\partial y} = - \frac{\partial p}{\partial y} + \frac{1}{Re} \left ( \frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2} \right ), \]
+donde $Re = U_0L/\nu$ es el número de Reynolds. En ambas ecuaciones, el primer término del lado izquierdo resume la dependencia temporal del problema, los términos siguientes corresponden al efecto advectivo, el primer término del lado derecho resume la dependencia con la presión y los siguientes, el efecto difusivo. En segundo lugar se cuenta con la ecuación de conservación de masa. Para un fluido incompresible esta es
+\[\bigtriangledown \bullet \vec{V} = \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0.  \]
+En base a esta ecuación se suele decir que el campo de velocidades tiene divergencia libre.
 
-  \item en base a esa ecuación se dice que el campo de velocidades tiene "divergencia libre"
-  \item Las soluciones dependen de Re
-\end{itemize}
+\ptitle{Resumen}
+
+Empleando las tres ecuaciones diferenciales en derivadas parciales anteriores, es posible calcular la presión y las velocidades. Es notable que las soluciones dependerán del valor del número de Reynolds, el cual depende de la velocidad en la cara superior, la longitud de la cavidad y la viscocidad del líquido.
 
 \section{Métodos Numéricos}
 
 \ptitle{Resumen}
-\begin{itemize}
-  \item Para resolver el sistema de ecuaciones diferenciales es necesario discretizar el dominio y plantear esquemas numéricos para las ecuaciones. En cuanto al primero, es necesario diferenciar entre dominio espacial y temporal.
-  \item En cuanto al segundo, se emplearon volúmenes finitos con el objetivo de asegurar la conservación de masa \textcolor{red}{?} y distintos métodos espaciales y temporales para cada término.
-\end{itemize}
+Para resolver el sistema de ecuaciones diferenciales es necesario discretizar el dominio y plantear esquemas numéricos para las ecuaciones diferenciales. En cuanto al primero, es necesario diferenciar entre dominio espacial y temporal. En cuanto al segundo, se emplearon volúmenes finitos con el objetivo de asegurar la conservación de masa \textcolor{red}{?} y se estudió el efecto de distintos métodos espaciales y temporales.
+
+\subsection{Discretización del dominio}
 
 \ptitle{Discretización espacial}
-\begin{itemize}
-  \item El dominio espacial se discretiza ... 
-  \item Copiar lo que está en el pdf de la cátedra
-  \item \cite{Notas_materia}
-\end{itemize}
+El dominio espacial se discretiza mediante una grilla uniforme con igual espaciamiento $\Delta$ en ambas direcciones. El número de volúmenes por dirección espacial es $n$ tal que $\Delta = 1/n$. En total se cuentan con $n^2$ volúmenes, cada uno numerado con los índices $i$ y $j$ para las direcciones horizontales y verticales, respecticamente. 
 
 \ptitle{Grilla desplazada}
-\begin{itemize}
-  \item Copiar lo que está en el pdf de la cátedra
-\end{itemize}
+Se emplearon grillas desplazadas para las velocidades respecto a la presión. Estas se muestran esquemáticamente en la figura \ref{fig:grillas_desplazadas}. La grilla para $p$ posee todos sus volúmenes contenidos en la cavidad. Esto tiene la ventaja de no necesitar condiciones de borde sobre $p$, las cuales son difíciles de determinar, sino solo para $u$ y $v$.
+
 \begin{figure}
   \centering
   \begin{subfigure}[b]{0.25\textwidth}
       \includegraphics[width=\textwidth]{grilla_diferida_u.png}
       \caption{}
-      \label{fig:grilla_diferida_u}
+      \label{fig:grilla_desplazada_u}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.2\textwidth}
       \includegraphics[width=\textwidth]{grilla_diferida_v}
       \caption{}
-      \label{fig:grilla_diferida_v}
+      \label{fig:grilla_desplazada_v}
   \end{subfigure}
-     \caption{Grillas diferidas. Figuras extraídas de \cite{Notas_materia}}
-     \label{fig:grillas_diferidas}
+     \caption{Esquema de las grillas desplazadas para la presión $p$ y las velocidades horizontal $u$ (\ref{fig:grilla_desplazada_u}) y vertical $v$ (\ref{fig:grilla_desplazada_v}). La grilla para $p$ es la única que posee todos sus volúmenes contenidos en la cavidad. Estas figuras fueron extraídas de \cite{Notas_materia}.}
+     \label{fig:grillas_desplazadas}
 \end{figure}
 
 
 \ptitle{Discretización temporal}
+Por otro lado, el dominio temporal se define desde $t = 0$ hasta $t = t_{max}$. De este modo, la variable temporal se discretizó en puntos equiespaciados $t_k = k \Delta t$ con $k = 0,1,\dots,M$ con $\Delta t = t_{max}/M$.
+
+\subsection{Costo computacional}
+
+\ptitle{Costo computacional y elección de $n$}
+Debido a la cantidad de variables involucradas, proporcional a $n^2$, y dependiendo del número de pasos de tiempo a realizar, el costo computacional puede ser alto. En base a esto, es importante desarrollar métodos que permitan disminuir el costo pero que a su vez tengan una precisión aceptable. Un modo de minimizarlo es disminuyendo el número de variables pero exigiendo a su vez un error menor al 5 \%, por ejemplo. Sin embargo, para esto es necesario conocer la solución exacta o al menos una muy buena aproximación, lo cual no siempre se tiene.
+
+\ptitle{Elección de $M$}
+Otra alternativa es para dado $\Delta t$ elegir $M$ en base a un criterio de convergencia: si la solución tiende a un estacionario independiente del tiempo, entonces se avanza la solución hasta que, por ejemplo, se cumplan al mismo tiempos las desigualdades
+\[\frac{du}{dt} < tol, \, \frac{dv}{dt} < tol \]
+con $tol$ tolerancia. Claramente a menor $tol$, mayor el costo computacional debido a que se necesitan más pasos $M$. En este trabajo se decidió establecer $tol = 1 \times 10^{-5}$.
+
+\ptitle{Elección de $\Delta t$}
+
+Además, si solo es de interés la solución en el estado estacionario, otra alternativa es eligir $\Delta t$ de modo que la solución converja más rápido a pesar de tener un estado transitorio lejos de la solución exacta. Esto último se basa en la hipótesis de que la solución no depende del paso de tiempo, lo cual debe ser estudiado en detalle.
+
+\ptitle{Resumen de costo computacional}
+En este trabajo se estudiaron todos los métodos mencionados. En primer lugar, se determinó para $Re = 100$ y $1000$, el valor de $n_1$ tal que la solución numérica tiene un error menor al 5 \% respecto a una solución numérica de mayor precisión obtenida en \textcolor{red}{ref Guia}. En segundo lugar, estudiando la velocidad de convergencia en función de $\Delta t$ se planteó un algoritmo que permita elegir $\Delta t$ de modo de minimizar el número de pasos de tiempo necesarios. En tercer lugar, se decidió emplear el criterio de elección de $M$ durante todo el trabajo.
+
+
+
+\subsection{Esquema numérico}
+
+\ptitle{Resumen}
 \begin{itemize}
-  \item En cuando al dominio temporal, la variable temporal se discretizó en puntos equiespaciados $t_n = n \Delta t$ con $n = 0,1,\dots,N$ con $\Delta t = t_{max}/N$
+  \item Se construyó un esquema numérico del sistema de ecuaciones \textcolor{red}{REFs} empleando distintos métodos para cada término. \item Se estudió el efecto de elegir distintos métodos para la evolución temporal y para el término advectivo.
+  \item En particular, para la evolución temporal 
+  \item Una vez planteado el esquema numérico, se resolvió el sistema de ecuaciones mediante el algoritmo SIMPLER, el cual permite calcular la presión y la velocidad con divergencia libre.
 \end{itemize}
-
-
-\ptitle{Costo computacional y elección de dt}
-\begin{itemize}
-  \item Debido a la cantidad de variables involucradas y dependiendo del número de pasos de tiempo a realizar, el costo computacional puede ser alto.
-  \item Un modo de minimizarlo es eligiendo n1 lo suficientemente pequeño para que el error sea menor a una tolerancia determinada, aunque para esto es necesario conocer al menos la solución exacta, lo cual no siempre se tiene
-  \item Otra alternativa es elegir $N$ en base a un criterio de convergencia: si la solución tiende a un estacionario independiente del tiempo, entonces avanzamos la solución hasta que, por ejemplo, CONDICIÓN SOBRE DERIVADAS
-  \item Si solo es de interés la solución en el estado estacionario, otro modo de atacar el problema es eligiendo dt para que el problema converja rápido a pesar de tener un estado transitorio lejos de la solución exacta. Esto último se basa en la hipótesis de que la solución no depende del paso de tiempo
-  \item En este trabajo se estudiaron ambos métodos, eligiendo n1 de modo que el error sea menor a una tolerancia de 1e-5 y proponiendo un algoritmo para elegir dt de modo de minimizar el costo computacional.
-  \item No describir el algoritmo
-\end{itemize}
-
-
 
 
 \ptitle{Algoritmo simpler simplificadamente}
