@@ -776,9 +776,9 @@ if calcular == true
     n1 = 30;
     Re = 1000;
     dt = 0.4;
-    tmax = 30;#60;
+    tmax = 15;#60;
     Ndeltat = round(tmax/dt)
-    nsimpler_array = [3];#[1,3];
+    nsimpler_array = [1];#[1,3];
     metodo_temporal_array = ['C']#['E'; 'C'];
 
 
