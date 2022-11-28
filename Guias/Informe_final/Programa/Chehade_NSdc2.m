@@ -1313,6 +1313,7 @@ endif
 
 if k == Ndeltat - 1
   strcat("Se llego al nro maximo de pasos de tiempo Ndeltat =  ", num2str(k))
+  Ndeltat = k; #Test para ver si se guarda el nro de pasos de tiempo ejecutados
 endif
 
 #---------------------------------------------

@@ -635,7 +635,7 @@ if calcular == true
 
     e_tol = 0.05;
     n1_guess = 30
-    dt_guess = 0.05; #0.001 Con este valor converge para DC2 y Re = 1000
+    dt_guess = 0.005; #0.001 Con este valor converge para DC2 y Re = 1000
     Ndeltat=8000;
 
     nsimpler = 1;
@@ -659,16 +659,24 @@ if calcular == true
             #Detengo cronómetro
             costo_rta = time() - t_crono_ini;
 
-            #Extraigo los valores de Ndeltat, deltat
+
+            #Me interesa guardar
+            #*termino advectivo
+            #*Re
+            #*n1
+            #*deltat
+            #*Ndeltat
+            #*costo_rta
+
             data = importdata(archivo_parametros);
             Ndeltat_rta = data(3);
             dt_rta = data(4);
 
-            #Guardo en un archivo n1, Ndeltat, deltat y el tiempo
+            #Guardo en un archivo
 
             archivo_costo_comp = strcat("graficos/datos/e_costo_computacional_Re", num2str(Re),"_termino_adv", termino_advectivo, ".csv");
             archivo_costo_comp = fopen(archivo_costo_comp, "w");
-            fprintf(archivo_costo_comp,"%e %e %e %e\n", n1, Ndeltat_rta, dt_rta, costo_rta);
+            fprintf(archivo_costo_comp,"%e %e %e %e %e %e\n", termino_advectivo, Re, n1, dt_rta, Ndeltat_rta, costo_rta);
 
             
         endfor
@@ -723,6 +731,16 @@ if calcular == true
 
         #Detengo cronómetro
         costo_rta = time() - t_crono_ini;
+
+        #Guardo en un archivo las velocidades a tiempo final
+        #Abro el archivo de velocidad
+        archivo_velocidades_centrales = strcat("graficos/datos/", inciso, "_",termino_advectivo, "_",num2str(n1), "_",num2str(Re),"_velocentral.csv");
+        data = importdata(archivo_velocidades_centrales);
+        #Guardo los datos agregando la terminación con el nsimpler
+        
+        archivo_velocidades_centrales = strcat("graficos/datos/", inciso, "_",termino_advectivo, "_",num2str(n1), "_",num2str(Re), "_lsimpler",num2str(nsimpler),"_velocentral.csv");
+        csvwrite(archivo_velocidades_centrales, data);
+
 
         #Me interesa guardar el tiempo de ejecución de cada caso y el paso de tiempo
         #Abro el archivo de parámetros y extraigo el costo y el paso de tiempo

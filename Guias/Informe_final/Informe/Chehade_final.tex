@@ -398,38 +398,99 @@ En este trabajo se estudiaron todos los métodos mencionados. En primer lugar, s
 
 \subsection{Dependencia del estado estacionario con el paso dt}
 
-En primer lugar, se analizó la dependencia del estado estacionario con el paso de evolución temporal. Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$, $n_1 = 20$ y distintos $\Delta t$ entre $0.005$ y $20$. Se emplearon diferencias centradas de orden 2 para el término advectivo y Euler implícito para la evolución temporal. En la figura \ref{fig:a_vel_vs_dt} se grafican los resultados obtenidos respecto al valor correspondiente al menor $\Delta t$ en valor absoluto. Se observa una diferencia entre los valores obtenidos del orden de $1 \times 10^{-4}$, ligeramente superior a la tolerancia en el criterio de convergencia. Aunque si solo se consideraran $\Delta t$ menores a 1, se obtendría una diferencia menor a dicha tolerancia.
-
-Esto indica que el estado estacionario depende de $\Delta t$ con una variación menor a la tolerancia siempre que ocurra $\Delta t < 1$ \textcolor{red}{menor pero del orden}. Si bien esto sólo se da en el caso particular considerado, se tomará como normal general
-
-
+En primer lugar, se analizó la dependencia del estado estacionario con el paso de evolución temporal. El estado estacionario se define en base al criterio de convergencia descripto en la sección anterior con una tolerancia $tol = 1 \times 10^{-5}$. Se calculó $u(0.5,0.5)$ y $v(0.5,0.5)$ para $Re = 1000$, $n = 20$, $l_simpler = 1$ y distintos $\Delta t$ entre $0.005$ y $20$. Se emplearon diferencias centradas de orden 2 para el término advectivo y Euler implícito para la evolución temporal. En la figura \ref{fig:a_vel_vs_dt} se grafican $\delta u(0.5,0.5)$ y $\delta v(0.5,0.5)$ definidos como la diferencia en valor absoluto entre la velocidad con determinado $\Delta t$ y su valor con $\Delta t = 0.005$. Se observa una diferencia entre los valores obtenidos del orden de $1 \times 10^{-4}$, ligeramente superior a la tolerancia en el criterio de convergencia. Aunque si solo se consideraran $\Delta t \lessim 1$, se obtendría una diferencia menor a dicha tolerancia y por lo tanto se podría decir que el estado estacionario no depende de $\Delta t$. De este modo, bajo estas condiciones es válido el uso del algortimo para calcular el mejor $\Delta t$ descripto en la sección anterior. Si bien la afirmación anterior sólo es válida en el caso particular considerado, se tomará como normal general en próximas simulaciones.
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=\columnwidth]{a_vel_vs_dt.pdf}
-  \caption{}
+  \caption{$\delta u(0.5,0.5)$ y $\delta v(0.5,0.5)$ en función del paso temporal $\Delta t$. Se empleó $Re = 1000$, $n = 20$ y $l_{simpler} = 1$. Además, se utilizó diferencias finitas centradas de orden 2 para el término advectivo y difusivo y Euler implícito para la evolución temporal.}
    \label{fig:a_vel_vs_dt}
 \end{figure}
 
 
+\subsection{Costo computacional}
 
-\subsection{Elección de dt}
-
+\ptitle{Resumen}
 \begin{itemize}
-  \item Como se mencionó en la sección anterior, debido a la cantidad de variables involucradas el costo computacional necesario para encontrar el estado estacionario es muy alto.
-  \item Además, el resultado anterior indica que el estado estacionario podría no depender del paso de tiempo $\Delta t$.
-  \item Por lo tanto, si solo es de interés el estado estacionario, se puede elegir $\Delta t$ de modo que el número de pasos necesarios sea el menor posible mediante el algoritmo propuesto en la sección anterior
+  \item El algoritmo para encontrar el mejor $\Delta t$ permite disminuir el número de pasos necesarios para alcanzar el estado estacionario, lo cual disminuye a su vez el costo computacional.
+  \item Otro modo de hacer esto último es reduciendo el número de variables involucradas. En este caso se debe tener cuidado de no perder precisión en la solución, para lo cual es útil tener una solución de referencia con mayor precisión. En este trabajo se empleó la solución numérica de \textcolor{red}{ref guia} como referencia.
+  \item Para encontrar el mínimo $n$ se empleó el siguiente algoritmo. Se comenzó con $n = 30$, lo suficientemente grande para asegurar un error menor al 5 \%. Luego, se redujo $n$ en dos unidades, se avanzó la solución hasta el estado estacionario eligiendo $\Delta t$ mediante el algoritmo presentado en la sección anterior y se midió el error. Si este es menor al 5 \% se disminuye nuevamente $n$. Si es mayor al 5 \%, se define como el mejor valor de $n$ al valor anterior.
+  \item Se observó el efecto de ambos algoritmos en casos particulares. Para $Re = 100$ y $1000$ se midió el tiempo de cómputo $T$ para encontrar $u(0.5,0.5)$ en el estado estacionario con un error menor al 5 \%.
+  \item Se empleó DC2 para el término difusivo y UP1 y DC2 para el advectivo. Para la evolución temporal se empleó EI.
+  \item Los resultados se resumen en la tabla \textcolor{red}{REF}
+  \item Discusión de resultados
 \end{itemize}
 
-\ptitle{Para qué se usó el algoritmo anterior}
-\begin{itemize}
-  \item Este algoritmo no siempre va a encontrar el mejor $\Delta t$ posible, pero se espera que esté cerca del óptimo.
-  \item El algoritmo anterior fue empleado para hallar el estado estacionario en todo este trabajo salvo el caso particular $n_1 = 80$. Este es el caso más costoso y se buscará a mano el mejor $\Delta t$ para cada $Re$ específico.
-  \item Se usaron $\Delta t = 0.35$, $1.25$ y $2.0$ para $Re = 100$, $1000$ y $5000$, respecticamente
-\end{itemize}
+
+\begin{table}[]
+  \begin{tabular}{|c|c|c|c|c|c|}
+  \hline
+  \begin{tabular}[c]{@{}c@{}}método para el\\ termino advectivo\end{tabular} & $Re$ & $n$ & $\Delta t$ & $N$ & $T$ \\ \hline
+  DC2 & 100 &  &  &  &  \\ \hline
+  DC2 & 1000 &  &  &  &  \\ \hline
+  UP1 & 100 &  &  &  &  \\ \hline
+  UP1 & 1000 &  &  &  &  \\ \hline
+  \end{tabular}
+\end{table}
+
+
+
+
+% \ptitle{Para qué se usó el algoritmo anterior}
+% \begin{itemize}
+%   \item Este algoritmo no siempre va a encontrar el mejor $\Delta t$ posible, pero se espera que esté cerca del óptimo.
+%   \item El algoritmo anterior fue empleado para hallar el estado estacionario en todo este trabajo salvo el caso particular $n_1 = 80$. Este es el caso más costoso y se buscará a mano el mejor $\Delta t$ para cada $Re$ específico.
+%   \item Se usaron $\Delta t = 0.35$, $1.25$ y $2.0$ para $Re = 100$, $1000$ y $5000$, respecticamente
+% \end{itemize}
 
 \subsection{dt para distintos lsimpler}
 
-Estaría bueno dar para cada caso el máximo dt posible y el que me da mi algoritmo
+\begin{itemize}
+  \item Se estudió la dependencia del paso de tiempo y del costo computacional en función del número de iteraciones internas del algoritmo $l_{simpler}$
+  \item Para representar el costo computacional se utilizó el tiempo $T$ necesario para que se encuentre el mejor $\Delta t$ y se llegue al estado estacionario.
+  \item Se emplearon las mismas condiciones que en la simulación anterior a excepción del número de volúmenes finitos $n = 30$.
+  \item Los resultados se resumen en la tabla \ref{dt_costo_vs_lsimpler}
+  \item Se observa que el número de pasos de tiempo necesarios para alcanzar el estado estacionario varía ligeramente con $l_{simpler}$, no así el tiempo de cómputo que aumenta de forma proporcional con el mismo. Por otro lado, el valor de $\Delta t$ calculado mediante el algoritmo es independiente de $l_{simpler}$.
+  \item La información anterior da idea del costo computacional pero cabe preguntarse cómo cambia la precisión con $l_{simpler}$. En la figura REF se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ en el estado estacionario para los distintos valores de $l_simpler$.
+  \item Cualitativamente, 
+\end{itemize}
+
+\begin{figure}[h]
+  \includegraphics[clip=true,width=\columnwidth]{dt_costo_vs_lsimpler.pdf}
+  \caption{}
+   \label{fig:dt_costo_vs_lsimpler}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{f_lsimpler_u.pdf}
+      \caption{}
+      \label{fig:lsimpler_u}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{f_lsimpler_v.pdf}
+      \caption{}
+      \label{fig:three sin x}
+  \end{subfigure}
+     \caption{Velocidades $u(0.5,y)$ y $v(x,0.5)$ en el estado estacionario para $l_simpler = 1$, $2$ y $3$ iteraciones internas en el algoritmo SIMPLER. En ambos casos todas las curvas están superpuestas. Se empleó $Re = 1000$ y $n = 30$. Además, se utilizó diferencias finitas centradas de orden 2 para el término advectivo y difusivo y Euler implícito para la evolución temporal.}
+     \label{fig:lsimpler_v}
+\end{figure}
+
+
+\begin{table}[]
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+  \multicolumn{1}{|c|}{$l_{simpler}$ \quad} & \multicolumn{1}{c|}{$N$\quad} & \multicolumn{1}{c|}{$\Delta t$\quad} & \multicolumn{1}{c|}{$T [min]$} \\ \hline
+  1 & 756 & 0.16 & 5.8 \\ \hline
+  2 & 793 & 0.16 & 12.7 \\ \hline
+  3 & 800 & 0.16 & 18.8 \\ \hline
+  \end{tabular}
+  \label{tabla:dt_costo_vs_lsimpler}
+\end{table}
+
 
 \subsection{Término advectivo}
 \textcolor{red}{Los captions no están siendo autocontenidos. Hay que mencionar qué curva se encima sobre cuál}
