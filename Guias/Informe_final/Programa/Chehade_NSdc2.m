@@ -1345,7 +1345,7 @@ fclose(fid);
 #---------------------------------------------
 #abro archivo
 fid = fopen(archivo_parametros, "w");
-fprintf(fid,"%e %e %e\n", n1, Re, Ndeltat, dt, t2-t1);
+fprintf(fid,"%e %e %e %e %e\n", n1, Re, Ndeltat, dt, t2-t1);
 #cierro archivo
 fclose(fid);
 #---------------------------------------------

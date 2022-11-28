@@ -436,7 +436,7 @@ tol_estacionario = 1e-5;
 if calcular == true
 
     #Defino el mejor esquema advectivo
-    termino_advectivo_mejor_esquema = "Q";
+    termino_advectivo_mejor_esquema = "D";
 
     #Defino parámetros
     Re_array = [1,1000];
@@ -625,7 +625,7 @@ endfunction
 % n1 = n1_minimo(Re, @U0_top_cte, n1_guess, dt_guess, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros, e_tol, u_central_guia)
 
 
-calcular = false;
+calcular = true;
 if calcular == true
     "Inciso e"
     Re_array = [100,1000];
@@ -640,16 +640,37 @@ if calcular == true
 
     nsimpler = 1;
     metodo_temporal = "E";
-    archivo_velocidades_centrales = "graficos/datos/velocentral_basura_e.csv";
-    archivo_evolucion_variables = "graficos/datos/evolucion_basura_e.csv";
-    archivo_parametros = "graficos/datos/parametros_basura_e.csv";
+    archivo_velocidades_centrales = "graficos/datos/e_velocentral_basura_e.csv";
+    archivo_evolucion_variables = "graficos/datos/e_evolucion_basura_e.csv";
+    archivo_parametros = "graficos/datos/e_parametros_basura_e.csv";
 
     for i=1:length(Re_array)
         Re = Re_array(i)
         u_central_guia = u_central_guia_array(i)
-        for j=1:length(termino_advectivo)
+        for j=1:length(termino_advectivo_array)
+
+            #Inicio cronómetro
+            t_crono_ini = time();
+
+            #Calculo n1 mínimo
             termino_advectivo = termino_advectivo_array(j)
             n1 = n1_minimo(Re, @U0_top_cte, n1_guess, dt_guess, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros, e_tol, u_central_guia)
+
+            #Detengo cronómetro
+            costo_rta = time() - t_crono_ini;
+
+            #Extraigo los valores de Ndeltat, deltat
+            data = importdata(archivo_parametros);
+            Ndeltat_rta = data(3);
+            dt_rta = data(4);
+
+            #Guardo en un archivo n1, Ndeltat, deltat y el tiempo
+
+            archivo_costo_comp = strcat("graficos/datos/e_costo_computacional_Re", num2str(Re),"_termino_adv", termino_advectivo, ".csv");
+            archivo_costo_comp = fopen(archivo_costo_comp, "w");
+            fprintf(archivo_costo_comp,"%e %e %e %e\n", n1, Ndeltat_rta, dt_rta, costo_rta);
+
+            
         endfor
     endfor
 
@@ -662,6 +683,7 @@ endif
 
 
 #Inciso f: análogo al anterior pero variando dt y lsimpler
+#YA ESTÁ IMPLEMENTADO. HAY QUE CORRERLO SOLO
 calcular = false;
 
 if calcular == true
@@ -683,26 +705,36 @@ if calcular == true
     Ndeltat = 80000;    
 
     for i=1:length(nsimpler_array)
+
+        #Inicio cronómetro
+        t_crono_ini = time();
+
+
         #Busco el mejor dt y evoluciono para asegurar convergencia
         nsimpler = nsimpler_array(i)
 
         archivo_ucentral = strcat("graficos/datos/f_ucentral_nsimpler", num2str(nsimpler), ".csv");
         archivo_vcentral = strcat("graficos/datos/f_vcentral_nsimpler", num2str(nsimpler), ".csv");
 
+
         comparacion_Ghuia(Re, @U0_top_cte, n1, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_ucentral, archivo_vcentral, dt_guess, Ndeltat_max, buscar, inciso)
 
 
-        #Me interesa guardar el tiempo de ejecución de cada caso
-        #Abro el archivo de parámetros y extraigo el costo
-        archivo_parametros = strcat("graficos/datos/parametros_basura", inciso, ".csv");
+
+        #Detengo cronómetro
+        costo_rta = time() - t_crono_ini;
+
+        #Me interesa guardar el tiempo de ejecución de cada caso y el paso de tiempo
+        #Abro el archivo de parámetros y extraigo el costo y el paso de tiempo
+        archivo_parametros = strcat("graficos/datos/", inciso, "_",termino_advectivo, "_",num2str(n1(1)), "_",num2str(Re(1)), "_parametros.csv")
         data = importdata(archivo_parametros);
-        costo = data(3);
+        Ndeltat_rta = data(3);
+        dt_rta = data(4);
 
         #Guardo la info en un archivo distinto para cada lsimpler
         archivo_costo_comp = strcat("graficos/datos/f_costo_computacional_nsimpler", num2str(nsimpler), ".csv");
         archivo_costo_comp = fopen(archivo_costo_comp, "w");
-        fprintf(archivo_costo_comp, num2str(costo));
-
+        fprintf(archivo_costo_comp,"%e %e %e\n", Ndeltat_rta, dt_rta, costo_rta);
 
     endfor
 
