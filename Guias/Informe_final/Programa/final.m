@@ -585,6 +585,7 @@ function n1 = n1_minimo(Re, U0_top, n1_guess, dt_guess, tol_estacionario, Ndelta
     # Busco el mejor dt
     Ndeltat_max = 10;
     best_dt = busco_best_dt(0, Re, U0_top, n1_guess, dt_guess, tol_estacionario, Ndeltat_max, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
+    % best_dt = dt_guess #Si no quiero buscar el mejor dt
 
     # Evoluciono hasta el estado estacionario y me fijo si bajo esa condición se logra un error menor a la tolerancia
     ucentral = u_central_estacionario(Re, U0_top, n1_guess, best_dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
@@ -625,18 +626,18 @@ endfunction
 % n1 = n1_minimo(Re, @U0_top_cte, n1_guess, dt_guess, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros, e_tol, u_central_guia)
 
 
-calcular = true;
+calcular = false;
 if calcular == true
     "Inciso e"
-    Re_array = [100,1000];
-    termino_advectivo_array = ["D", "U"];
+    Re_array = [1000];
+    termino_advectivo_array = ['U'] #["D","U"];
     tol_estacionario = 1e-5;
     u_central_guia_array = [-0.20581,-0.06080];
 
     e_tol = 0.05;
-    n1_guess = 30
-    dt_guess = 0.005; #0.001 Con este valor converge para DC2 y Re = 1000
-    Ndeltat=8000;
+    n1_guess = 80; #Para 100 U es menor a 60. Con 1000 tiene un error de 0.7 para 60
+    dt_guess = 0.005#0.005; #0.001 Con este valor converge para DC2 y Re = 1000
+    Ndeltat= 80000;
 
     nsimpler = 1;
     metodo_temporal = "E";
@@ -760,7 +761,7 @@ endif
 
 
 #Inciso g: cambiar condición de contorno
-calcular = false;
+calcular = true;
 
 if calcular == true
     inciso = "g"
@@ -772,16 +773,13 @@ if calcular == true
 
     #Testeo
     termino_advectivo = "D";
-    n1 = 31;
+    n1 = 30;
     Re = 1000;
     dt = 0.4;
-    tmax = 60;
-    Ndeltat = round(tmax/dt);
-    % nsimpler_array = [1]
-    nsimpler_array = [1,3];
-    % metodo_temporal_array = ["E"]
-    metodo_temporal_array = ['E'; 'C'];
-
+    tmax = 30;#60;
+    Ndeltat = round(tmax/dt)
+    nsimpler_array = [3];#[1,3];
+    metodo_temporal_array = ['C']#['E'; 'C'];
 
 
     for i=1:length(nsimpler_array)
@@ -790,12 +788,16 @@ if calcular == true
             nsimpler = nsimpler_array(i)
             metodo_temporal = metodo_temporal_array(j)
 
-            archivo_velocidades_centrales = strcat("graficos/datos/velocentral_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
-            archivo_evolucion_variables = strcat("graficos/datos/evolucion_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
-            archivo_parametros = strcat("graficos/datos/parametros_g_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
+
+            archivo_velocidades_centrales = strcat("graficos/datos/g_velocentral_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
+            archivo_evolucion_variables = strcat("graficos/datos/g_evolucion_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
+            archivo_parametros = strcat("graficos/datos/g_parametros_nsimpler", num2str(nsimpler), "_metodotemporal", metodo_temporal, ".csv");
+
 
             #Evoluciono
             Chehade_NSdc2(Re, @U0_top_cos, n1, dt, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros)
+
+
         endfor
     endfor
 
