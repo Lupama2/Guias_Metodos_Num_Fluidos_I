@@ -170,6 +170,9 @@ if metodo_temporal == "C"
   f_CNu_matriz = zeros(n1-1,n1); #matriz actual (n1,n1)
   f_CNv_matriz = zeros(n1,n1-1); # matriz actual (n1,n1)
 
+  buCN = zeros(n1-1,n1);
+  bvCN = zeros(n1,n1-1);
+
   #Redefino dt y Ndeltat
   Ndeltat = 2*Ndeltat;
   dt = dt/2;
@@ -232,8 +235,9 @@ if metodo_temporal == "C"
   % uvel = uvel + b_CNu_matriz*dt;
   % vvel = vvel + b_CNv_matriz*dt;
 
-  u0 = u0 + f_CNu_matriz*dt;
-  v0 = v0 + f_CNv_matriz*dt;
+  % u0 = u0 + f_CNu_matriz*dt;
+  % v0 = v0 + f_CNv_matriz*dt;
+
 endif
 
 
@@ -793,9 +797,12 @@ for j=1:n1-1
 
 endfor
 
-% if metodo_temporal == "C"
-%   bv = bv + b_CNv_matriz;
-% endif
+if metodo_temporal == "C"
+  bu = bu + buCN*dx2;
+  bv = bv + bvCN*dx2;
+endif
+
+
 
 #---------------------------------------------
 # Calculo de los coeficientes para la ecuacion de presión
@@ -1253,6 +1260,7 @@ endfor
 
 
 
+
 # -------------------------------------------------------------------
 #
 #
@@ -1260,6 +1268,10 @@ endfor       #termina iteracion simpler, indice lsimpler
 #
 #
 # -------------------------------------------------------------------
+if metodo_temporal == 'C'
+  buCN = (uvel - u0)/dt - buCN;
+  bvCN = (vvel - v0)/dt - bvCN;
+endif
 
 # -------------------------------------------------------------------
 #
@@ -1281,8 +1293,8 @@ if metodo_temporal == "C"
   % b_CNu_matriz = (uvel-u0)/dt;
   % b_CNv_matriz = (vvel-v0)/dt;
 
-  f_CNu_matriz = (uvel-u0)/dt*dx2;
-  f_CNv_matriz = (vvel-v0)/dt*dx2;
+  % f_CNu_matriz = (uvel-u0)/dt*dx2;
+  % f_CNv_matriz = (vvel-v0)/dt*dx2;
 
 
 

@@ -776,10 +776,10 @@ if calcular == true
     n1 = 30;
     Re = 1000;
     dt = 0.4;
-    tmax = 60;
+    tmax = 80;#60
     Ndeltat = round(tmax/dt)
-    nsimpler_array = [1]#[1,3];
-    metodo_temporal_array = ['C']#['E'; 'C'];
+    nsimpler_array = [1,3]#[1,3];
+    metodo_temporal_array = ['E','C'];#; 'C'];
 
 
     for i=1:length(nsimpler_array)
