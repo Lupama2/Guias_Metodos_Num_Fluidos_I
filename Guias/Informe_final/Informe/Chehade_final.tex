@@ -46,8 +46,8 @@ bookmarksopen=false,
 \newcommand\ptitle[1]{\par\refstepcounter{para}
 {\ifpnumber{\noindent\textcolor{lightgray}{\textbf{\thepara}}\indent}\fi}
 {\ifptitle{\textbf{[{#1}]}}\fi}}
-\ptitletrue  % comment this line to hide paragraph titles
-\pnumbertrue  % comment this line to hide paragraph numbers
+% \ptitletrue  % comment this line to hide paragraph titles
+% \pnumbertrue  % comment this line to hide paragraph numbers
 
 % minimum font size for figures
 \newcommand{\minfont}{6}
@@ -161,7 +161,7 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 \begin{document}
 
 % Allows to rewrite the same title in the supplement
-\newcommand{\mytitle}{\textcolor{red}{Título??}}
+\newcommand{\mytitle}{Métodos numéricos en Fluidos}
 
 \title{\mytitle}
 
@@ -172,44 +172,29 @@ We acknowledge advice from Jessie Zhang and Harry Pirie to produce Fig.\ \ref{fi
 
 \begin{abstract}
 
-\begin{itemize}
-  \item Se estudiaron métodos numéricos espaciales y de evolución temporal para resolver el problema de la cavidad cuadrada hidrodinámica bidimensional.
-  \item Se tiene en cuenta la ecuación de momentos y la de conservación de masa. Este tiene un término advectivo, uno difusivo.
-  \item Se resolvió mediante el método de volumenes finitos y algoritmo simpler calculando presión y velocidades con grilla desplazada.
-  \item En primer lugar, se estudió la dependencia de la solución en el estado estacionario con respecto al paso temporal.
-  \item Se planteó un algoritmo para minimizar el costo computacional para encontrar el estado estacionario con un error menor al 5 \%
-  \item En segundo lugar, se estudió el impacto en el estacionario del esquema espacial en el término advectivo empleando distintos números de Reynolds. En particular, se utilizaron diferencias centradas de orden 2, Up-wind de orden uno y el esquema QUICK de orden \textcolor{red}{?}
-  \item Además, se estudió el orden de convergencia espacial de Up-wind de primer orden en referencia al mejor esquema advectivo
-  \item Se evaluó el efecto de los pasos internos del algoritmo simpler
-  \item Se estudió el efecto del método de evolución temporal, evaluando el estado transitorio de la solución mediante los métodos Euler Implícito y Crank-Nicholson
-\end{itemize}
+Se resolvió el problema de la cavidad cuadrada hidrodinámica bidimensional mediante el método de volumenes finitos y algoritmo SIMPLER calculando presión y velocidades con grilla desplazada. Debido a la cantidad de variables involucradas, la resolución conlleva un gran costo computacional. Se plantearon algoritmos que permiten minimizar el tiempo de cómputo, a costo de aumentar el error de la solución. Estos se basan en aumentar el paso de tiempo y la discretización espacial de forma controlada. Además, se estudiaron distintos métodos numéricos espaciales y de evolución temporal. En particular, se analizaron los esquemas de diferencias finitas de orden 2, Upwind de orden 1 y el esquema QUICK para el término advectivo de la ecuación de momento. Mientras que para la evolución temporal, los métodos Euler implícito y Crank-Nicholson. Se estudió también la dependencia del estado estacionario con el paso de tiempo, el tamaño de la discretización espacial y el número de iteraciones internas en el algoritmo SIMPLER.
+
 
 
 \end{abstract}
 
 \maketitle
 
-\textcolor{red}{Dudas:}
-\begin{itemize}
-  \item A mayor Re, mayor dt?
-  \item $t_hat = tU_0/L$
-\end{itemize}
-
 \section{Introducción}
 
 \ptitle{¿Por qué es importante resolver problemas de fluidos numéricamente? Rtas en la primera clase}
 
-Gran parte de los problemas de mecánica de fluidos no son resolubles analíticamente. Algunos de ellos pueden ser estudiados experimentalmente, con el costo operativo y las dificultades para realizar las mediciones que esto conlleva \textcolor{red}{ref clase 1}. Una alternativa más rápida y de menor costo es resolverlos numéricamente. Si bien esto trae aparejado algunas dificultades, como los errores de aproximación numérica y el costo computacional, en los últimos años la resolución numérica de ecuaciones es aceptada y está ganando preponderancia.
+Gran parte de los problemas de mecánica de fluidos no son resolubles analíticamente. Algunos de ellos pueden ser estudiados experimentalmente, con el costo operativo y las dificultades para realizar las mediciones que esto conlleva \cite{Notas_materia}. Una alternativa más rápida y de menor costo es resolverlos numéricamente. Si bien esto trae aparejado algunas dificultades, como los errores de aproximación numérica y el costo computacional, en los últimos años la resolución numérica de ecuaciones es aceptada y está ganando preponderancia.
 
 \ptitle{Explicar el problema de la cavidad cuadrada hidrodinámica bidimensional}
-Un problema muy estudiado desde el punto de vista numérico en mecánica de fluidos es el de la cavidad cuadrada hidrodinámica bidimensional, también conocido como Shear-drien cavity flow. En la figura \ref{fig:esquema_cavidad_cuadrada} se muestra un esquema del mismo. Consiste en una cavidad cuadrada bidimensional de lado $L$ que contiene un fluido incompresible de viscocidad $\nu$. Las condiciones de borde son de no deslizamiento en todas las paredes excepto en la horizontal superior. Sea $\vec{V}(x,y,t) = (u(x,y,t), v(x,y,t))$ la velocidad en el punto $(x,y)$ a tiempo $t$, las condiciones anteriores se traducen en $\vec{V}(x,0) = \vec{V}(0,y) = \vec{V}(L,y) = (0,0)$ y $\vec{V}(x,L) = (U_0(t),0)$.
-\end{itemize}
+Un problema muy estudiado desde el punto de vista numérico en mecánica de fluidos es el de la cavidad cuadrada hidrodinámica bidimensional, también conocido como Shear-drien cavity flow. En la figura \ref{fig:esquema_cavidad_cuadrada} se muestra un esquema del mismo. Consiste en una cavidad cuadrada bidimensional de lado $L$ que contiene un fluido incompresible de viscocidad $\nu$. La condición inicial es de velocidad nula en todo el dominio y las condiciones de borde son de no deslizamiento en todas las paredes excepto en la horizontal superior. Sea $\vec{V}(x,y,t) = (u(x,y,t), v(x,y,t))$ la velocidad en el punto $(x,y)$ a tiempo $t$, las condiciones anteriores se traducen en $\vec{V}(x,0) = \vec{V}(0,y) = \vec{V}(L,y) = (0,0)$ y $\vec{V}(x,L) = (U_0(t),0)$.
 
 \begin{figure}[h]
   \includegraphics[clip=true,width=0.7\columnwidth]{esquema_cavidad_cuadrada.png}
   \caption{Esquema del problema de la cavidad cuadrada hidrodinámica bidimensional. Consiste en una cavidad cuadrada bidimensional de lado $L$ que contiene un fluido incompresible de viscocidad $\nu$. Las condiciones de borde son de no deslizamiento en todas las paredes excepto en la horizontal superior, con velocidad $U_0$. Esta figura fue extraída de \cite{Notas_materia}.}
    \label{fig:esquema_cavidad_cuadrada}
 \end{figure}
+
 
 
 \ptitle{Explicación de las ecuaciones involucradas}
@@ -225,11 +210,9 @@ El objetivo es determinar la presión $p(x,y,t)$ y las velocidades $u(x,y,t)$ y 
 \end{equation}
 donde $Re = U_0L/\nu$ es el número de Reynolds. En ambas ecuaciones, el primer término del lado izquierdo resume la dependencia temporal del problema, los términos siguientes corresponden al efecto advectivo, el primer término del lado derecho resume la dependencia con la presión y los siguientes, el efecto difusivo. En segundo lugar se cuenta con la ecuación de conservación de masa. Para un fluido incompresible esta es
 \begin{equation}
-  \bigtriangledown \bullet \vec{V} = \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0.
+  \nabla \bullet \vec{V} = \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0.
   \label{eq:cons_masa}
 \end{equation}
-
-
 En base a esta ecuación se suele decir que el campo de velocidades tiene divergencia libre.
 
 \ptitle{Resumen}
@@ -274,14 +257,14 @@ Por otro lado, el dominio temporal se define desde $t = 0$ hasta $t = t_{max}$. 
 \subsection{Esquema numérico}
 
 \ptitle{Resumen}
-Se construyó un esquema numérico para las ecuaciones de conservación de momento \ref{eq:momento_x} y \ref{eq:momento_y} mediante la técnica de volúmenes finitos. Para aproximar los términos obtenidos se emplearon distintos métodos numéricos. Para la evolución temporal se utilizó Euler Implícito y Crank-Nicolson. Mientras que para el término advectivo se empleó diferencias finitas centradas de orden 2, Up-wind de orden 1 y el esquema QUICK \textcolor{red}{REF}. Por último, para el difusivo se empleó diferencias centradas de orden 2. Una vez planteado el esquema numérico, se resolvió el sistema de ecuaciones mediante el algoritmo SIMPLER exigiendo que el campo de velocidades tenga divergencia libre en base a \ref{eq:cons_masa}. A continuación se explica la construcción del esquema numérico, junto a las características particulares de cada método utilzado.
+Se construyó un esquema numérico para las ecuaciones de conservación de momento \ref{eq:momento_x} y \ref{eq:momento_y} mediante la técnica de volúmenes finitos. Para aproximar los términos obtenidos se emplearon distintos métodos numéricos. Para la evolución temporal se utilizó Euler Implícito y Crank-Nicolson. Mientras que para el término advectivo se empleó diferencias finitas centradas de orden 2, Up-wind de orden 1 y el esquema QUICK \cite{Hayase1992}. Por último, para el difusivo se empleó diferencias centradas de orden 2. Una vez planteado el esquema numérico, se resolvió el sistema de ecuaciones mediante el algoritmo SIMPLER exigiendo que el campo de velocidades tenga divergencia libre en base a \ref{eq:cons_masa}. A continuación se explica la construcción del esquema numérico, junto a las características particulares de cada método utilzado.
 
 \ptitle{Volúmenes finitos}
-La implementación de la técnica de volúmenes finitos para este problema en particular se explica en detalle en \cite{Notas_materia}. De forma resumida, se integran las ecuaciones de momento \ref{eq:momento_x} y \ref{eq:momento_y} en el volumen de las grillas de $u$ y $v$, respecticamente, empleando la regla del rectángulo \textcolor{red}{ref Moin}. Esta aproximación es de orden mayor a $\Delta^2$, correspondiente al mayor orden de aproximación de los esquemas para los términos advectivo y difusivo. De este modo se arriba a un sistema de ecuaciones donde el término temporal depende de $\partial U_{ij}/ \partial t$, el advectivo depende de $u$ evaluada en los cuatro laterales: $U_{N,ij}$ norte, $U_{S,ij}$ sur, $U_{E,ij}$ este y $U_{W,ij}$ oeste, y de $v$ evaluada de igual manera. Una particularidad del término advectivo es su no linealidad, que se resuelve empleando como uno de los factores la solución del paso previo o de iteraciones internas. Además, el término de presión depende de $P_{ij}$ y el término difusivo depende de las derivadas espaciales de $u$ evaluadas en los laterales: $\frac{\partial U_{E,ij}}{\partial x}$, $\frac{\partial U_{W,ij}}{\partial x}$, $\frac{\partial U_{N,ij}}{\partial y}$ y $\frac{\partial U_{S,ij}}{\partial y}$, y de las derivadas espaciales de $v$ de forma análoga. Es necesario aclarar que las variables anteriores se evalúan tanto en los laterales de los volúmenes de la grilla de $u$ como en los de $v$. Sin embargo, las aproximaciones para ambos casos son análogas. En base a las dependencias presentadas, aplicar un método numérico determinado implica aproximar las velocidades $U_{ij}$, $V_{ij}$ y sus derivadas en el centro y los laterales de sus volúmenes finitos respectivos. Además, por simetría $U_{E,ij} = U_{W,i+1j}$, $U_{N,ij} = U_{S,ij+1}$ y cualquier aproximación sobre $U_{W,ij}$ vale sobre $U_{S,ij}$ intercambiando los índices $ij$ entre sí. De este modo, solo basta describir la aproximación en uno de los laterales
+La implementación de la técnica de volúmenes finitos para este problema en particular se explica en detalle en \cite{Notas_materia}. De forma resumida, se integran las ecuaciones de momento \ref{eq:momento_x} y \ref{eq:momento_y} en el volumen de las grillas de $u$ y $v$, respecticamente, empleando la regla del rectángulo \cite{Moin}. Esta aproximación es de orden mayor a $\Delta^2$, correspondiente al mayor orden de aproximación de los esquemas para los términos advectivo y difusivo. De este modo se arriba a un sistema de ecuaciones donde el término temporal depende de $\partial U_{ij}/ \partial t$, el advectivo depende de $u$ evaluada en los cuatro laterales: $U_{N,ij}$ norte, $U_{S,ij}$ sur, $U_{E,ij}$ este y $U_{W,ij}$ oeste, y de $v$ evaluada de igual manera. Una particularidad del término advectivo es su no linealidad, que se resuelve empleando como uno de los factores la solución del paso previo o de iteraciones internas. Además, el término de presión depende de $P_{ij}$ y el término difusivo depende de las derivadas espaciales de $u$ evaluadas en los laterales: $\frac{\partial U_{E,ij}}{\partial x}$, $\frac{\partial U_{W,ij}}{\partial x}$, $\frac{\partial U_{N,ij}}{\partial y}$ y $\frac{\partial U_{S,ij}}{\partial y}$, y de las derivadas espaciales de $v$ de forma análoga. Es necesario aclarar que las variables anteriores se evalúan tanto en los laterales de los volúmenes de la grilla de $u$ como en los de $v$. Sin embargo, las aproximaciones para ambos casos son análogas. En base a las dependencias presentadas, aplicar un método numérico determinado implica aproximar las velocidades $U_{ij}$, $V_{ij}$ y sus derivadas en el centro y los laterales de sus volúmenes finitos respectivos. Además, por simetría $U_{E,ij} = U_{W,i+1j}$, $U_{N,ij} = U_{S,ij+1}$ y cualquier aproximación sobre $U_{W,ij}$ vale sobre $U_{S,ij}$ intercambiando los índices $ij$ entre sí. De este modo, solo basta describir la aproximación en uno de los laterales
 
 
 \ptitle{Métodos espaciales: presentación y aproximaciones para el término advectivo}
-A continuación se desarrollan los métodos numéricos utilizados para el dominio espacial. Sólo se presentan las expresiones para la velocidad horizontal $u$, considerando que para la velocidad vertical $v$ son análogas. En cuanto al término advectivo, se empleron tres métodos numéricos: diferencias centradas de orden 2 (DC1), Up-wind de orden 1 (UP1) y el esquema QUICK \textcolor{red}{REF}. En diferencias centradas de orden 2 se aproxima
+A continuación se desarrollan los métodos numéricos utilizados para el dominio espacial. Sólo se presentan las expresiones para la velocidad horizontal $u$, considerando que para la velocidad vertical $v$ son análogas. En cuanto al término advectivo, se empleron tres métodos numéricos: diferencias centradas de orden 2 (DC1), Up-wind de orden 1 (UP1) y el esquema QUICK \cite{Hayase1992}. En diferencias centradas de orden 2 se aproxima
 \[U_{W,ij} = \frac{U_{ij} + U_{i-1j}}{2}. \]
 Este método tiene la desventaja de presentar oscilaciones espúreas. Por otro lado, en Up-wind de orden 1 se aproxima
 \[U_{W,ij} =  \left\{\begin{matrix}
@@ -294,8 +277,6 @@ donde el subíndice '*' indica que corresponde al paso previo o a iteraciones in
   U_{ij} + \frac{1}{8}(3 U_{i-1j} - 2 U_{ij} - U_{i+1j}) \quad \quad \mathrm{si} U_{W,ij}^* < 0
 \end{matrix}\right.\]
 escrito como UP1 más términos de fuente.
-\textcolor{red}{Si tengo tiempo: ventajas y desventajas?}
-
 
 \ptitle{Aproximaciones para el término difusivo}
 En cuanto al término difusivo, se emplearon diferencias finitas centradas de orden 2:
@@ -324,7 +305,7 @@ y de forma análoga para $\partial V_{ij}^k / \partial t$. Este método implíci
 \subsection{Costo computacional}
 
 \ptitle{Costo computacional y elección de $n$}
-Debido a la cantidad de variables involucradas proporcional a $n^2$ y dependiendo del número de pasos de tiempo a realizar, el costo computacional puede ser alto. En base a esto, es importante desarrollar métodos que permitan disminuir el costo pero que a su vez tengan una precisión aceptable. Un modo de minimizarlo es disminuyendo el número de variables pero exigiendo a su vez un error menor al 5 \% respecto a la solución exacta, por ejemplo. Sin embargo, para esto es necesario conocer tal solución o al menos una muy buena aproximación, lo cual no siempre se tiene. Debido a que el problema analizado está ampliamente estudiado en la bibliografía, se cuenta con una solución numérica de gran precisión \textcolor{red}{ref Guia}. Para disminuir $n$ se puede emplear el siguiente algoritmo: se parte de $n_{guess}$ lo suficientemente grande para asegurar un error menor al 5 \%. Luego, se reduce $n$ en dos unidades, se avanza la solución y se calcula el error en el estado estacionario. Si este es menor al 5 \% se disminuye nuevamente $n$ y se repite el procedimiento. Si es mayor al 5 \%, se define como el mejor valor de $n$ al valor anterior.
+Debido a la cantidad de variables involucradas proporcional a $n^2$ y dependiendo del número de pasos de tiempo a realizar, el costo computacional puede ser alto. En base a esto, es importante desarrollar métodos que permitan disminuir el costo pero que a su vez tengan una precisión aceptable. Un modo de minimizarlo es disminuyendo el número de variables pero exigiendo a su vez un error menor al 5 \% respecto a la solución exacta, por ejemplo. Sin embargo, para esto es necesario conocer tal solución o al menos una muy buena aproximación, lo cual no siempre se tiene. Debido a que el problema analizado está ampliamente estudiado en la bibliografía, se cuenta con una solución numérica de gran precisión \cite{Guia1982}. Para disminuir $n$ se puede emplear el siguiente algoritmo: se parte de $n_{guess}$ lo suficientemente grande para asegurar un error menor al 5 \%. Luego, se reduce $n$ en dos unidades, se avanza la solución y se calcula el error en el estado estacionario. Si este es menor al 5 \% se disminuye nuevamente $n$ y se repite el procedimiento. Si es mayor al 5 \%, se define como el mejor valor de $n$ al valor anterior.
 
 \ptitle{Elección de $M$}
 Otra alternativa es disminuyendo el número de pasos de tiempo $M$. Cuando $U_0(t)$ es independiente del tiempo, el sistema debe llegar a un estado estacionario a partir del cual la solución deja de variar. Una vez en este estado, no tiene sentido continuar la ejecución. Entonces, se puede aplicar un criterio de convergencia que indique cuándo la solución se encuentra en el estado estacionario y la ejecución deba detenerse. El criterio tomado fue el siguiente: si la solución tiende a un estacionario independiente del tiempo, entonces se avanza la solución hasta que se cumplan al mismo tiempo las desigualdades
@@ -354,7 +335,7 @@ Este algoritmo no es necesariamente el óptimo. Se basa en la hipótesis de que 
 
 \ptitle{Resumen de lo que se va a estudiar}
 
-En este trabajo se analizaron y emplearon las técnicas mencionadas anteriormente para reducir el tiempo de cómputo, para lo cual fue necesario en primer lugar verificar la hipótesis de la dependencia del estacionario con el paso de tiempo. Además, se calculó el mínimo valor de $n$ necesario para que la solución tenga un error menor al 5 \% respecto a la bibliografía \textcolor{red}{REF a guía}. Por último, se estudió la dependencia del tiempo de cómputo con el número de iteraciones internas $l_{simpler}$.
+En este trabajo se analizaron y emplearon las técnicas mencionadas anteriormente para reducir el tiempo de cómputo, para lo cual fue necesario en primer lugar verificar la hipótesis de la dependencia del estacionario con el paso de tiempo. Además, se calculó el mínimo valor de $n$ necesario para que la solución tenga un error menor al 5 \% respecto a la bibliografía \cite{Guia1982}. Por último, se estudió la dependencia del tiempo de cómputo con el número de iteraciones internas $l_{simpler}$.
 
 Una vez finalizado el estudio sobre el costo computacional, se estudió la dependencia de la solución en el estado estacionario para distintos $Re$ respecto al método numérico del término advectivo, al tamaño de la discretización espacial $\Delta$ y al número de iteraciones internas $l_{simpler}$ en el algoritmo simpler. También se calculó el orden de convergencia de UP1 para distintos valores del número de Reynolds. Por último, se estudió el comportamiento de la solución en el tiempo respecto al método de evolución temporal. 
 
@@ -373,7 +354,7 @@ En primer lugar, se analizó la dependencia del estado estacionario con el paso 
 \ptitle{Resumen}
 Otro modo de disminuir el costo computacional es reduciendo el número de variables involucradas. Se empleó el algoritmo de reducción de $n$ presentado en la sección anterior para $Re = 100$ y $1000$. Se empleó $l_{simpler} = 1$ y EI para la evolución temporal. Mientras que para el término advectivo se empleó UP1 y DC2 para el advectivo. En base a esto, se empleó $n_{guess} = 70$ para UP1 y $n_{guess} = 32$ para DC2. Esto último considerando que los órdenes de convergencia de ambos métodos son distintos y se esperaría que para UP1 se necesite mayor $n$ (y consecuentemente menor $\Delta$) para obtener la misma precisión.
 
-En cada ejecución se midió el tiempo de cómputo $T$ para encontrar $u(0.5,0.5)$ en el estado estacionario con un error menor al 5 \%. Los resultados se resumen en la tabla \ref{tabla:costo_computacional}. \textcolor{red}{Se observa...}
+En cada ejecución se midió el tiempo de cómputo $T$ para encontrar $u(0.5,0.5)$ en el estado estacionario con un error menor al 5 \%. Los resultados se resumen en la tabla \ref{tabla:costo_computacional}. En primer lugar, el método UP1 es consistentemente más caro que el DC2. Esto se podría deber a que UP1 es de un orden de convergencia menor y por lo tanto exige $n$ mayor. En segundo lugar, el costo aumenta con $Re$. Esto podría deberse a que ambos métodos presentan mayor error al aumentar Re. Por último, es necesario aclarar que el tiempo de cómputo en el caso UP1 y $Re = 100$ se debió en su mayoría a la minimización de $n$. Esto se debe a que el algoritmo requiere evaluar el estado estacionario para cada $n$ desde $n_guess$ hasta $n = 56$ en este caso. Además, en el caso UP1 y $Re = 1000$ no se logró un error menor al 5 \% en un tiempo de ejecución menor a la hora.
 
 
 \begin{table}[]
@@ -381,14 +362,13 @@ En cada ejecución se midió el tiempo de cómputo $T$ para encontrar $u(0.5,0.5
   \hline
   \begin{tabular}[c]{@{}c@{}}método para el\\ termino advectivo\end{tabular} & $Re$ & $n$ & $\Delta t$ & $N$ & $T [min]$ \\ \hline
   DC2 & 100 & 20 & 2.56 & 22 & 4.5 \\ \hline
-  UP1 & 100 & 32 & 1.28 & 25 & 0.9 \\ \hline
+  UP1 & 100 & 56 & 0.64 & 47 & 45 \\ \hline
   DC2 & 1000 & 30 & 0.16 & 768 & 11.3 \\ \hline
-  UP1 & 1000 & 32 & 5.12 & 59 & 1.2 \\ \hline
+  UP1 & 1000 & $\geqslant  70$ & 0.08 & 1024 & $\geqslant  48$ \\ \hline
   \end{tabular}
+  \caption{Tiempo de ejecución $T$ en minutos para avanzar la solución hasta el estado estacionario bajo distintas condiciones. $Re$ es el número de Reynolds, $n$ es el número de volúmenes en cada dirección espacial, $\Delta t$ es el paso de tiempo, $N$ el número de pasos de tiempo ejecutados. El tiempo se midió con un procesador AMD Ryzen 7 4700U y 8 Gb de memoria RAM. El caso UP1 con $Re = 1000$ presentó un error de aproximadamente 70 \%.}
   \label{tabla:costo_computacional}
-  \caption{Tiempo de ejecución $T$ en minutos para avanzar la solución hasta el estado estacionario bajo distintas condiciones. $Re$ es el número de Reynolds, $n$ es el número de volúmenes en cada dirección espacial, $\Delta t$ es el paso de tiempo, $N$ el número de pasos de tiempo ejecutados. El tiempo se midió con un procesador AMD Ryzen 7 4700U y 8 Gb de memoria RAM.}
 \end{table}
-
 
 % \ptitle{Para qué se usó el algoritmo anterior}
 % \begin{itemize}
@@ -397,7 +377,7 @@ En cada ejecución se midió el tiempo de cómputo $T$ para encontrar $u(0.5,0.5
 %   \item Se usaron $\Delta t = 0.35$, $1.25$ y $2.0$ para $Re = 100$, $1000$ y $5000$, respecticamente
 % \end{itemize}
 
-Se estudió la dependencia del paso de tiempo y el tiempo de cómputo en función del número de iteraciones internas del algoritmo $l_{simpler}$ para avanzar la solución hasta el estado estacionario. Se emplearon las mismas condiciones que la simulación anterior a excepción del número de volúmenes finitos fijo en $n = 30$. Los resultados se resumen en la tabla \ref{dt_costo_vs_lsimpler}. Se observa que el número de pasos de tiempo necesarios para alcanzar el estado estacionario varía ligeramente con $l_{simpler}$, no así el tiempo de cómputo que aumenta de forma proporcional con el mismo. Por otro lado, el valor de $\Delta t$ calculado mediante el algoritmo es independiente de $l_{simpler}$.
+Se estudió la dependencia del paso de tiempo y el tiempo de cómputo en función del número de iteraciones internas del algoritmo $l_{simpler}$ para avanzar la solución hasta el estado estacionario. Se emplearon las mismas condiciones que la simulación anterior a excepción del número de volúmenes finitos fijo en $n = 30$. Los resultados se resumen en la tabla \ref{tabla:dt_costo_vs_lsimpler}. Se observa que el número de pasos de tiempo necesarios para alcanzar el estado estacionario varía ligeramente con $l_{simpler}$, no así el tiempo de cómputo que aumenta de forma proporcional con el mismo. Por otro lado, el valor de $\Delta t$ calculado mediante el algoritmo es independiente de $l_{simpler}$.
 
 
 % \begin{figure}[h]
@@ -416,8 +396,8 @@ Se estudió la dependencia del paso de tiempo y el tiempo de cómputo en funció
   2 & 793 & 0.16 & 12.7 \\ \hline
   3 & 800 & 0.16 & 18.8 \\ \hline
   \end{tabular}
-  \label{tabla:dt_costo_vs_lsimpler}
   \caption{Tiempo de ejecución $T$ en minutos para alcanzar el estado estacionario bajo distinto número de iteraciones internas $l_{simpler}$. $N$ es el número de pasos de tiempo ejecutados y $\Delta$, el paso de tiempo.}
+  \label{tabla:dt_costo_vs_lsimpler}
 \end{table}
 
 
@@ -430,19 +410,19 @@ Se estudió la solución numérica respecto al número de Reynolds $Re$, al tama
 \subsubsection{Dependencia con el tamaño de la discretización $\Delta$}
 
 \ptitle{Comparación DC2 vs n1 para distintos Re}
-Se estudió la dependencia del estado estacionario con la discretización espacial $\Delta$ y el número de $Re$, empleando DC2 para el término advectivo. En las figuras \ref{fig:velocidades_u_DC2_vs_Re} y \ref{fig:velocidades_v_DC2_vs_Re} se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ para los distintos casos. Para $Re = 100$ se observa que el resultado varía cualitativamente poco con el tamaño de la discretización. Para $Re = 1000$ la diferencia entre los resultados es significativa, llegando en algunos sitios a superar la tolerancia del criterio de convergencia. Por último, para $Re = 5000$ todas las soluciones distan de la referencia. Esto indica que a mayor número de Reynolds es necesario disminuir el tamaño de la discretización, es decir, aumentar $n_1$, para obtener una solución más precisa.
+Se estudió la dependencia del estado estacionario con la discretización espacial $\Delta$ y el número de $Re$, empleando DC2 para el término advectivo, $l_{simpler} = 1$ y Euler implícito para la evolución temporal. Para todos los casos se determinó $\Delta t$ con el algoritmo mencionado, salvo para $\Delta = 0.0125$. Este es el caso más caro computacionalmente, tanto para el uso del algoritmo como para la búsqueda del estado estacionario. Se buscó el mejor paso de tiempo a mano, encontrando $\Delta t = 0.35$, $1.25$ y $2.0$ para $Re = 100$, $1000$ y $5000$, respectivamente. En las figuras \ref{fig:velocidades_u_DC2_vs_Re} y \ref{fig:velocidades_v_DC2_vs_Re} se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ para los distintos casos. Para $Re = 100$ se observa que el resultado varía cualitativamente poco con el tamaño de la discretización. Para $Re = 1000$ la diferencia entre los resultados es significativa, llegando en algunos sitios a superar la tolerancia del criterio de convergencia. Por último, para $Re = 5000$ todas las soluciones distan de la referencia. Esto indica que a mayor número de Reynolds es necesario disminuir el tamaño de la discretización, es decir, aumentar $n$, para obtener una solución más precisa.
 
 \subsubsection{Dependencia con el método numérico para el término advectivo \label{sec:termino_adv}}
 
 \ptitle{Comparación cualitativa entre métodos numéricos para distintos Re}
-Se estudió la dependencia del estado estacionario con el número de Reynolds y el método numérico para el término advectivo. En todos los casos se empleó $n = 80$. En las figuras \ref{terminos_advs_u} y \ref{terminos_advs_u} se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ para los distintos casos. Cualitativamente, para $Re = 100$ no se observan grandes diferencias. Para $Re = 1000$ es notable que el método UP1 no aproxima correctamente la solución, mientras que DC2 y QUICK sí lo hacen. Esto se puede justificar en los órdenes de aproximación de los métodos, siendo el primero de orden 1 y los segundos de orden \textcolor{red}{2}. Esto también justifica por qué en la tabla \ref{tabla:costo_computacional} fue necesario un valor de $n$ mayor para UP1 que para DC2. Para $Re = 5000$ ninguno de los métodos aproxima correctamente la solución en la totalidad del dominio. En base a los resultados obtenidos al variar $n$, esto podría deberse al tamaño de la grilla espacial y no al método numérico.
+Se estudió la dependencia del estado estacionario con el número de Reynolds y el método numérico para el término advectivo. En todos los casos se empleó $n = 80$ y los valores de $\Delta t$ específicos presentados en anteriormente. En las figuras \ref{fig:terminos_advs_u} y \ref{fig:terminos_advs_u} se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ para los distintos casos. Cualitativamente, para $Re = 100$ no se observan grandes diferencias. Para $Re = 1000$ es notable que el método UP1 no aproxima correctamente la solución, mientras que DC2 y QUICK sí lo hacen. Esto se puede justificar en los órdenes de aproximación de los métodos, siendo el primero de orden 1 y los segundos de orden \textcolor{red}{2}. Esto también justifica por qué en la tabla \ref{tabla:costo_computacional} fue necesario un valor de $n$ mayor para UP1 que para DC2. Para $Re = 5000$ ninguno de los métodos aproxima correctamente la solución en la totalidad del dominio. En base a los resultados obtenidos al variar $n$, esto podría deberse al tamaño de la grilla espacial y no al método numérico.
 
 Cabe preguntarse por qué a medida que aumenta $Re$ la solución con UP1 se aleja aún más de la de referencia. A mayor $Re$, el término advectivo en las ecuaciones de momento \ref{eq:momento_x} y \ref{eq:momento_y} gana imporancia respecto al difusivo. De este modo, se esperaría una solución con baja difusión. Sin embargo, el método UP1 presenta naturalmente difusión, como se mencionó en la sección anterior, y de este modo la solución numérica se aparta de la de referencia.
 
 \ptitle{Comparación numérica entre métodos numéricos para distintos $Re$.}
-El análisis anterior es meramente cualitativo. A continuación se realiza un estudio cuantitativo para determinar cuál es el mejor método numérico. Para cada variación posible de $n_1$, $Re$ y método para el término advectivo se calculó el error relativo $e_{rel}$ respecto a la referencia \texcolor{red}{ref a Guia} en el centro del dominio $x = 0.5$ e $y = 0.5$. Para calcular este error se suman cuadráticamente los errores en $u$ y $v$ y se normaliza con el valor de referencia, es decir,
+El análisis anterior es meramente cualitativo. A continuación se realiza un estudio cuantitativo para determinar cuál es el mejor método numérico. Para cada variación posible de $n$, $Re$ y método para el término advectivo se calculó el error relativo $e_{rel}$ respecto a la referencia \cite{Guia1982} en el centro del dominio $x = 0.5$ e $y = 0.5$. Para calcular este error se suman cuadráticamente los errores en $u$ y $v$ y se normaliza con el valor de referencia, es decir,
 \[e_{rel} = \frac{\sqrt{(u_{exp} - u_{sol})^2 + (v_{exp} - v_{sol})^2}}{\sqrt{u_{sol}^2 + v_{sol}^2}}. \]
-donde todos las velocidades están evaluadas en el centro. Para calcular las velocidades en el centro se promediaron los valores en la cercanía, resultando en una aproximación de segundo orden. Los resultados se resumen en la figura \ref{fig:termino_advectivo}. Al comportamiento visto en las figuras \ref{terminos_advs_u} y \ref{terminos_advs_u} se agregan dos particularidades. En primer lugar, independientemente de $Re$ el método UP1 presenta mayor error que los demás, lo cual es esperable por ser un método de menor orden. En segundo lugar, en casi todos los casos a mayor $n$, menor error. La excepción son los casos de $Re = 100$, $n = 80$ y DC2 y QUICK como método para el término advectivo.
+donde todos las velocidades están evaluadas en el centro. Para calcular las velocidades en el centro se promediaron los valores en la cercanía, resultando en una aproximación de segundo orden. Los resultados se resumen en la figura \ref{fig:termino_advectivo}. Al comportamiento visto en las figuras \ref{fig:terminos_advs_u} y \ref{fig:terminos_advs_u} se agregan dos particularidades. En primer lugar, independientemente de $Re$ el método UP1 presenta mayor error que los demás, lo cual es esperable por ser un método de menor orden. En segundo lugar, en casi todos los casos a mayor $n$, menor error. La excepción son los casos de $Re = 100$, $n = 80$ y DC2 y QUICK como método para el término advectivo.
 
 Por último, cabe preguntarse qué método es más preciso. Para tal fin se resumen en la tabla \ref{tabla:erel} los errores de cada método para $n = 80$ y $Re = 100$, $1000$ y $5000$. Se observa que el método DC2 posee un error ligeramente menor a QUICK. Entonces, se podría argumentar que DC2 es un método más preciso que QUICK. Sin embargo, esta afirmación debe tomarse con cuidado debido a que sólo se analizó la velocidad en el punto central y no en todo el dominio. En un análisis formal podría obtenerse el comportamiento opuesto.
 
@@ -476,7 +456,7 @@ Por último, cabe preguntarse qué método es más preciso. Para tal fin se resu
       \caption{}
       \label{fig:termino_adv_Db_u_5000}
   \end{subfigure}
-     \caption{Velocidad $u(0.5,y)$ en el estado estacionario en función de $y$ para distinto tamaño de la discretización espacial $\Delta$ y número de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$.}
+     \caption{Velocidad $u(0.5,y)$ en el estado estacionario en función de $y$ para distinto tamaño de la discretización espacial $\Delta$ y número de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$. Nótese que en \ref{fig:termino_adv_Db_u_100} las tres curvas se encuentran superpuestas.}
      \label{fig:velocidades_u_DC2_vs_Re}
 \end{figure}
 
@@ -503,7 +483,7 @@ Por último, cabe preguntarse qué método es más preciso. Para tal fin se resu
     \caption{}
     \label{fig:termino_adv_Db_v_5000}
 \end{subfigure}
-     \caption{Velocidad $v(x,0.5)$ en el estado estacionario en función de $x$ para distinto tamaño de la discretización espacial $\Delta$ y número de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$.}
+     \caption{Velocidad $v(x,0.5)$ en el estado estacionario en función de $x$ para distinto tamaño de la discretización espacial $\Delta$ y número de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$. Nótese que en \ref{fig:termino_adv_Db_v_100} las curvas correspondientes a $\Delta = 0.0125$ y $0.025$ se encuentran superpuestas.}
      \label{fig:velocidades_v_DC2_vs_Re}
 \end{figure}
 
@@ -534,7 +514,7 @@ Por último, cabe preguntarse qué método es más preciso. Para tal fin se resu
       \caption{}
       \label{fig:terminos_advs_u_5000}
   \end{subfigure}
-     \caption{Velocidad $u(0.5,y)$ en el estado estacionario en función de $y$ para distintos métodos numéricos para el término advectivo y distintos números de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$. En todos los casos se empleó una grilla espacial de tamaño $n_1 \times n_1$ con $n_1 = 80$, diferencias centradas de orden 2 para el término difusivo y Euler implícito para la evolución temporal.}
+     \caption{Velocidades $u(0.5,y)$ en el estado estacionario en función de $y$ para distintos métodos numéricos para el término advectivo y distintos números de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$. En todos los casos se empleó una grilla espacial de tamaño $n \times n$ con $n = 80$ y el método Euler implícito para la evolución temporal. Nótese que las curvas correspondientes a los métodos QUICK y DC2 se encuentran superpuestas en (a) y(b).}
      \label{fig:terminos_advs_u}
 \end{figure}
 
@@ -560,7 +540,7 @@ Por último, cabe preguntarse qué método es más preciso. Para tal fin se resu
     \caption{}
     \label{fig:terminos_advs_v_5000}
   \end{subfigure}
-     \caption{Velocidad $v(x,0.5)$ en el estado estacionario en función de $x$ para distintos métodos numéricos para el término advectivo y distintos números de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$. En todos los casos se empleó una grilla espacial de tamaño $n_1 \times n_1$ con $n_1 = 80$, diferencias centradas de orden 2 para el término difusivo y Euler implícito para la evolución temporal.}
+     \caption{Velocidad $v(x,0.5)$ en el estado estacionario en función de $x$ para distintos métodos numéricos para el término advectivo y distintos números de Reynolds $Re$: (a) $Re = 100$, (b) $Re = 1000$ y (c) $Re = 5000$. En todos los casos se empleó una grilla espacial de tamaño $n \times n$ con $n = 80$ y el método Euler implícito para la evolución temporal. Nótese que las curvas correspondientes los métodos QUICK y DC2 se encuentran superpuestas en (a) y (b).}
      \label{fig:terminos_advs_v}
 \end{figure}
 
@@ -588,7 +568,7 @@ Por último, cabe preguntarse qué método es más preciso. Para tal fin se resu
       \caption{}
       \label{fig:termino_adv_QUICK}
   \end{subfigure}
-     \caption{Error relativo $e_{rel}$ para distintos número de Reynolds $Re$, tamaño de la discretización espacial $\Delta$ y método numérico para el término advectivo: (a) Diferencias centradas de orden 2, (b) Upwind de orden 1 y (c) esquema QUICK. En todos los casos se empleó Euler implícito para la evolución temporal. Nótese que todas las figuras tienen el mismo rango en el eje vertical.}
+     \caption{Error relativo $e_{rel}$ para distintos número de Reynolds $Re$, tamaño de la discretización espacial $\Delta$ y método numérico para el término advectivo: (a) Diferencias centradas de orden 2, (b) Upwind de orden 1 y (c) esquema QUICK. En todos los casos se empleó Euler implícito para la evolución temporal.}
      \label{fig:termino_advectivo}
 \end{figure}
 
@@ -608,89 +588,86 @@ Por último, cabe preguntarse qué método es más preciso. Para tal fin se resu
   \multicolumn{1}{|l|}{UP1} & \multicolumn{1}{c|}{$0.14813$} & \multicolumn{1}{c|}{$3.46833$} & $17.6402$ \\ \hline
   \multicolumn{1}{|l|}{QUICK} & \multicolumn{1}{c|}{$0.08778$} & \multicolumn{1}{c|}{$0.30266$} & $4.09139$ \\ \hline
   \end{tabular}
+  \caption{Error relativo $e_{rel}$ para distintos número de Reynolds $Re$ y método numérico para el término advectivo: (a) Diferencias centradas de orden 2, (b) Upwind de orden 1 y (c) método QUICK. En todos los casos se empleó el método Euler implícito para la evolución temporal.}
   \label{tabla:erel}
-  \caption{Error relativo $e_{rel}$ para distintos número de Reynolds $Re$ y método numérico para el término advectivo: (a) Diferencias centradas de orden 2, (b) Upwind de orden 1 y (c) método QUICK \textcolor{red}{ref}. En todos los casos se empleó el tamaño de la discretización $\Delta = $ \textcolor{red}{valor}, diferencias centradas de orden 2 para el término difusivo y Euler implícito para la evolución temporal.}
 \end{table}
 
 \subsubsection{Órden de convergencia del método UP1}
 
 Se calculó el orden de convergencia espacial del método UP1 para el término advectivo para $Re = 1$ y $1000$. Para ello se calculó el error en la determinación de $u(0.5, 0.2)$ y $v(0.2, 0.5)$ respecto a una solución precisa para distintos valores de $\Delta$. Se consideró como solución precisa a aquella con $n = 80$ y DC2 para el término advectivo, considerado como el método más preciso de los tres en base a los resultados presentados anteriormente. Se empleó el método Euler implícito para la evolución temporal.
 
-Los resultados se grafican en la figura \ref{error_UP1_n1_vs_Re}. Comparando \ref{fig:error_UP1_n1_vs_Re_1} con \ref{fig:error_UP1_n1_vs_Re_1000} se observa que el método presenta mayor error con $Re = 1000$ que con $Re = 1$, consistente con lo estudiado en \ref{sec:termino_adv}. En base al comportamiento lineal para ambas velocidades se realizó un ajuste de los datos, obteniendo como pendiente el orden de convergencia para $u$ y $v$ y $Re = 1$ y $1000$. En el caso de $Re = 1$ se obtuvo un orden de convergencia para $u$ de $2.5 \pm 0.3$ y para $v$ de $2.9 \pm 0.4$. Los órdenes de convergencia para cada variable son indistinguibles entre sí y mayores al orden teórico de UP1. Esto podría deberse a que a bajo número de Reynolds el término difusivo en las ecuaciones \ref{eq:momento_x} y \ref{eq:momento_y} cobra mayor importancia que el advectivo. Como el difusivo se discretizó con DC2 se esperaría un error del orden 2. Sin embargo, el orden de convergencia es aún mayor. No es claro a qué se debe este comportamiento pero podría estar relacionado a la mezcla de métodos espaciales y temporales utilzada y además, a que la solución de referencia no es la solución exacta sino una aproximación. En el caso de $Re = 1000$ se obtuvo un orden de convergencia para $u$ de $0.52 \pm 0.06$ y para $v$ de $0.52 \pm 0.05$. Ambos valores son indistinguibles entre sí y menores al orden teórico UP1. Análogamente al caso anterior, como aumentó el número de Reynolds, el término advectivo cobra mayor importancia y se esperaría un orden 1 de convergencia. Sin embargo, el orden es aún menor. No es claro a qué se debe este comportamiento pero podría deberse a las mismas razones discutidas para $Re = 1$.
+Los resultados se grafican en la figura \ref{fig:error_UP1_n1_vs_Re}. Comparando \ref{fig:error_UP1_n1_vs_Re_1} con \ref{fig:error_UP1_n1_vs_Re_1000} se observa que el método presenta mayor error con $Re = 1000$ que con $Re = 1$, consistente con lo estudiado en \ref{sec:termino_adv}. En base al comportamiento lineal para ambas velocidades se realizó un ajuste de los datos, obteniendo como pendiente el orden de convergencia para $u$ y $v$ y $Re = 1$ y $1000$. En el caso de $Re = 1$ se obtuvo un orden de convergencia para $u$ de $2.5 \pm 0.3$ y para $v$ de $2.9 \pm 0.4$. Los órdenes de convergencia para cada variable son indistinguibles entre sí y mayores al orden teórico de UP1. Esto podría deberse a que a bajo número de Reynolds el término difusivo en las ecuaciones \ref{eq:momento_x} y \ref{eq:momento_y} cobra mayor importancia que el advectivo. Como el difusivo se discretizó con DC2 se esperaría un error del orden 2. Sin embargo, el orden de convergencia es aún mayor. No es claro a qué se debe este comportamiento pero podría estar relacionado a la mezcla de métodos espaciales y temporales utilzada y además, a que la solución de referencia no es la solución exacta sino una aproximación. En el caso de $Re = 1000$ se obtuvo un orden de convergencia para $u$ de $0.52 \pm 0.06$ y para $v$ de $0.52 \pm 0.05$. Ambos valores son indistinguibles entre sí y menores al orden teórico UP1. Análogamente al caso anterior, como aumentó el número de Reynolds, el término advectivo cobra mayor importancia y se esperaría un orden 1 de convergencia. Sin embargo, el orden es aún menor. No es claro a qué se debe este comportamiento pero podría deberse a las mismas razones discutidas para $Re = 1$.
 
 \begin{figure}
   \centering
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{error_UP1_n1_vs_Re_1.pdf}
       \caption{}
       \label{fig:error_UP1_n1_vs_Re_1}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{error_UP1_n1_vs_Re_1000.pdf}
       \caption{}
       \label{fig:error_UP1_n1_vs_Re_1000}
   \end{subfigure}
-     \caption{Error local de $u$ y $v$ calculados con Upwind de orden 1 respecto a la solución con diferencias centradas de orden 2 para distintos valores de $\Delta$. Se analizaron los casos (a) $Re = 1$ y (b) $Re = 1000$. Se empleó el método Euler implícito para la evolución temporal y diferencias centradas de orden 2 para el término de difusión. Se ajustó en todos los casos una dependencia lineal $a \mathrm{log(\Delta)} + b$, donde $a$ indica el orden de convergencia. En el caso $Re = 1$ se obtuvo para $u$ una pendiente $a_{u}^1 = 2.5 \pm 0.3$ y para $v$, $a_{v}^1 = 2.9 \pm 0.4$. Mientras que en el caso $Re = 1000$ se obtuvo para $u$ una pendiente $a_u^1000 = 0.52 \pm 0.06$ y para $v$, $a_v^1000 ? 0.52 \pm 0.05$.
+     \caption{Error local de $u$ y $v$ calculados con Upwind de orden 1 respecto a la solución con diferencias centradas de orden 2 para distintos valores de $\Delta$. Se analizaron los casos (a) $Re = 1$ y (b) $Re = 1000$. Se empleó el método Euler implícito para la evolución temporal y diferencias centradas de orden 2 para el término de difusión. Se ajustó en todos los casos una dependencia lineal $a \mathrm{log(\Delta)} + b$, donde $a$ indica el orden de convergencia. En el caso $Re = 1$ se obtuvo para $u$ una pendiente $a_{u}^1 = 2.5 \pm 0.3$ y para $v$, $a_{v}^1 = 2.9 \pm 0.4$. Mientras que en el caso $Re = 1000$ se obtuvo para $u$ una pendiente $a_u^{1000} = 0.52 \pm 0.06$ y para $v$, $a_v^{1000} = 0.52 \pm 0.05$.
      }
      \label{fig:error_UP1_n1_vs_Re}
 \end{figure}
 
 \subsubsection{Dependencia con el número de iteraciones del algoritmo SIMPLER.}
 
-Cabe preguntarse cómo cambia la precisión con $l_{simpler}$. En la figura \ref{fig:lsimpler} se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ en el estado estacionario para los distintos valores de $l_simpler$. Cualitativamente las velocidades en el estado estacionario no se modifican con $l_{simpler}$. Sin embargo, la solución numérica dista de la de referencia. Esto podría deberse al valor de $n$ utilizado o a los métodos numéricos en sí.
+Cabe preguntarse cómo cambia la precisión con $l_{simpler}$. En la figura \ref{fig:lsimpler} se grafican las velocidades $u(0.5,y)$ y $v(x,0.5)$ en el estado estacionario para los distintos valores de $l_{simpler}$. Cualitativamente las velocidades en el estado estacionario no se modifican con $l_{simpler}$. Sin embargo, la solución numérica dista de la de referencia. Esto podría deberse al valor de $n$ utilizado o a los métodos numéricos en sí.
 
 \begin{figure}
   \centering
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{f_lsimpler_u.pdf}
       \caption{}
       \label{fig:lsimpler_u}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{f_lsimpler_v.pdf}
       \caption{}
       \label{fig:lsimpler_v}
   \end{subfigure}
-     \caption{Velocidades $u(0.5,y)$ y $v(x,0.5)$ en el estado estacionario para $l_simpler = 1$, $2$ y $3$ iteraciones internas en el algoritmo SIMPLER. En ambos casos todas las curvas están superpuestas. Se empleó $Re = 1000$ y $n = 30$. Además, se utilizó diferencias finitas centradas de orden 2 para el término advectivo y difusivo y Euler implícito para la evolución temporal.}
+     \caption{Velocidades $u(0.5,y)$ y $v(x,0.5)$ en el estado estacionario para $l_simpler = 1$, $2$ y $3$ iteraciones internas en el algoritmo SIMPLER. En ambos casos todas las curvas están superpuestas. Se empleó $Re = 1000$ y $n = 30$. Además, se utilizó diferencias finitas centradas de orden 2 para el término advectivo y difusivo y Euler implícito para la evolución temporal. Nótese que en ambas figuras las tres curvas se encuentran superpuestas.}
      \label{fig:lsimpler}
 \end{figure}
 
 \subsubsection{Dependencia con el método numérico de evolución temporal}
-\begin{itemize}
-  \item Lo único que queda por estudiar es el efecto del método de evolución temporal en la solución numérica.
-  \item Para esto se modificó la condición de contorno en la cara superior para que sea dependiente del tiempo como $U_0 = cos(t)$
-  \item Se calculó la evolución temporal de $u(0.5,0.5)$ y $v(0.5,0.5)$ hasta $t = 10$ empleando Euler implícito y Crack-Nicholson. En cuanto a los parámetros de la simulación se empleó $n = 30$ y $Re = 1000$, DC2 para los término advectivo y difusivo, $\Delta t = 0.4$ y $l_{simpler} = 1$ y $3$. Los resultados se resumen en la figura
+Se determinó el efecto del método numérico de evolución temporal sobre la solución. Para esto se modificó la condición de contorno en la cara superior para que sea dependiente del tiempo como $U_0 = cos(t)$. Se calculó la evolución temporal de $u(0.5,0.5)$ y $v(0.5,0.5)$ hasta $t = 80$ empleando los métodos Euler implícito y Crack-Nicholson. En cuanto a los parámetros de la simulación se empleó $n = 30$ y $Re = 1000$, DC2 para los término advectivo y difusivo, $\Delta t = 0.4$ y $l_{simpler} = 1$ y $3$. Los resultados se resumen en la figura \ref{fig:e}.
+  
+En el caso de la velocidad $u(0.5,0.5)$, se observa que la solución con EI y $l_{simpler} = 1$ converge rápidamente, aunque difiere de las demás con mayor precisión. Estas se encuentran prácticamente superpuestas con algunas diferencias en los mínimos y máximos y hasta $t \approx 40$ no están convergidas. Es notable que cualitativamente una solución con EI y $l_{simpler} = 3$ tiene prácticamente el mismo comportamiento que una con CN, a pesar que este último método es de mayor orden.
+  
+En el caso de la velocidad $v(0.5,0.5)$, la solución con EI y $l_{simpler} = 1$ también dista de las demás. A diferencia de la velocidad horizontal, la solución con CN y $l_{simpler} = 1$ difiere de las demás con mayor precisión. La diferencia fundamental se encuentra en el número de iteraciones internas $l_{simpler}$. En resumen, cualitativamente se observa que la precisión está fuertemente influenciada por el número de iteraciones internas $l_{simpler}$.
 
-\end{itemize}
 
 \begin{figure}
   \centering
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{e_1.pdf}
       \caption{}
       \label{fig:e_1}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.3\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{e_2.pdf}
       \caption{}
       \label{fig:e_2}
   \end{subfigure}
-     \caption{}
+     \caption{Evolución de (a) $u(0.5,0.5)$ y (b) $v(0.5,0.5)$ en el tiempo. Se empleó como condición de contorno $U_0 = cos(t)$ y $Re = 1000$. En cuanto a las condiciones de la simulación se utilizó $n = 30$, $\Delta t = 0.4$, diferencias centradas de orden 2 para los términos advectivo y difusivo, distintos métodos para la evolución temporal ('EI': Euler Implícito, 'CN': Crank-Nicholson) y distinto número de iteraciones internas $l_{simpler}$ del algoritmo SIMPLER. Nótese que en (a) las curvas correspondientes a EI y $l_{simpler}$ = 1, CN y $l_{simpler}$ = 1 y 3, se encuentran superpuestas. Además, en (b) las curvas correspondientes a CN y EI con $l_{simpler} = 3$ se encuentran superpuestas.}
      \label{fig:e}
 \end{figure}
 
-
-\textcolor{red}{Condición inicial?}
-\textcolor{blue}{Evolución temporal con EI y CN.}
 
 
 
@@ -700,6 +677,22 @@ Cabe preguntarse cómo cambia la precisión con $l_{simpler}$. En la figura \ref
 
 
 \section{Conclusión}
+
+
+Se resolvió el problema de la cavidad cuadrada hidrodinámica bidimensional mediante el método de volumenes finitos y algoritmo SIMPLER calculando presión y velocidades con grilla desplazada. Se estudiaron distintos métodos numéricos espaciales y de evolución temporal. En particular, se analizaron los esquemas de diferencias finitas de orden 2 (DC2), Upwind de orden 1 (UP1) y el esquema QUICK  para el término advectivo de la ecuación de momento. Mientras que para la evolución temporal, los métodos Euler implícito y Crank-Nicholson. 
+
+Debido a la cantidad de variables involucradas, la resolución conlleva un gran costo computacional. Se plantearon algoritmos que permitiesen minimizar el tiempo de cómputo. En primer lugar, bajo la hipótesis de que el estado estacionario no depende del paso de tiempo, se propuso un algoritmo para elegir el paso de tiempo de modo de maximizar la velocidad de convergencia durante los primeros 10 pasos. Para determinar cuándo el sistema se encuentra en el estado estacionario se definió un criterio de convergencia empleando las derivadas de las velocidades. En segundo lugar, se propuso un algoritmo para disminuir progresivamente el tamaño de la grilla espacial hasta obtener un error menor al 5 \% respecto a la bibliografía. Se obtuvo que UP1 es consistentemente más caro computacionalmente que DC2 y, además, el costo aumenta con el número de Reynolds. En tercer lugar, se analizó la dependencia del tiempo de cómputo con el número de iteraciones internas en el algoritmo simpler. Se obtuvo que el tiempo de cómputo aumenta de forma aproximadamente proporcional al número de iteraciones internas. Sin embargo, cualitativamente el estado estacionario no presenta diferencias significativas al modificar tal número.
+
+
+Por otro lado, se analizó la dependencia del estado estacionario con el número de Reynolds y el método numérico para el término advetivo, empleando como condición de contorno una velocidad constante en el tiempo. Se obtuvo que la precisión disminuye con el número de Reynolds independientemente del método para el término advectivo. Además, que el método con mayor error es UP1 debido a que es de menor orden que los demás y presenta difusión, cada vez más notoria cuando aumenta $Re$.
+
+Además, se determinó el método más exacto para el término advectivo. Para esto se calculó el error relativo en la determinación de $u(0.5,0.5)$ y $v(0.5,0.5)$ respecto a la bibliografía. Se obtuvo que el método con menor error es DC2. Luego, se lo empleó como solución de referencia para calcular el órden de convergencia del método UP1 en la determinación de $u(0.5,0.2)$ y $v(0.2,0.5)$. Se obtuvo para $Re = 1$ un orden de convergencia mayor a 2 y para $Re = 1000$ un orden menor a 1. El primero se justifica en que a bajo número de Reynolds el término advectivo discretizado con UP1 tiene menor importancia que el difusivo discretizado con DC2. Mientras que el segundo se justifica de forma contraria: a mayor Reydolds el término advectivo cobra importancia respecto al difusivo.
+
+Por último, se cambió la condición de contorno a una oscilatoria dependiente del tiempo y se resolvió el problema con los métodos Euler implícito y Crank-Nicholson, empleando $l_{simpler} = 1$ y $3$ iteraciones internas en el algoritmo SIMPLER. Cualitativamente se observó que la precisión está influenciada tanto por el método numérico como por el número de iteraciones del algoritmo SIMPLER.
+
+
+
+
 
 \bibliography{Chehade_final.bib}
 
