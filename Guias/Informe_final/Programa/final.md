@@ -190,6 +190,19 @@ Lo dejé buscando el best_dt para el caso de n1 = 80 y Re 5000. La única difere
 
 
 
+En el inciso f se pide otra cosa. Lo voy a cambiar si me queda tiempo
+
+En el e resolví un caso simplificado por las dudas
+
+
+Mencionar en algún lado que el código fue escrito por la cátedra
+
+Y si el error está en el promedio para calcular u(0.5,0.5)?
+
+Asumí que QUICK es de orden 2 (podría ser de orden 3)
+
+El e con Re 1000 llegó a un error de 0.7642
+
 
 
 
