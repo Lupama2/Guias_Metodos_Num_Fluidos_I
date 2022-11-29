@@ -167,9 +167,14 @@ if metodo_temporal == "C"
   b_CNv_matriz = zeros(n1,n1-1); # matriz actual (n1,n1)
   b_CNv0_matriz = zeros(n1,n1-1); # matriz del paso anterior (n1,n1)
 
+  f_CNu_matriz = zeros(n1-1,n1); #matriz actual (n1,n1)
+  f_CNv_matriz = zeros(n1,n1-1); # matriz actual (n1,n1)
+
   #Redefino dt y Ndeltat
   Ndeltat = 2*Ndeltat;
   dt = dt/2;
+  % Ndeltat = Ndeltat;
+  % dt = dt;
 
 endif
 
@@ -224,8 +229,11 @@ for j=1:n1-1
 endfor
 
 if metodo_temporal == "C"
-  uvel = uvel + b_CNu_matriz*dt;
-  vvel = vvel + b_CNv_matriz*dt;
+  % uvel = uvel + b_CNu_matriz*dt;
+  % vvel = vvel + b_CNv_matriz*dt;
+
+  u0 = u0 + f_CNu_matriz*dt;
+  v0 = v0 + f_CNv_matriz*dt;
 endif
 
 
@@ -1161,6 +1169,8 @@ for i=1:n1
   endfor
 endfor
 
+
+
 # -------------------------------------------------------------------
 #
 #   PASO 3 SIMPLER: ENCONTRAMOS LA CORRECION DE LA PRESION QUE HACE EL CAMPO DE VELOCIDADES DIVERGENCIA LIBRE
@@ -1242,6 +1252,7 @@ for j=1:n1-1
 endfor
 
 
+
 # -------------------------------------------------------------------
 #
 #
@@ -1249,7 +1260,6 @@ endfor       #termina iteracion simpler, indice lsimpler
 #
 #
 # -------------------------------------------------------------------
-
 
 # -------------------------------------------------------------------
 #
@@ -1268,13 +1278,20 @@ if metodo_temporal == "C"
 
   % b_u = -b_u + (uvel-u0)/dt;
   % b_v = -b_v + (vvel-v0)/dt;
-  b_CNu_matriz = - b_CNu_matriz + (uvel-u0)/dt;
-  b_CNv_matriz = - b_CNv_matriz + (vvel-v0)/dt;
+  % b_CNu_matriz = (uvel-u0)/dt;
+  % b_CNv_matriz = (vvel-v0)/dt;
+
+  f_CNu_matriz = (uvel-u0)/dt*dx2;
+  f_CNv_matriz = (vvel-v0)/dt*dx2;
+
+
 
   % b_CNu_matriz =  - b_CNu0_matriz + (uvel - u0)/dt*dx2;
   % b_CNv_matriz =  - b_CNv0_matriz + (vvel - v0)/dt*dx2;
   % b_CNu_matriz =  - b_CNu0_matriz + bu;
   % b_CNv_matriz =  - b_CNv0_matriz + bv;
+
+
 
 
   #Redefino b_CNu0_matriz y b_CNv0_matriz
@@ -1283,6 +1300,7 @@ if metodo_temporal == "C"
 
   #2*Utop2*re1 + dx2/dt*v0(i,j) +vsourcew(i,j)+vsources(i,j)-vsources(i,j+1);
 endif
+
 
 # -------------------------------------------------------------------
 #

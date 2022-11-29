@@ -626,7 +626,7 @@ endfunction
 % n1 = n1_minimo(Re, @U0_top_cte, n1_guess, dt_guess, tol_estacionario, Ndeltat, nsimpler, termino_advectivo, metodo_temporal, archivo_evolucion_variables, archivo_velocidades_centrales, archivo_parametros, e_tol, u_central_guia)
 
 
-calcular = false;
+calcular = true;
 if calcular == true
     "Inciso e"
     Re_array = [1000];
@@ -761,7 +761,7 @@ endif
 
 
 #Inciso g: cambiar condición de contorno
-calcular = true;
+calcular = false;
 
 if calcular == true
     inciso = "g"
@@ -776,9 +776,9 @@ if calcular == true
     n1 = 30;
     Re = 1000;
     dt = 0.4;
-    tmax = 15;#60;
+    tmax = 60;
     Ndeltat = round(tmax/dt)
-    nsimpler_array = [1];#[1,3];
+    nsimpler_array = [1]#[1,3];
     metodo_temporal_array = ['C']#['E'; 'C'];
 
 

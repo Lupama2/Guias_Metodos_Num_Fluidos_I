@@ -239,12 +239,12 @@ Empleando las tres ecuaciones diferenciales en derivadas parciales anteriores, e
 \section{Métodos Numéricos}
 
 \ptitle{Resumen}
-Para resolver el sistema de ecuaciones diferenciales es necesario discretizar el dominio y plantear esquemas numéricos para las ecuaciones diferenciales. En cuanto al primero, es necesario diferenciar entre dominio espacial y temporal. En cuanto al segundo, se emplearon volúmenes finitos con el objetivo de asegurar la conservación de masa \textcolor{red}{?} y se estudió el efecto de distintos métodos espaciales y temporales.
+Para resolver el sistema de ecuaciones diferenciales es necesario discretizar el dominio y plantear un esquema numérico para las ecuaciones diferenciales. En cuanto al primero, es necesario diferenciar entre dominio espacial y temporal. En cuanto al segundo, se emplearon volúmenes finitos y distintos métodos espaciales y temporales.
 
 \subsection{Discretización del dominio}
 
 \ptitle{Discretización espacial}
-El dominio espacial se discretiza mediante una grilla uniforme con igual espaciamiento $\Delta$ en ambas direcciones. El número de volúmenes por dirección espacial es $n$ tal que $\Delta = 1/n$. En total se cuentan con $n^2$ volúmenes, cada uno numerado con los índices $i$ y $j$ para las direcciones horizontales y verticales, respecticamente.
+El dominio espacial se discretizó mediante una grilla uniforme con espaciamiento $\Delta$ en ambas direcciones. El número de volúmenes por dirección espacial es $n$ tal que $\Delta = 1/n$. En total se cuentan con $n^2$ volúmenes, cada uno numerado con los índices $i$ y $j$ para las direcciones horizontales y verticales, respecticamente.
 
 \ptitle{Grilla desplazada}
 Se emplearon grillas desplazadas para las velocidades y la presión. Estas se muestran esquemáticamente en la figura \ref{fig:grillas_desplazadas}. De este modo, $P_{ij}$ es la presión en el volumen de tamaño $\Delta \times \Delta$ ubicado en $x = i \Delta$ e $y = j \Delta$. Mientras que $U_{ij}$ es la velocidad horizontal en $x = (i+1/2)\Delta $ e $y = j\Delta$ y $V_{ij}$, la velocidad vertical en $x = i \Delta$ e $y = (j + 1/2) \Delta$. En base a lo anterior, la grilla para $p$ posee todos sus volúmenes contenidos en la cavidad. Como no se necesita conocer la presión en el borde del domindio, no es necesario describir sus condiciones de borde, las cuales suelen ser difíciles de determinar. Esta justamente es la ventaja de emplear grillas desplazadas.
@@ -268,101 +268,71 @@ Se emplearon grillas desplazadas para las velocidades y la presión. Estas se mu
 
 
 \ptitle{Discretización temporal}
-Por otro lado, el dominio temporal se define desde $t = 0$ hasta $t = t_{max}$. El tiempo se discretizó en puntos equiespaciados $t_k = k \Delta t$ con $k = 0,1,\dots,M$ con $\Delta t = t_{max}/M$. De este modo, la presión $P_{ij}^k$ es la $P_{ij}$ evaluada en $t t_k$ y de forma análoga con las demás variables.
+Por otro lado, el dominio temporal se define desde $t = 0$ hasta $t = t_{max}$. El tiempo se discretizó en puntos equiespaciados $t_k = k \Delta t$ con $k = 0,1,\dots,M$ con $\Delta t = t_{max}/M$. De este modo, la presión $P_{ij}^k$ es la $P_{ij}$ evaluada en $t = t_k$ y de forma análoga con las demás variables.
 
 
 \subsection{Esquema numérico}
 
 \ptitle{Resumen}
-\begin{itemize}
-  \item Se construyó un esquema numérico para las ecuaciones de conservación de momento \ref{eq:momento_x} y \ref{eq:momento_y} mediante la técnica de volúmenes finitos.
-  \item Para aproximar los términos obtenidos se emplearon distintos métodos numéricos,analizando su efecto en la solución numérica.
-  \item Para la evolución temporal se utilizó Euler Implícito y Crank-Nicolson
-  \item Mientras que para el término advectivo se empleó diferencias centradas de orden 2, Up-wind de orden 1 y el \textcolor{red}{algoritmo?} QUICK. Por último, para el difusivo se empleó diferencias centradas de orden 2.
-  \item Una vez planteado el esquema numérico, se resolvió el sistema de ecuaciones formado por \ref{eq:momento_x}, \ref{eq:momento_y} y \ref{eq:cons_masa} mediante el algoritmo SIMPLER.
-  \item A continuación se explica la construcción del esquema numérico, junto a las características particulares de cada método utilzado.
-\end{itemize}
+Se construyó un esquema numérico para las ecuaciones de conservación de momento \ref{eq:momento_x} y \ref{eq:momento_y} mediante la técnica de volúmenes finitos. Para aproximar los términos obtenidos se emplearon distintos métodos numéricos. Para la evolución temporal se utilizó Euler Implícito y Crank-Nicolson. Mientras que para el término advectivo se empleó diferencias finitas centradas de orden 2, Up-wind de orden 1 y el esquema QUICK \textcolor{red}{REF}. Por último, para el difusivo se empleó diferencias centradas de orden 2. Una vez planteado el esquema numérico, se resolvió el sistema de ecuaciones mediante el algoritmo SIMPLER exigiendo que el campo de velocidades tenga divergencia libre en base a \ref{eq:cons_masa}. A continuación se explica la construcción del esquema numérico, junto a las características particulares de cada método utilzado.
 
 \ptitle{Volúmenes finitos}
-\begin{itemize}
-  \item La implementación de la técnica de volúmenes finitos para este problema en particular se explica en detalle en \cite{Notas_materia}. 
-  \item De forma resumida, se integran las ecuaciones de momento \ref{eq:momento_x} y \ref{eq:momento_y} en el volumen de las grillas de $u$ y $v$, respecticamente, empleando la regla del rectángulo \textcolor{red}{ref Moin}. Esta aproximación es de orden mayor a $\Delta^2$, correspondiente al mayor orden de aproximación de los esquemas para los términos advectivo y difusivo. De este modo se arriba a un sistema de ecuaciones donde el término temporal depende de $\partial U_{ij}/ \partial t$, el advectivo depende de $u$ evaluada en los cuatro laterales: $U_{N,ij}$ norte, $U_{S,ij}$ sur, $U_{E,ij}$ este y $U_{W,ij}$ oeste, y de $v$ evaluada de igual manera. Además, el término de presión depende de $P_{ij}$ y el término difusivo depende de las derivadas espaciales de $u$ evaluadas en los laterales: $\frac{\partial U_{E,ij}}{\partial x}$, $\frac{\partial U_{W,ij}}{\partial x}$, $\frac{\partial U_{N,ij}}{\partial y}$ y $\frac{\partial U_{S,ij}}{\partial y}$, y de las derivadas espaciales de $v$ de forma análoga.
-  \item Es necesario aclarar que las variables anteriores se evalúan tanto en los laterales de los volúmenes de la grilla de $u$ como en los de $v$. Sin embargo, las aproximaciones para un caso y otro son análogas.
-  \item En base a lo anterior, aplicar un método numérico determinado implica aproximar las velocidades $U_{ij}$, $V_{ij}$ y sus derivadas evaluadas en el centro y los laterales de sus volúmenes finitos respectivos.
-  \item Por simetría $U_{E,ij} = U_{W,i+1j}$ y $U_{N,ij} = U_{S,ij+1}$. Además, cualquier aproximación sobre $U_{W,ij}$ vale sobre $U_{S,ij}$ intercambiando los índices $ij$ entre sí. De este modo, solo basta describir la aproximación en uno de los laterales
-  \item Por último, una particularidad del término advectivo es su no linealidad, que se resuelve empleando la solución del paso previo como uno de los factores.
-\end{itemize}
+La implementación de la técnica de volúmenes finitos para este problema en particular se explica en detalle en \cite{Notas_materia}. De forma resumida, se integran las ecuaciones de momento \ref{eq:momento_x} y \ref{eq:momento_y} en el volumen de las grillas de $u$ y $v$, respecticamente, empleando la regla del rectángulo \textcolor{red}{ref Moin}. Esta aproximación es de orden mayor a $\Delta^2$, correspondiente al mayor orden de aproximación de los esquemas para los términos advectivo y difusivo. De este modo se arriba a un sistema de ecuaciones donde el término temporal depende de $\partial U_{ij}/ \partial t$, el advectivo depende de $u$ evaluada en los cuatro laterales: $U_{N,ij}$ norte, $U_{S,ij}$ sur, $U_{E,ij}$ este y $U_{W,ij}$ oeste, y de $v$ evaluada de igual manera. Una particularidad del término advectivo es su no linealidad, que se resuelve empleando como uno de los factores la solución del paso previo o de iteraciones internas. Además, el término de presión depende de $P_{ij}$ y el término difusivo depende de las derivadas espaciales de $u$ evaluadas en los laterales: $\frac{\partial U_{E,ij}}{\partial x}$, $\frac{\partial U_{W,ij}}{\partial x}$, $\frac{\partial U_{N,ij}}{\partial y}$ y $\frac{\partial U_{S,ij}}{\partial y}$, y de las derivadas espaciales de $v$ de forma análoga. Es necesario aclarar que las variables anteriores se evalúan tanto en los laterales de los volúmenes de la grilla de $u$ como en los de $v$. Sin embargo, las aproximaciones para ambos casos son análogas. En base a las dependencias presentadas, aplicar un método numérico determinado implica aproximar las velocidades $U_{ij}$, $V_{ij}$ y sus derivadas en el centro y los laterales de sus volúmenes finitos respectivos. Además, por simetría $U_{E,ij} = U_{W,i+1j}$, $U_{N,ij} = U_{S,ij+1}$ y cualquier aproximación sobre $U_{W,ij}$ vale sobre $U_{S,ij}$ intercambiando los índices $ij$ entre sí. De este modo, solo basta describir la aproximación en uno de los laterales
 
 
 \ptitle{Métodos espaciales: presentación y aproximaciones para el término advectivo}
-\begin{itemize}
-  \item A continuación se desarrollan los métodos numéricos utilizados para el dominio espacial. Sólo se presentan las expresiones para la velocidad horizontal $u$, considerando que para la velocidad vertical $v$ son análogas.
-  \item En cuanto al término advectivo, se empleron tres métodos numéricos: diferencias centradas de orden 2, Up-wind de orden 1 y \textcolor{red}{algoritmo?} QUICK.
-  \item En diferencias centradas de orden 2 se aproxima
-  \[U_{W,ij} = \frac{U_{ij} + U_{i-1j}}{2} \]
-  \item Ventajas y desventajas
-  \item En Up-wind de orden 1 se aproxima
-  \[U_{W,ij} =  \left\{\begin{matrix}
-    U_{i-1j} \qquad \mathrm{si} \qquad U_{W,ij}^*\geqslant 0\\
-    U_{ij} \quad \qquad \mathrm{si} \qquad U_{W,ij}^* < 0
-   \end{matrix}\right.\]
-  \item donde el subíndice '*' indica que corresponde al paso previo o se calcula en base al paso previo.
-  \item Ventajas y desventajas
-  \item Por último, en \textcolor{red}{algoritmo?} QUICK se aproxima \textcolor{red}{REF}
-  \[U_{W,ij} =  \left\{\begin{matrix}
-    U_{i-1j} + \frac{1}{8}( - U_{i-2j} -2 U_{i-1j} + 3U_{ij} ) \, \qquad \mathrm{si} \qquad U_{W,ij}^*\geqslant 0\\
-    U_{ij} + \frac{1}{8}(3 U_{i-1j} - 2 U_{ij} - U_{i+1j}) \quad \quad \qquad \mathrm{si} \qquad U_{W,ij}^* < 0
-   \end{matrix}\right.\]
-  \item ventajas y desventajas
-\end{itemize}
+A continuación se desarrollan los métodos numéricos utilizados para el dominio espacial. Sólo se presentan las expresiones para la velocidad horizontal $u$, considerando que para la velocidad vertical $v$ son análogas. En cuanto al término advectivo, se empleron tres métodos numéricos: diferencias centradas de orden 2 (DC1), Up-wind de orden 1 (UP1) y el esquema QUICK \textcolor{red}{REF}. En diferencias centradas de orden 2 se aproxima
+\[U_{W,ij} = \frac{U_{ij} + U_{i-1j}}{2}. \]
+Este método tiene la desventaja de presentar oscilaciones espúreas. Por otro lado, en Up-wind de orden 1 se aproxima
+\[U_{W,ij} =  \left\{\begin{matrix}
+  U_{i-1j} \qquad \mathrm{si} \qquad U_{W,ij}^*\geqslant 0\\
+  U_{ij} \quad \qquad \mathrm{si} \qquad U_{W,ij}^* < 0
+  \end{matrix}\right.\]
+donde el subíndice '*' indica que corresponde al paso previo o a iteraciones internas. Tiene la ventaja de no presentar oscilaciones espúreas pero las desventajas de ser difusivo y de menor orden que DC2. Por último, en el esquema QUICK se aproxima
+\[U_{W,ij} =  \left\{\begin{matrix}
+  U_{i-1j} + \frac{1}{8}( - U_{i-2j} -2 U_{i-1j} + 3U_{ij} ) \, \mathrm{si} U_{W,ij}^*\geqslant 0\\
+  U_{ij} + \frac{1}{8}(3 U_{i-1j} - 2 U_{ij} - U_{i+1j}) \quad \quad \mathrm{si} U_{W,ij}^* < 0
+\end{matrix}\right.\]
+escrito como UP1 más términos de fuente.
+\textcolor{red}{Si tengo tiempo: ventajas y desventajas?}
+
 
 \ptitle{Aproximaciones para el término difusivo}
-\begin{itemize}
-  \item En cuanto al término difusivo, se empleaon diferencis finitas centradas de orden 2:
-  \[\frac{\partial U_{W,ij}}{\partial t} =  \frac{U_{ij} - U_{i-1j}}{\Delta}\]
-  \item Ventajas y desventajas
-\end{itemize}
+En cuanto al término difusivo, se emplearon diferencias finitas centradas de orden 2:
+\[\frac{\partial U_{W,ij}}{\partial t} =  \frac{U_{ij} - U_{i-1j}}{\Delta}\]
 
 
 \ptitle{Método de evolución temporal}
-\begin{itemize}
-  \item En cuanto a la evolución temporal, el sistema de ecuaciones discretizadas se puede llevar a uno de la forma
-  \[\frac{\partial U_{ij}^k}{\partial t} = f(U^k,V^k,P^k)\]
-  \[\frac{\partial V_{ij}^k}{\partial t} = g(U^k,V^k,P^k)\]
-  donde $f$ y $g$ son funciones y $U^k$, $V^k$ y $P^k$ son las matrices de velocidad y presión evaluadas a tiempo $t = t_k$.
-  \item En ambos casos la derivada temporal se aproximó mediante los métodos Euler Implícito y Crank-Nicholson. En el primero, se aproximó
-  \[U_{ij}^{k+1} = U_{ij}^{k} + \Delta t f(U^{k+1},V^{k+1},P^{k+1})  + O_{local}({\Delta t}^2)\]
-  y de forma análoga para $\frac{\partial V_{ij}^k}{\partial t}$.
+En cuanto a la evolución temporal, el sistema de ecuaciones discretizadas se puede llevar a uno de la forma
+\[\frac{\partial U_{ij}^k}{\partial t} = f(U^k,V^k,P^k)\]
+\[\frac{\partial V_{ij}^k}{\partial t} = g(U^k,V^k,P^k)\]
+donde $f$ y $g$ son funciones y $U^k$, $V^k$ y $P^k$ son las matrices de velocidad y presión evaluadas a tiempo $t = t_k$. En ambos casos la derivada temporal se aproximó mediante los métodos Euler Implícito (EI) y Crank-Nicholson (CN). En el primero, se aproximó
+\[U_{ij}^{k+1} = U_{ij}^{k} + \Delta t f(U^{k+1},V^{k+1},P^{k+1})  + O_{local}({\Delta t}^2)\]
+y de forma análoga para $\partial V_{ij}^k / \partial t$. En el segundo, se aproximó
+\[
+\begin{split}  
+U_{ij}^{k+1} = U_{ij}^{k} + \frac{\Delta t}{2} [f(U^{k+1},V^{k+1},P^{k+1}) + f(U^{k},V^{k},P^{k})] + \\ O_{local}({\Delta t}^3).
+\end{split}\]
+y de forma análoga para $\partial V_{ij}^k / \partial t$. Este método implícito tiene la ventaja de tener factor de amplificación unitario y de ser de mayor orden que EI
 
-  \item En el segundo, se aproximó
-  \[U_{ij}^{k+1} = U_{ij}^{k} + \frac{\Delta t}{2} [f(U^{k+1},V^{k+1},P^{k+1}) + f(U^{k},V^{k},P^{k})] + O_{local}({\Delta t}^3).\]
-  \item Este método implícito tiene la ventaja de tener factor de amplificación unitario.
-
-\end{itemize}
 
 \ptitle{Algoritmo simpler simplificadamente}
-\begin{itemize}
-  \item Mediante las aproximaciones anteriores, las ecuaciones de conservación de momento \ref{eq:momento_x} y \ref{eq:momento_y} se transforman en dos ecuaciones que sólo dependen de $U^k$, $U^{k-1}$, $V^k$, $V^{k-1}$, $P^k$ y $P^{k-1}$.
-  \item Estas ecuaciones junto a la condición de divergencia libre \ref{eq:cons_masa} se resuelven mediante elalgoritmo SIMPLER. \cite{Patankar}
-  \item Este es un algoritmo segregado o de paso fraccionado en el que se calculan por separado velocidad y presión. Partiendo de una aproximación de la velocidad y presión a tiempo $t_k$ es capaz de mejorarla mediante un método iterativo. Tal aproximación inicial suele ser la solución numérica a tiempo $t_{k-1}$. La exactitud de la solución depende del número de iteraciones internas $l_{simpler}$ realizadas, a expensas de un mayor costo computacional.
-\end{itemize}
-
-
+¿Mediante las aproximaciones anteriores, las ecuaciones de conservación de momento \ref{eq:momento_x} y \ref{eq:momento_y} se transforman en dos ecuaciones que sólo dependen de $U^k$, $U^{k-1}$, $V^k$, $V^{k-1}$, $P^k$ y $P^{k-1}$. Estas ecuaciones junto a la condición de divergencia libre \ref{eq:cons_masa} se resuelven mediante elalgoritmo SIMPLER. \cite{Patankar}. Este es un algoritmo segregado o de paso fraccionado en el que se calculan por separado velocidad y presión. Partiendo de una aproximación de la velocidad y presión a tiempo $t_k$ es capaz de mejorarla mediante un método iterativo. Tal aproximación inicial suele ser la solución numérica a tiempo $t_{k-1}$. La exactitud de la solución depende del número de iteraciones internas $l_{simpler}$ realizadas, a expensas de un mayor costo computacional.
 
 \subsection{Costo computacional}
 
 \ptitle{Costo computacional y elección de $n$}
-Debido a la cantidad de variables involucradas, proporcional a $n^2$, y dependiendo del número de pasos de tiempo a realizar, el costo computacional puede ser alto. En base a esto, es importante desarrollar métodos que permitan disminuir el costo pero que a su vez tengan una precisión aceptable. Un modo de minimizarlo es disminuyendo el número de variables pero exigiendo a su vez un error menor al 5 \%, por ejemplo. Sin embargo, para esto es necesario conocer la solución exacta o al menos una muy buena aproximación, lo cual no siempre se tiene.
+Debido a la cantidad de variables involucradas proporcional a $n^2$ y dependiendo del número de pasos de tiempo a realizar, el costo computacional puede ser alto. En base a esto, es importante desarrollar métodos que permitan disminuir el costo pero que a su vez tengan una precisión aceptable. Un modo de minimizarlo es disminuyendo el número de variables pero exigiendo a su vez un error menor al 5 \% respecto a la solución exacta, por ejemplo. Sin embargo, para esto es necesario conocer tal solución o al menos una muy buena aproximación, lo cual no siempre se tiene.
 
 \ptitle{Elección de $M$}
-Otra alternativa es disminuyendo el número de pasos de tiempo $M$. Cuando $U_0(t)$ es independiente del tiempo, el sistema de ecuaciones REFs debe llegar a un estado estacionario a partir del cual la solución deja de variar. Una vez en este estado, no tiene sentido continuar la ejecución. Entonces, se puede aplicar un criterio de convergencia que para dado $\Delta t$ indique cuándo la solución se encuentra en el estado estacionario y la ejecución debe detenerse. El criterio tomado fue el siguiente: si la solución tiende a un estacionario independiente del tiempo, entonces se avanza la solución hasta que se cumplan al mismo tiempo las desigualdades
-\[\frac{\left \|U^{k+1}-U^k \right \|_2}{\Delta t} < tol, \, \frac{\left \| V^{k+1} - V^k \right \|}{dt} < tol \]
-con $tol$ tolerancia. A menor $tol$, mayor el costo computacional debido a que se necesitan más pasos $M$. En este trabajo se decidió establecer $tol = 1 \times 10^{-5}$.
+Otra alternativa es disminuyendo el número de pasos de tiempo $M$. Cuando $U_0(t)$ es independiente del tiempo, el sistema debe llegar a un estado estacionario a partir del cual la solución deja de variar. Una vez en este estado, no tiene sentido continuar la ejecución. Entonces, se puede aplicar un criterio de convergencia que indique cuándo la solución se encuentra en el estado estacionario y la ejecución deba detenerse. El criterio tomado fue el siguiente: si la solución tiende a un estacionario independiente del tiempo, entonces se avanza la solución hasta que se cumplan al mismo tiempo las desigualdades
+\[\frac{\left \|U^{k+1}-U^k \right \|_2}{\Delta t} < tol, \, \frac{\left \| V^{k+1} - V^k \right \|_2}{dt} < tol \]
+con $tol$ tolerancia y $|| \bullet ||_2$ es la norma 2 matricial. Hay que tener en cuenta que a menor $tol$, mayor costo computacional debido a que se necesitan más pasos $M$. En este trabajo se decidió establecer $tol = 1 \times 10^{-5}$.
 \ptitle{Algoritmo para $\Delta t$}
 
-Además, si solo es de interés la solución en el estado estacionario, otra alternativa es eligir $\Delta t$ de modo que la solución converja más rápido a pesar de tener un estado transitorio lejos de la solución exacta. Esto último se basa en la hipótesis de que la solución no depende del paso de tiempo, lo cual debe ser estudiado en detalle. Asumiendo que así es, se propone el siguiente algoritmo para elegir $\Delta t$.
+Además, si solo es de interés la solución en el estado estacionario, otra alternativa es eligir $\Delta t$ de modo que la solución converja más rápido. Esto último se basa en las hipótesis de que la solución no depende del paso de tiempo, lo cual debe ser estudiado en detalle, y que es posible llegar al estado estacionario correcto atravesando un estado transitorio lejos de la solución. Asumiendo ambas hipótesis, se propone el siguiente algoritmo para elegir $\Delta t$.
 \begin{enumerate}
-  \item Se parte de una propuesta $\Delta t_{guess}$ lo suficientemente pequeña para que asegurar que la solución no diveja. En este trabajo se empleó $\Delta t_{guess} = 0.005.$ 
+  \item Se parte de una propuesta $\Delta t_{guess}$ lo suficientemente pequeña para asegurar que la solución no diveja. En este trabajo se empleó $\Delta t_{guess} = 0.005.$ 
   \item Se avanza en 10 pasos la solución numérica, calculando en cada uno de ellos el parámetro $\epsilon$ definido como
   \[\epsilon = \sqrt{ \left \|U^{k+1}-U^k \right \|_2^2 +  \left \| V^{k+1} - V^k \right \|_2^2 }.\]
   Este parámetro da indicio de cuán rápido varían las velocidades.
@@ -544,7 +514,7 @@ donde todos las velocidades están evaluadas en el centro
 
 
 
-\onecolumngrid
+% \onecolumngrid
 
 
 \begin{figure}
@@ -687,7 +657,7 @@ donde todos las velocidades están evaluadas en el centro
 
 
 
-\twocolumngrid
+% \twocolumngrid
 
 
 
@@ -752,6 +722,25 @@ Se calculó el orden de convergencia espacial del método UP1 para el término a
   \item Se calculó la evolución temporal de $u(0.5,0.5)$ y $v(0.5,0.5)$ hasta $t = 10$ empleando Euler implícito y Crack-Nicholson. En cuanto a los parámetros de la simulación se empleó $n = 30$ y $Re = 1000$, DC2 para los término advectivo y difusivo, $\Delta t = 0.4$ y $l_{simpler} = 1$ y $3$. Los resultados se resumen en la figura
 
 \end{itemize}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{e_1.pdf}
+      \caption{}
+      \label{fig:e_1}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{e_2.pdf}
+      \caption{}
+      \label{fig:e_2}
+  \end{subfigure}
+     \caption{}
+     \label{fig:e}
+\end{figure}
 
 
 \textcolor{red}{Condición inicial?}
