@@ -1,0 +1,177 @@
+Quick
+
+
+#Esquina inferior izquierda:
+  i=1;
+  j=1;
+  if (uwest(i,j)>0)
+    usourcew(i,j)=(uvel(i,j))/2*dx*uwest(i,j);
+  else
+    usourcew(i,j)=(-uvel(i,j))/2*dx*uwest(i,j);
+  endif 
+  usources(i,j)=0;
+
+  #Borde izquierdo:
+  for j=2:n1
+    if (uwest(i,j)>0)
+      usourcew(i,j)=(uvel(i,j))/2*dx*uwest(i,j);
+    else
+      usourcew(i,j)=(-uvel(i,j))/2*dx*uwest(i,j);
+    endif 
+    if (usouth(i,j)>0)
+      usources(i,j)=(uvel(i,j)-uvel(i,j-1))/2*dx*usouth(i,j);
+    else
+      usources(i,j)=(-uvel(i,j)+uvel(i,j-1))/2*dx*usouth(i,j);
+    endif  
+  endfor
+
+  for i=2:n1-1
+    #Borde inferior:
+    j=1;
+    if (uwest(i,j)>0)
+      usourcew(i,j)=(uvel(i,j)-uvel(i-1,j))/2*dx*uwest(i,j);
+    else
+      usourcew(i,j)=(-uvel(i,j)+uvel(i-1,j))/2*dx*uwest(i,j);
+    endif 
+    usources(i,j)=0;
+
+    #Interior desde i=2 hasta n1-1 y desde j=2 hasta n1:
+    #Ejecuto como si fuera uno de DC-2. Luego voy a cambiar algunos términos de fuente para QUICK
+    for j=2:n1
+      if (uwest(i,j)>0)
+        usourcew(i,j)=(uvel(i,j)-uvel(i-1,j))/2*dx*uwest(i,j);
+      else
+        usourcew(i,j)=(-uvel(i,j)+uvel(i-1,j))/2*dx*uwest(i,j);
+      endif 
+      if (usouth(i,j)>0)
+        usources(i,j)=(uvel(i,j)-uvel(i,j-1))/2*dx*usouth(i,j);
+      else
+        usources(i,j)=(-uvel(i,j)+uvel(i,j-1))/2*dx*usouth(i,j);
+      endif  
+    endfor
+  endfor
+
+  #Interior - QUICK
+  #Corrijo los valores de fuente para usar QUICK en lugar de DC2
+  for i=3:n1-2
+      for j=3:n1-1
+      if (uwest(i,j)>0)
+        usourcew(i,j)=  1/8*(-uvel(i-2,j)-2*uvel(i-1,j) + 3*uvel(i,j)) *dx*uwest(i,j);
+      else
+        usourcew(i,j)= 1/8*(-uvel(i+1,j)-2*uvel(i,j) + 3*uvel(i-1,j))*dx*uwest(i,j);
+      endif 
+      if (usouth(i,j)>0)
+        usources(i,j)=   1/8*(-uvel(i,j-2)-2*uvel(i,j-1) + 3*uvel(i,j))*dx*usouth(i,j);
+      else
+        usources(i,j)= 1/8*(-uvel(i,j+1)-2*uvel(i,j) + 3*uvel(i,j-1))*dx*usouth(i,j);
+      endif  
+    endfor
+  endfor
+
+  #Esquina inferior derecha:
+  i=n1;
+  j=1;
+  if (uwest(i,j)>0)
+    usourcew(i,j)=(-uvel(i-1,j))/2*dx*uwest(i,j);
+  else
+    usourcew(i,j)=(+uvel(i-1,j))/2*dx*uwest(i,j);
+  endif 
+
+  #Borde derecho:
+  for j=2:n1
+    if (uwest(i,j)>0)
+      usourcew(i,j)=(-uvel(i-1,j))/2*dx*uwest(i,j);
+    else
+      usourcew(i,j)=(+uvel(i-1,j))/2*dx*uwest(i,j);
+    endif 
+  endfor
+
+
+  #   PARA VOLUMENES V
+  #Esquina inferior izquierda:
+  i=1;
+  j=1;
+  if (vsouth(i,j)>0)
+    vsources(i,j)=(vvel(i,j))/2*dx*vsouth(i,j);
+  else
+    vsources(i,j)=(-vvel(i,j))/2*dx*vsouth(i,j);     
+  endif  
+  vsourcew(i,j)=0;   
+
+  #Borde izquierdo
+  for j=2:n1-1
+    if (vsouth(i,j)>0)
+      vsources(i,j)=(vvel(i,j)-vvel(i,j-1))/2*dx*vsouth(i,j);         
+    else
+      vsources(i,j)=(-vvel(i,j)+vvel(i,j-1))/2*dx*vsouth(i,j);     
+    endif
+    vsourcew(i,j)=0;     
+  endfor
+
+  #Esquina superior izquierda
+  j=n1;
+  if (vsouth(i,j)>0)
+    vsources(i,j)=(-vvel(i,j-1))/2*dx*vsouth(i,j);          
+  else
+    vsources(i,j)=(+vvel(i,j-1))/2*dx*vsouth(i,j);     
+  endif 
+
+
+  for i=2:n1
+    #Borde inferior:
+    j=1;
+    if (vwest(i,j)>0)
+      vsourcew(i,j)=(vvel(i,j)-vvel(i-1,j))/2*dx*vwest(i,j);
+    else
+      vsourcew(i,j)=(-vvel(i,j)+vvel(i-1,j))/2*dx*vwest(i,j);
+    endif 
+    if (vsouth(i,j)>0)
+      vsources(i,j)=(vvel(i,j))/2*dx*vsouth(i,j);          
+    else
+      vsources(i,j)=(-vvel(i,j))/2*dx*vsouth(i,j);    
+    endif     
+
+    #Interior y creo borde derecho
+    
+    #Interior desde i=2 hasta n1 y desde j=2 hasta n1-1:
+    #Ejecuto como si fuera uno de DC-2. Luego voy a cambiar algunos términos de fuente para QUICK 
+    for j=2:n1-1
+      if (vwest(i,j)>0)
+        vsourcew(i,j)=(vvel(i,j)-vvel(i-1,j))/2*dx*vwest(i,j);     
+      else
+        vsourcew(i,j)=(-vvel(i,j)+vvel(i-1,j))/2*dx*vwest(i,j);
+      endif 
+      if (vsouth(i,j)>0)
+        vsources(i,j)=(vvel(i,j)-vvel(i,j-1))/2*dx*vsouth(i,j);          
+      else
+        vsources(i,j)=(-vvel(i,j)+vvel(i,j-1))/2*dx*vsouth(i,j);     
+      endif     
+    endfor
+
+
+
+    #Borde superior:
+    j=n1;
+    if (vsouth(i,j)>0)
+      vsources(i,j)=(-vvel(i,j-1))/2*dx*vsouth(i,j);          
+    else
+      vsources(i,j)=(+vvel(i,j-1))/2*dx*vsouth(i,j);     
+    endif 
+  endfor
+
+
+  #Interior-corrijo QUICK:
+  for i=3:n1-1
+    for j=3:n1-2
+      if (vwest(i,j)>0)
+        vsourcew(i,j)=1/8*(-vvel(i-2,j)-2*vvel(i-1,j) + 3*vvel(i,j))*dx*vwest(i,j);     
+      else
+        vsourcew(i,j)= 1/8*(-vvel(i+1,j)-2*vvel(i,j) + 3*vvel(i-1,j))*dx*vwest(i,j);
+      endif 
+      if (vsouth(i,j)>0)
+        vsources(i,j)=1/8*(-vvel(i,j-2)-2*vvel(i,j-1) + 3*vvel(i,j))*dx*vsouth(i,j);          
+      else
+        vsources(i,j)= 1/8*(-vvel(i,j+1)-2*vvel(i,j) + 3*vvel(i,j-1))*dx*vsouth(i,j);     
+      endif     
+    endfor
+  endfor
